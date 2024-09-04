@@ -1,2 +1,2 @@
 # Simple backup tool
-for making backups to your cloud by imKokoT 
+for making backups to your Google Drive cloud by imKokoT
