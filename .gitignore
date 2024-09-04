@@ -1,0 +1,12 @@
+/.vscode/
+/.vs/
+/.idea/
+__pycache__/
+
+/env/
+/_tests/
+
+/configs
+/logs/
+
+/token.json
