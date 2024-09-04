@@ -1,0 +1,8 @@
+/.vscode/
+/.vs/
+/.idea/
+
+/_tests/
+__pycache__/
+
+/logs/
