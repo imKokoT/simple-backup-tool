@@ -5,6 +5,11 @@ import colorlog
 import os
 from os import path
 
+# --- MAIN -------------------------------------------------------------------
+DEBUG = True
+SCOPES = ['''https://www.googleapis.com/auth/drive''']
+
+
 # --- colorama shortcuts -----------------------------------------------------
 colorama.init(autoreset=True) # init colorama escape codes
 DC = colorama.Style.RESET_ALL
