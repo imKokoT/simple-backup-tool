@@ -2,6 +2,9 @@ import os
 import tarfile
 from config import *
 import schema
+import time
+import json
+import io
 
 
 def packAll(schemaName:str):
@@ -23,6 +26,7 @@ def packAll(schemaName:str):
         exit(1)
 
     packedCount = 0
+    packedFolders = []
     result = {
         'files':0,
         'ignored': 0,
@@ -31,12 +35,15 @@ def packAll(schemaName:str):
     }
     res:dict
     for dir in sch['folders']:
-        res = pack(dir, archive, schemaName)
+        res = pack(dir, archive)
 
         if res:
+            packedFolders.append(dir)
             for k in res.keys():
                 result[k] += res[k]
             packedCount += 1
+
+    configurePack(archive, sch, packedFolders)
 
     programLogger.info(f'packing process finished successfully;\n'
                        f' - packs created: {packedCount}/{len(sch["folders"])}\n'
@@ -47,7 +54,7 @@ def packAll(schemaName:str):
 
 
 
-def pack(targetFolder:str, archive:tarfile.TarFile, schemaName:dict):
+def pack(targetFolder:str, archive:tarfile.TarFile):
     if not os.path.exists(targetFolder):
         programLogger.error(f'packing failed: target folder "{targetFolder}" not exists')
         return
@@ -82,3 +89,27 @@ def pack(targetFolder:str, archive:tarfile.TarFile, schemaName:dict):
         'size': packSize,
         'scannedSize': scannedSize
         }
+
+def configurePack(archive:tarfile.TarFile, backupSchema:dict, packedFolders:list):
+    programLogger.info('configuring pack...')
+
+    if not backupSchema.get('destination', None):
+        programLogger.fatal(f'failed to get "destination" param from schema')
+        exit(1)
+
+    data = {
+        'creation-time': time.time(),
+        'destination': backupSchema['destination'],
+        'packs': { os.path.basename(p): p for p in packedFolders }
+    }
+
+    meta = tarfile.TarInfo('config')
+    if DEBUG:
+        jsonData = json.dumps(data, indent=2)
+    else:
+        jsonData = json.dumps(data, separators=(',',':'))
+    
+    jsonData = io.BytesIO(jsonData.encode())
+    meta.size = len(jsonData.getvalue())
+
+    archive.addfile(meta, fileobj=jsonData)
