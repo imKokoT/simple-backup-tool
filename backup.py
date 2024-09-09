@@ -7,6 +7,7 @@ from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 from config import *
+import schema
 
 
 def authenticate():
@@ -32,21 +33,9 @@ def authenticate():
     return creds
 
 
-def getBackupSchema(backupName:str) ->dict|None:
-    if not os.path.exists('./configs/schemas.yaml'):
-        return None
-    
-    data:dict
-    with open('./configs/schemas.yaml', 'r') as f:
-        data = yaml.safe_load(f)
-
-    schema = data.get(backupName,None)
-    return schema
-
-
 def createBackupOf(backupName:str):
-    schema = getBackupSchema(backupName)
-    if not schema:
+    sch = schema.getBackupSchema(backupName)
+    if not sch:
         programLogger.error(f'No backup schema with name "{backupName}"')
         return
     
