@@ -6,6 +6,7 @@ __pycache__/
 /env/
 /_tests/
 debug.py
+/debug/
 
 /configs
 /logs/
