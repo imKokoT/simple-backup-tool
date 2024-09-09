@@ -23,20 +23,42 @@ def packAll(schemaName:str):
         exit(1)
 
     packedCount = 0
+    result = {
+        'files':0,
+        'ignored': 0,
+        'size': 0,
+        'scannedSize': 0
+    }
+    res:dict
     for dir in sch['folders']:
-        res = pack(dir, archive)
+        res = pack(dir, archive, schemaName)
 
-    programLogger.info(f'packing process finished successfully; packs created: {packedCount}/{len(sch["folders"])}')
+        if res:
+            for k in res.keys():
+                result[k] += res[k]
+            packedCount += 1
+
+    programLogger.info(f'packing process finished successfully;\n'
+                       f' - packs created: {packedCount}/{len(sch["folders"])}\n'
+                       f' - archived and ignored total files: {result['files']}/{result['ignored']}\n'
+                       f' - archived total size: {result["size"]}/{result["scannedSize"]}'
+                       )
     archive.close()
 
 
 
-def pack(targetFolder:str, archive:str):
+def pack(targetFolder:str, archive:tarfile.TarFile, schemaName:dict):
+    if not os.path.exists(targetFolder):
+        programLogger.error(f'packing failed: target folder "{targetFolder}" not exists')
+        return
+
     programLogger.info(f'packing "{targetFolder}"; reading content...')
     files = []
     ignored = 0
     scannedSize = 0
     packSize = 0
+
+
     for dpath, _, fnames in os.walk(targetFolder):
         for fname in fnames:
             relative_path = os.path.relpath(os.path.join(dpath, fname), targetFolder)
@@ -45,13 +67,18 @@ def pack(targetFolder:str, archive:str):
             packSize += os.path.getsize(os.path.join(targetFolder, relative_path))
             scannedSize += os.path.getsize(os.path.join(targetFolder, relative_path))
 
-    programLogger.info(f'reading success; total files: {len(files)} [{packSize}B/{scannedSize}B]; ignored total: {ignored}')
-
-
-    
+    programLogger.info(f'reading success; total files: {len(files)} [{packSize}B/{scannedSize}B]; ignored total: {ignored}')    
 
     programLogger.info(f'adding to archive...')
-    with tarfile.open(os.path.join(tmp, archive), 'x') as t:
-        for f in files:
-            t.add(os.path.join(targetFolder, f), arcname=f)
+    
+    for f in files:
+        dpath = os.path.join(schemaName,f)
+        archive.add(os.path.join(targetFolder, f), arcname=dpath)
+    
     programLogger.info(f'success')
+    return {
+        'files':len(files),
+        'ignored': ignored,
+        'size': packSize,
+        'scannedSize': scannedSize
+        }
