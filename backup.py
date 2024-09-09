@@ -8,6 +8,7 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 from config import *
 import schema
+import packer
 
 
 def authenticate():
@@ -40,6 +41,9 @@ def createBackupOf(backupName:str):
         return
     
     creds = authenticate()
+
+    packer.packAll(backupName)
+    
     
 
 
