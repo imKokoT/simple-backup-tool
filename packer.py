@@ -72,7 +72,7 @@ def pack(targetFolder:str, archive:tarfile.TarFile, schemaName:dict):
     programLogger.info(f'adding to archive...')
     
     for f in files:
-        dpath = os.path.join(schemaName,f)
+        dpath = os.path.join(os.path.basename(targetFolder),f)
         archive.add(os.path.join(targetFolder, f), arcname=dpath)
     
     programLogger.info(f'success')
