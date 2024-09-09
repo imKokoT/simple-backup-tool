@@ -2,7 +2,8 @@ import os
 from schema import getBackupSchema
 from config import *
 
-def archive(schemaName:str):
+def archive(schemaName:str) -> str:
+    '''returns archive name'''
     schema = getBackupSchema(schemaName)
 
     if not schema:
@@ -19,7 +20,7 @@ def archive(schemaName:str):
         case 'zip':
             raise NotImplementedError()
         case None | 'tar':
-            raise NotImplementedError()
+            return f'{schemaName}.tar'
         case _:
             programLogger.fatal(f'unknown compression format {schema.get('compressionFormat', None)}')
             exit(1)        

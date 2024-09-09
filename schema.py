@@ -2,7 +2,7 @@ import os
 import yaml
 
 
-def getBackupSchema(backupName:str) ->dict|None:
+def getBackupSchema(schemaName:str) ->dict|None:
     if not os.path.exists('./configs/schemas.yaml'):
         return None
     
@@ -10,5 +10,5 @@ def getBackupSchema(backupName:str) ->dict|None:
     with open('./configs/schemas.yaml', 'r') as f:
         data = yaml.safe_load(f)
 
-    schema = data.get(backupName,None)
+    schema = data.get(schemaName,None)
     return schema

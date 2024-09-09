@@ -6,9 +6,11 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
+from googleapiclient.errors import HttpError
 from config import *
 import schema
 import packer
+import archiver
 
 
 def authenticate():
@@ -34,18 +36,37 @@ def authenticate():
     return creds
 
 
-def createBackupOf(backupName:str):
-    sch = schema.getBackupSchema(backupName)
+def backup(archiveName:str, schema:dict, creds:Credentials):
+    programLogger.info('preparing backup to send to cloud...')
+
+    if DEBUG:
+        if not os.path.exists('./debug'): os.mkdir('./debug')
+        if not os.path.exists('./debug/tmp'): os.mkdir('./debug/tmp')
+        tmp = './debug/tmp'
+
+    try:
+        programLogger.info('building service')
+        service = build('drive', 'v3', creds)
+
+        
+
+    except HttpError as e:
+        programLogger.fatal(f'failed to backup; error: {e}')
+        exit(1)
+
+
+
+def createBackupOf(schemaName:str):
+    sch = schema.getBackupSchema(schemaName)
     if not sch:
-        programLogger.error(f'No backup schema with name "{backupName}"')
+        programLogger.error(f'No backup schema with name "{schemaName}"')
         return
     
     creds = authenticate()
 
-    packer.packAll(backupName)
+    packer.packAll(schemaName)
     
-    
-
+    archName = archiver.archive(schemaName)
 
 
 if __name__ == '__main__':
