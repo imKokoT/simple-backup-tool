@@ -105,9 +105,19 @@ def backup(archiveName:str, schemaName:str, schema:dict, creds:Credentials):
         
         _cleanup(service, destinationFolder, schemaName)
 
+        programLogger.info('sending backup to cloud...')
+        meta = {
+            'name': 'backup.txt',
+            'parents': [destinationFolder]
+        }
+        media = MediaFileUpload(os.path.join(tmp, archiveName))
+        uploadFile = service.files().create(body=meta, media_body=media, fields='id').execute()
+
     except HttpError as e:
         programLogger.fatal(f'failed to backup; error: {e}')
         exit(1)
+
+    programLogger.info(f'successfully backup "{archiveName}" to cloud; it placed in {f'{schema['destination']}/{schemaName}'}.archive')
 
 
 
