@@ -107,7 +107,7 @@ def backup(archiveName:str, schemaName:str, schema:dict, creds:Credentials):
 
         programLogger.info('sending backup to cloud...')
         meta = {
-            'name': 'backup.txt',
+            'name': f'{schemaName}.archive',
             'parents': [destinationFolder]
         }
         media = MediaFileUpload(os.path.join(tmp, archiveName))
