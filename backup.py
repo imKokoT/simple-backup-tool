@@ -37,7 +37,11 @@ def authenticate():
 
 
 def _getOrCreate(service, folderName:str, parent=None):
-    query = f"'{parent}' in parents and name='{folderName}' and mimeType='application/vnd.google-apps.folder' and trashed=false"
+    if parent:
+        query = f"'{parent}' in parents and name='{folderName}' and mimeType='application/vnd.google-apps.folder' and trashed=false"
+    else:
+        query = f"name='{folderName}' and mimeType='application/vnd.google-apps.folder' and trashed=false"
+    
     response = service.files().list(q=query, spaces='drive').execute()
     files = response.get('files', [])
 
@@ -81,8 +85,8 @@ def backup(archiveName:str, schema:dict, creds:Credentials):
         programLogger.info('building service')
         service = build('drive', 'v3', credentials=creds)
 
-        backupFolder = _getDestination(service, schema['destination'])
-        print(backupFolder)
+        destinationFolder = _getDestination(service, schema['destination'])
+        print(destinationFolder)
 
     except HttpError as e:
         programLogger.fatal(f'failed to backup; error: {e}')
