@@ -21,7 +21,7 @@ def packAll(schemaName:str):
 
     archive = tarfile.open(os.path.join(tmp, f'{schemaName}.tar'), 'w')
     
-    if not sch.get('folders', None):
+    if not sch.get('folders'):
         programLogger.fatal(f'failed to get "folders" key from schema "{schemaName}"')
         exit(1)
 
@@ -93,7 +93,7 @@ def pack(targetFolder:str, archive:tarfile.TarFile):
 def configurePack(archive:tarfile.TarFile, backupSchema:dict, packedFolders:list):
     programLogger.info('configuring pack...')
 
-    if not backupSchema.get('destination', None):
+    if not backupSchema.get('destination'):
         programLogger.fatal(f'failed to get "destination" param from schema')
         exit(1)
 

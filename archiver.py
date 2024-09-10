@@ -10,7 +10,7 @@ def archive(schemaName:str) -> str:
         programLogger.fatal(f'failed to load schema name "{schemaName}"')
         exit(0)
     
-    match schema.get('compressFormat', None):
+    match schema.get('compressFormat'):
         case '7z':
             raise NotImplementedError()
         case 'gz':

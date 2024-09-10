@@ -10,5 +10,5 @@ def getBackupSchema(schemaName:str) ->dict|None:
     with open('./configs/schemas.yaml', 'r') as f:
         data = yaml.safe_load(f)
 
-    schema = data.get(schemaName,None)
+    schema = data.get(schemaName)
     return schema

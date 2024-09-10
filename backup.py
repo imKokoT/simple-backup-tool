@@ -73,7 +73,19 @@ def _getDestination(service, path:str):
     return parent
 
 
-def backup(archiveName:str, schema:dict, creds:Credentials):
+def _cleanup(service, folder:str, schemaName:str):
+    programLogger.info('cleaning old cloud backup if exists...')
+
+    query = f"'{folder}' in parents and name='{f'{schemaName}.archive'}' and trashed=false"
+    response = service.files().list(q=query, spaces='drive').execute()
+    files = response.get('files', [])
+
+    if files:
+        file_id = files[0]['id']
+        service.files().delete(fileId=file_id).execute()
+
+
+def backup(archiveName:str, schemaName:str, schema:dict, creds:Credentials):
     programLogger.info('preparing backup to send to cloud...')
 
     if DEBUG:
@@ -81,12 +93,17 @@ def backup(archiveName:str, schema:dict, creds:Credentials):
         if not os.path.exists('./debug/tmp'): os.mkdir('./debug/tmp')
         tmp = './debug/tmp'
 
+    if not schema.get('destination'):
+        programLogger.fatal(f'failed to get "destination" from schema')
+        exit(1)
+
     try:
         programLogger.info('building service')
         service = build('drive', 'v3', credentials=creds)
 
         destinationFolder = _getDestination(service, schema['destination'])
-        print(destinationFolder)
+        
+        _cleanup(service, destinationFolder, schemaName)
 
     except HttpError as e:
         programLogger.fatal(f'failed to backup; error: {e}')
@@ -106,7 +123,7 @@ def createBackupOf(schemaName:str):
     
     archName = archiver.archive(schemaName)
 
-    backup(schemaName, sch, creds)
+    backup(archName, schemaName, sch, creds)
 
 
 if __name__ == '__main__':
