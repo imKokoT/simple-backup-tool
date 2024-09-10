@@ -36,6 +36,39 @@ def authenticate():
     return creds
 
 
+def _getOrCreate(service, folderName:str, parent=None):
+    query = f"'{parent}' in parents and name='{folderName}' and mimeType='application/vnd.google-apps.folder' and trashed=false"
+    response = service.files().list(q=query, spaces='drive').execute()
+    files = response.get('files', [])
+
+    if files:
+        return files[0]['id']
+    else:
+        meta = {
+            'name': folderName,
+            'mimeType': 'application/vnd.google-apps.folder'
+        }
+        if parent:
+            meta['parents'] = [parent]
+
+        folder = service.files().create(body=meta, fields='id').execute()
+        return folder['id']
+
+
+def _getDestination(service, path:str):
+    programLogger.info('getting destination folder')
+    
+    folders = path.split('/')
+    folders = [e for e in folders if e != '']
+
+    parent = None  # Start with the root folder
+
+    for folder in folders:
+        parent = _getOrCreate(service, folder, parent)
+
+    return parent
+
+
 def backup(archiveName:str, schema:dict, creds:Credentials):
     programLogger.info('preparing backup to send to cloud...')
 
@@ -46,9 +79,10 @@ def backup(archiveName:str, schema:dict, creds:Credentials):
 
     try:
         programLogger.info('building service')
-        service = build('drive', 'v3', creds)
+        service = build('drive', 'v3', credentials=creds)
 
-        
+        backupFolder = _getDestination(service, schema['destination'])
+        print(backupFolder)
 
     except HttpError as e:
         programLogger.fatal(f'failed to backup; error: {e}')
@@ -67,6 +101,8 @@ def createBackupOf(schemaName:str):
     packer.packAll(schemaName)
     
     archName = archiver.archive(schemaName)
+
+    backup(schemaName, sch, creds)
 
 
 if __name__ == '__main__':
