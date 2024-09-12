@@ -30,7 +30,7 @@ def authenticate():
             programLogger.info('getting token...')
             flow = InstalledAppFlow.from_client_secrets_file('./configs/client-secrets.json', SCOPES)
             creds = flow.run_local_server(port=0)
-        with open('token.json', 'w') as token:
+        with open('./configs/token.json', 'w') as token:
             token.write(creds.to_json())
     programLogger.info('success!')
     return creds
