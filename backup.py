@@ -11,45 +11,8 @@ from config import *
 import schema
 import packer
 import archiver
-from cloud_tools import authenticate, send
+from cloud_tools import authenticate, send, getDestination
 
-
-
-def _getOrCreate(service, folderName:str, parent=None):
-    if parent:
-        query = f"'{parent}' in parents and name='{folderName}' and mimeType='application/vnd.google-apps.folder' and trashed=false"
-    else:
-        query = f"name='{folderName}' and mimeType='application/vnd.google-apps.folder' and trashed=false"
-    
-    response = service.files().list(q=query, spaces='drive').execute()
-    files = response.get('files', [])
-
-    if files:
-        return files[0]['id']
-    else:
-        meta = {
-            'name': folderName,
-            'mimeType': 'application/vnd.google-apps.folder'
-        }
-        if parent:
-            meta['parents'] = [parent]
-
-        folder = service.files().create(body=meta, fields='id').execute()
-        return folder['id']
-
-
-def _getDestination(service, path:str):
-    programLogger.info('getting destination folder')
-    
-    folders = path.split('/')
-    folders = [e for e in folders if e != '']
-
-    parent = None  # Start with the root folder
-
-    for folder in folders:
-        parent = _getOrCreate(service, folder, parent)
-
-    return parent
 
 
 def _cleanup(service, folder:str, schemaName:str):
@@ -80,7 +43,7 @@ def backup(archiveName:str, schemaName:str, schema:dict, creds:Credentials):
         programLogger.info('building service')
         service = build('drive', 'v3', credentials=creds)
 
-        destinationFolder = _getDestination(service, schema['destination'])
+        destinationFolder = getDestination(service, schema['destination'])
         
         _cleanup(service, destinationFolder, schemaName)
 

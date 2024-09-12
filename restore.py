@@ -7,11 +7,36 @@ from googleapiclient.http import MediaFileUpload
 from googleapiclient.errors import HttpError
 from config import *
 import schema
-from cloud_tools import authenticate
+from cloud_tools import authenticate, getDestination
 
 
 def restore(schemaName:str, schema:dict, creds:Credentials):
-    pass
+    programLogger.info('preparing for restore from cloud...')
+
+    if DEBUG:
+        if not os.path.exists('./debug'): os.mkdir('./debug')
+        if not os.path.exists('./debug/tmp'): os.mkdir('./debug/tmp')
+        tmp = './debug/tmp'
+
+    if not schema.get('destination'):
+        programLogger.fatal(f'failed to get "destination" from schema')
+        exit(1)
+    
+    try:
+        programLogger.info('building service')
+        service = build('drive', 'v3', credentials=creds)
+
+        destinationFolder = getDestination(service, schema['destination'])
+        
+
+        programLogger.info('sending backup to cloud...')
+
+
+    except HttpError as e:
+        programLogger.fatal(f'failed to backup; error: {e}')
+        exit(1)
+
+    programLogger.info(f'successfully backup "{0}" to cloud; it placed in {f'{schema['destination']}/{schemaName}'}.archive')
 
 
 def restoreFromCloud(schemaName:str):

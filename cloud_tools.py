@@ -45,3 +45,41 @@ def send(service, fpath:str, endName:str, folder=None):
         }
     media = MediaFileUpload(fpath)
     uploadFile = service.files().create(body=meta, media_body=media, fields='id').execute()
+
+
+
+def getDestination(service, path:str):
+    programLogger.info('getting destination folder')
+    
+    folders = path.split('/')
+    folders = [e for e in folders if e != '']
+
+    parent = None  # Start with the root folder
+
+    for folder in folders:
+        parent = _getOrCreate(service, folder, parent)
+
+    return parent
+
+
+def _getOrCreate(service, folderName:str, parent=None):
+    if parent:
+        query = f"'{parent}' in parents and name='{folderName}' and mimeType='application/vnd.google-apps.folder' and trashed=false"
+    else:
+        query = f"name='{folderName}' and mimeType='application/vnd.google-apps.folder' and trashed=false"
+    
+    response = service.files().list(q=query, spaces='drive').execute()
+    files = response.get('files', [])
+
+    if files:
+        return files[0]['id']
+    else:
+        meta = {
+            'name': folderName,
+            'mimeType': 'application/vnd.google-apps.folder'
+        }
+        if parent:
+            meta['parents'] = [parent]
+
+        folder = service.files().create(body=meta, fields='id').execute()
+        return folder['id']
