@@ -11,29 +11,8 @@ from config import *
 import schema
 import packer
 import archiver
+from cloud_tools import authenticate, send
 
-
-def authenticate():
-    programLogger.info('authorizing...')
-    creds = None
-    if not os.path.exists('./configs/client-secrets.json'):
-        programLogger.error('failed; no OAuth2 client json file secrets "./configs/client-secrets.json"; get it from Google Cloud Console project')
-        exit(1)
-
-    if os.path.exists('./configs/token.json'):
-        creds = Credentials.from_authorized_user_file('./configs/token.json', SCOPES)
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            programLogger.info('token expired, refreshing...')
-            creds.refresh(Request())
-        else:
-            programLogger.info('getting token...')
-            flow = InstalledAppFlow.from_client_secrets_file('./configs/client-secrets.json', SCOPES)
-            creds = flow.run_local_server(port=0)
-        with open('./configs/token.json', 'w') as token:
-            token.write(creds.to_json())
-    programLogger.info('success!')
-    return creds
 
 
 def _getOrCreate(service, folderName:str, parent=None):
@@ -106,12 +85,7 @@ def backup(archiveName:str, schemaName:str, schema:dict, creds:Credentials):
         _cleanup(service, destinationFolder, schemaName)
 
         programLogger.info('sending backup to cloud...')
-        meta = {
-            'name': f'{schemaName}.archive',
-            'parents': [destinationFolder]
-        }
-        media = MediaFileUpload(os.path.join(tmp, archiveName))
-        uploadFile = service.files().create(body=meta, media_body=media, fields='id').execute()
+        send(service, os.path.join(tmp, archiveName), f'{schemaName}.archive', destinationFolder)
 
     except HttpError as e:
         programLogger.fatal(f'failed to backup; error: {e}')
