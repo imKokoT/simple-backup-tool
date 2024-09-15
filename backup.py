@@ -34,6 +34,8 @@ def backup(archiveName:str, schemaName:str, schema:dict, creds:Credentials):
         if not os.path.exists('./debug'): os.mkdir('./debug')
         if not os.path.exists('./debug/tmp'): os.mkdir('./debug/tmp')
         tmp = './debug/tmp'
+    else:
+        raise NotImplementedError()
 
     if not schema.get('destination'):
         programLogger.fatal(f'failed to get "destination" from schema')
