@@ -24,6 +24,8 @@ def restore(schemaName:str, schema:dict, creds:Credentials):
         programLogger.fatal(f'failed to get "destination" from schema')
         exit(1)
     
+    downloadedName = f'{schemaName}.downloaded'
+
     try:
         programLogger.info('building service')
         service = build('drive', 'v3', credentials=creds)
@@ -32,7 +34,8 @@ def restore(schemaName:str, schema:dict, creds:Credentials):
         
         programLogger.info('getting backup from cloud...')
 
-        download(service, os.path.join(tmp, ))
+        download(service, os.path.join(tmp, downloadedName), f'{schemaName}.archive', destinationFolder)
+
 
     except HttpError as e:
         programLogger.fatal(f'failed to backup; error: {e}')
@@ -48,6 +51,8 @@ def restoreFromCloud(schemaName:str):
         return
     
     creds = authenticate()
+
+    restore(schemaName, sch, creds)
 
 
 if __name__ == '__main__':
