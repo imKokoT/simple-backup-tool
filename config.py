@@ -9,6 +9,7 @@ from os import path
 DEBUG = True
 SCOPES = ['''https://www.googleapis.com/auth/drive''']
 
+CHUNK_SIZE = 1024*1024*10
 
 # --- colorama shortcuts -----------------------------------------------------
 colorama.init(autoreset=True) # init colorama escape codes

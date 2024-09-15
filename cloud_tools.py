@@ -4,7 +4,7 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
-from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
+from googleapiclient.http import MediaIoBaseUpload, MediaIoBaseDownload
 from googleapiclient.errors import HttpError
 import google.auth
 from config import *
@@ -59,9 +59,21 @@ def send(service, fpath:str, endName:str, folder=None):
             'name': endName,
             'parents': [folder]
         }
-    media = MediaFileUpload(fpath)
-    uploadFile = service.files().create(body=meta, media_body=media, fields='id').execute()
+    with open(fpath, 'rb') as f:
+        media = MediaIoBaseUpload(f, mimetype='application/octet-stream', chunksize=CHUNK_SIZE, resumable=True)
 
+        uploadFile = service.files().create(
+            body=meta,
+            media_body=media, 
+            fields='id'
+            )
+
+        response = None
+        while response is None:
+            status, response = uploadFile.next_chunk()
+            if status:
+                updateProgressBar(status.progress())
+        print()
 
 def download(service, fpath:str, name:str, folder):
     '''
@@ -82,11 +94,12 @@ def download(service, fpath:str, name:str, folder):
     request = service.files().get_media(fileId=backup_id)
     fh = io.FileIO(fpath, 'wb')
 
-    downloader = MediaIoBaseDownload(fh, request)
+    downloader = MediaIoBaseDownload(fh, request, chunksize=CHUNK_SIZE)
     done = False
     while not done:
         status, done = downloader.next_chunk()
         updateProgressBar(status.progress())
+    print()
 
 
 def getDestination(service, path:str):
