@@ -115,14 +115,27 @@ def configurePack(archive:tarfile.TarFile, backupSchema:dict, packedFolders:list
     archive.addfile(meta, fileobj=jsonData)
 
 
+def loadPackConfig(archive:tarfile.TarFile) -> dict:
+    '''returns pack's config'''
+    programLogger.info('loading pack\'s config...')
+
+    if 'config' not in archive.getnames():
+        programLogger.fatal('bad pack: config not found')
+        exit(1)
+
+    configFile = archive.extractfile('config')
+    data = json.loads(configFile.read())
+    configFile.close()
+    return data
+
 def unpack(targetFolder:str, archive:tarfile.TarFile):
     if os.path.exists(targetFolder) and not ALLOW_LOCAL_REPLACE:
         targetFolder = os.path.join(os.path.dirname(targetFolder), os.path.basename(targetFolder) + '-restored')
 
-    print(targetFolder)
-
 
 def unpackAll(schemaName:str, schema:dict):
+    programLogger.info('unpacking process started')
+    
     if ALLOW_LOCAL_REPLACE and ASK_BEFORE_REPLACE:
         print(f'{LYC}Are you sure to rewrite next folders:')
         for f in schema['folders']:
@@ -132,3 +145,11 @@ def unpackAll(schemaName:str, schema:dict):
             print('restored data placed in tmp folder\nunpack process interrupted...')
             exit(0)
     
+    if DEBUG:
+        if not os.path.exists('./debug'): os.mkdir('./debug')
+        if not os.path.exists('./debug/tmp'): os.mkdir('./debug/tmp')
+        tmp = './debug/tmp'
+
+    archive = tarfile.open(os.path.join(tmp, f'{schemaName}.tar'), 'r')
+
+    packConfig = loadPackConfig(archive)
