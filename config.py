@@ -11,6 +11,10 @@ SCOPES = ['''https://www.googleapis.com/auth/drive''']
 
 CHUNK_SIZE = 1024*1024*10
 
+# --- restore settings -------------------------------------------------------
+ALLOW_LOCAL_REPLACE = True # if true restored backup will rewrite current local changes, if false will create new folder
+ASK_BEFORE_REPLACE = True # if true will ask before replace files
+
 # --- colorama shortcuts -----------------------------------------------------
 colorama.init(autoreset=True) # init colorama escape codes
 DC = colorama.Style.RESET_ALL
@@ -20,7 +24,7 @@ GC = colorama.Fore.GREEN
 BC = colorama.Fore.BLUE
 YC = colorama.Fore.YELLOW
 CC = colorama.Fore.CYAN
-BkC = colorama.Fore.BLUE
+BKC = colorama.Fore.BLUE
 MC = colorama.Fore.MAGENTA
 WC = colorama.Fore.WHITE
 
@@ -29,7 +33,7 @@ LGC = colorama.Fore.LIGHTGREEN_EX
 LBC = colorama.Fore.LIGHTBLUE_EX
 LYC = colorama.Fore.LIGHTYELLOW_EX
 LCC = colorama.Fore.LIGHTCYAN_EX
-LBkC = colorama.Fore.LIGHTBLACK_EX
+LBKC = colorama.Fore.LIGHTBLACK_EX
 LMC = colorama.Fore.LIGHTMAGENTA_EX
 LWC = colorama.Fore.LIGHTWHITE_EX
 

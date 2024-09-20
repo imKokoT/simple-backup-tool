@@ -53,7 +53,6 @@ def packAll(schemaName:str):
     archive.close()
 
 
-
 def pack(targetFolder:str, archive:tarfile.TarFile):
     if not os.path.exists(targetFolder):
         programLogger.error(f'packing failed: target folder "{targetFolder}" not exists')
@@ -90,6 +89,7 @@ def pack(targetFolder:str, archive:tarfile.TarFile):
         'scannedSize': scannedSize
         }
 
+
 def configurePack(archive:tarfile.TarFile, backupSchema:dict, packedFolders:list):
     programLogger.info('configuring pack...')
 
@@ -113,3 +113,22 @@ def configurePack(archive:tarfile.TarFile, backupSchema:dict, packedFolders:list
     meta.size = len(jsonData.getvalue())
 
     archive.addfile(meta, fileobj=jsonData)
+
+
+def unpack(targetFolder:str, archive:tarfile.TarFile):
+    if os.path.exists(targetFolder) and not ALLOW_LOCAL_REPLACE:
+        targetFolder = os.path.join(os.path.dirname(targetFolder), os.path.basename(targetFolder) + '-restored')
+
+    print(targetFolder)
+
+
+def unpackAll(schemaName:str, schema:dict):
+    if ALLOW_LOCAL_REPLACE and ASK_BEFORE_REPLACE:
+        print(f'{LYC}Are you sure to rewrite next folders:')
+        for f in schema['folders']:
+            print(f'{LYC} - {f}')
+        yn = input('[y/N] ')
+        if yn.strip().lower() != 'y':
+            print('restored data placed in tmp folder\nunpack process interrupted...')
+            exit(0)
+    

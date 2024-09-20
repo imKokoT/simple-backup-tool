@@ -8,6 +8,7 @@ from googleapiclient.errors import HttpError
 from config import *
 import schema
 from cloud_tools import authenticate, getDestination, download
+import archiver
 
 
 def restore(schemaName:str, schema:dict, creds:Credentials):
@@ -41,7 +42,7 @@ def restore(schemaName:str, schema:dict, creds:Credentials):
         programLogger.fatal(f'failed to backup; error: {e}')
         exit(1)
 
-    programLogger.info(f'successfully backup "{0}" to cloud; it placed in {f'{schema['destination']}/{schemaName}'}.archive')
+    programLogger.info(f'successfully downloaded "{schemaName}.archive" from cloud; it placed in {os.path.join(tmp, f'{schemaName}.downloaded')}')
 
 
 def restoreFromCloud(schemaName:str):
@@ -53,6 +54,8 @@ def restoreFromCloud(schemaName:str):
     creds = authenticate()
 
     restore(schemaName, sch, creds)
+
+    packName = archiver.dearchive(schemaName, sch)
 
 
 if __name__ == '__main__':
