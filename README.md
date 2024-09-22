@@ -4,6 +4,11 @@ for making backups to your Google Drive cloud by imKokoT
 # How to setup
 All application configurations placed in "configs" folder.
 
+## Requirements
+- Python 3.12+
+- ```pip install colorama colorlog pyyaml google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client```
+- (*optionally*) [7z](https://7-zip.org/) - for faster compression and more flexibility
+
 ## Creating Google service
 Before you start to configure application, firstly you must to create Google application service in [Google Console](https://console.cloud.google.com/) to get access to your Drive. **Don't worry it's free**. 
 1. Firstly you must to create new project by [following this link](https://console.cloud.google.com/projectcreate).
