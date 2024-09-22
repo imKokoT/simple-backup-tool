@@ -128,9 +128,22 @@ def loadPackConfig(archive:tarfile.TarFile) -> dict:
     configFile.close()
     return data
 
-def unpack(targetFolder:str, archive:tarfile.TarFile):
+
+def unpack(name:str, targetFolder:str, archive:tarfile.TarFile):
+    programLogger.info(f'unpacking {name}...')
+    
+    if not os.path.exists(os.path.dirname(targetFolder)):
+        programLogger.error(f'failed to unpack because "{os.path.dirname(targetFolder)}" not exists')
+        return
     if os.path.exists(targetFolder) and not ALLOW_LOCAL_REPLACE:
         targetFolder = os.path.join(os.path.dirname(targetFolder), os.path.basename(targetFolder) + '-restored')
+        if os.path.exists(targetFolder):
+            os.rmdir(targetFolder)
+        os.mkdir(targetFolder)
+    elif not os.path.exists(targetFolder):
+        os.mkdir(targetFolder)
+
+    
 
 
 def unpackAll(schemaName:str, schema:dict):
@@ -153,3 +166,9 @@ def unpackAll(schemaName:str, schema:dict):
     archive = tarfile.open(os.path.join(tmp, f'{schemaName}.tar'), 'r')
 
     packConfig = loadPackConfig(archive)
+
+    for name, path in packConfig['packs'].items():
+        unpack(name, path, archive)
+
+    programLogger.info('unpacking finished with success!')
+    archive.close()
