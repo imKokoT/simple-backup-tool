@@ -9,6 +9,7 @@ from config import *
 import schema
 from cloud_tools import authenticate, getDestination, download
 import archiver
+import packer
 
 
 def restore(schemaName:str, schema:dict, creds:Credentials):
@@ -56,6 +57,8 @@ def restoreFromCloud(schemaName:str):
     restore(schemaName, sch, creds)
 
     packName = archiver.dearchive(schemaName, sch)
+
+    packer.unpackAll(schemaName, sch)
 
 
 if __name__ == '__main__':
