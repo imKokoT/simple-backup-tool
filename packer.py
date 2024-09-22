@@ -130,11 +130,12 @@ def loadPackConfig(archive:tarfile.TarFile) -> dict:
 
 
 def unpack(name:str, targetFolder:str, archive:tarfile.TarFile):
-    programLogger.info(f'unpacking {name}...')
+    programLogger.info(f'unpacking "{name}"...')
     
     if not os.path.exists(os.path.dirname(targetFolder)):
         programLogger.error(f'failed to unpack because "{os.path.dirname(targetFolder)}" not exists')
         return
+    
     if os.path.exists(targetFolder) and not ALLOW_LOCAL_REPLACE:
         targetFolder = os.path.join(os.path.dirname(targetFolder), os.path.basename(targetFolder) + '-restored')
         if os.path.exists(targetFolder):
@@ -143,7 +144,34 @@ def unpack(name:str, targetFolder:str, archive:tarfile.TarFile):
     elif not os.path.exists(targetFolder):
         os.mkdir(targetFolder)
 
-    
+    rewrittenCount = 0
+    restoredCount = 0
+
+    for member in archive.getmembers():
+        if not (member.name.startswith(name) and member.isfile()):
+            continue
+
+        relpath = os.path.relpath(member.name, name)
+        targetFilePath = os.path.join(targetFolder, relpath)
+
+        if os.path.exists(targetFilePath):
+            rewrittenCount += 1
+        else:
+            restoredCount += 1
+
+        os.makedirs(os.path.dirname(targetFilePath), exist_ok=True)
+
+        with archive.extractfile(member) as file_obj:
+            with open(targetFilePath, 'wb') as out_file:
+                out_file.write(file_obj.read())
+
+    programLogger.info(f'success! unpacked to "{targetFolder}"\n'
+                       f' - rewritten: {rewrittenCount}\n'
+                       f' - restored: {restoredCount}')
+    return {
+        'rewritten': rewrittenCount,
+        'restored': restoredCount
+    }
 
 
 def unpackAll(schemaName:str, schema:dict):
@@ -167,8 +195,18 @@ def unpackAll(schemaName:str, schema:dict):
 
     packConfig = loadPackConfig(archive)
 
+    result = {
+        'rewritten': 0,
+        'restored': 0
+    }
+    res:dict
     for name, path in packConfig['packs'].items():
-        unpack(name, path, archive)
+        res = unpack(name, path, archive)
 
-    programLogger.info('unpacking finished with success!')
+        result['rewritten'] += res['rewritten']
+        result['restored'] += res['restored']
+
+    programLogger.info(f'unpacking finished with success!\n'
+                       f' - rewritten total: {result['rewritten']}\n'
+                       f' - restored total: {result["restored"]}')
     archive.close()
