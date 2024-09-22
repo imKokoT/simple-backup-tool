@@ -33,7 +33,7 @@ You can backup several folders at once. Backup will be placed in *destination* p
 ## Create first backup
 SBT has two main scripts: *backup.py* and *restore.py*. To backup run
 ```sh
-python backup.py \<your schema name\>
+python backup.py <your schema name>
 ```
 Or to get docs:
 ```sh
@@ -44,7 +44,7 @@ If you have done all right, backup will created successfully.
 ## Restore your data
 To restore simply run
 ```sh
-python restore.py \<your schema name\>
+python restore.py <your schema name>
 ```
 And backup will be restored to local paths, which you select before creating backup. Restore process WILL NOT delete or change all current files BUT will replace or insert all that contains in backup. 
 **WARNING: if local path not exits unpack of this folder will fail, but your downloaded data will placed in *tmp* local program folder in TAR archive *your schema name.tar***
