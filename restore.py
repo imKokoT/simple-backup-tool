@@ -63,6 +63,7 @@ def restoreFromCloud(schemaName:str):
 if __name__ == '__main__':
     import sys
     if len(sys.argv) == 1:
+        print(f'Welcome to SBT!  V{VERSION}')
         print(f'this script restore backup from cloud using your backup schema\n'
               f' - restore.py <schema name> -> make backup from schema')
     else:

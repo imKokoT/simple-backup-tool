@@ -73,6 +73,7 @@ def createBackupOf(schemaName:str):
 if __name__ == '__main__':
     import sys
     if len(sys.argv) == 1:
+        print(f'Welcome to SBT!  V{VERSION}')
         print(f'this script create backup from your backup schema\n'
               f' - backup.py <schema name> -> make backup from schema')
     else:
