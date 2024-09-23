@@ -1,5 +1,5 @@
 # Simple backup tool
-for making backups to your Google Drive cloud by imKokoT
+for making backups to your Google Drive cloud by imKokoT.
 
 # How to setup
 All application configurations placed in "configs" folder.
@@ -12,7 +12,7 @@ All application configurations placed in "configs" folder.
 ## Creating Google service
 Before you start to configure application, firstly you must to create Google application service in [Google Console](https://console.cloud.google.com/) to get access to your Drive. **Don't worry it's free**. 
 1. Firstly you must to create new project by [following this link](https://console.cloud.google.com/projectcreate).
-2. Attach **Google Drive API** support by [following this link](https://console.cloud.google.com/apis/library/drive.googleapis.com)
+2. Attach **Google Drive API** support by [following this link](https://console.cloud.google.com/apis/library/drive.googleapis.com).
 3. Create OAuth2 credentials by [following this link](https://console.cloud.google.com/apis/credentials) and clicking on *CREATE CREDENTIALS*. Also you must *configure consent screen* if you have not.
 4. Download client secrets json file and place it to configs folder and rename to *client-secrets.json*
 
@@ -22,7 +22,7 @@ When you have finished with creds, now you can create your first backup. SBT use
 # to define new schema use any name
 new-schema:
   compressFormat: tar # 7z, gz, bz, zip; null or ignored is tar
-  compressLevel: 5
+  compressLevel: 5 # don't work with tar; default is 5; can be ignored
   password: null # only 7z & zip; can be ignored
   # internal only for gz
   # external will try to use external program
