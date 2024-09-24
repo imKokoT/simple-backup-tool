@@ -37,5 +37,26 @@ def compress(targetPath:str, sch:dict) -> str:
     return zipPath
 
 
-def decompress(archPath:str, sch:dict):
-    pass
+def decompress(archPath:str, sch:dict, schemaName:str):
+    programLogger.info('zip decompressing...')
+
+    exportPath = os.path.join(os.path.dirname(archPath), f'{schemaName}.tar')
+    
+    zfile = zipfile.ZipFile(archPath, 'r')
+    efile = open(exportPath, 'wb')
+    esize = zfile.getinfo(f'{schemaName}.tar').file_size
+
+    processedSize = 0
+    with zfile.open(f'{schemaName}.tar', 'r') as t:
+        while True:
+            data = t.read(COMPRESS_CHUNK_SIZE)
+            if not data:
+                break
+            
+            processedSize = efile.write(data)
+            
+            updateProgressBar(processedSize / esize)
+
+    zfile.close()
+    efile.close()
+    programLogger.info('compress finished with success!')
