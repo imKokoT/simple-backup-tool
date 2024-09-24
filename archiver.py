@@ -1,10 +1,19 @@
 import os
 from schema import getBackupSchema
 from config import *
+from archive.internal import *
+
 
 def archive(schemaName:str) -> str:
     '''returns archive name'''
     schema = getBackupSchema(schemaName)
+
+    if DEBUG:
+        if not os.path.exists('./debug'): os.mkdir('./debug')
+        if not os.path.exists('./debug/tmp'): os.mkdir('./debug/tmp')
+        tmp = './debug/tmp'
+    else:
+        raise NotImplementedError()
 
     if not schema:
         programLogger.fatal(f'failed to load schema name "{schemaName}"')
@@ -17,7 +26,11 @@ def archive(schemaName:str) -> str:
             raise NotImplementedError()
         case 'bz':
             raise NotImplementedError()
+        case 'bz2':
+            raise NotImplementedError()
         case 'zip':
+            return zip_archiver.compress(f'{tmp}/{schemaName}.tar', schema)
+        case 'xz':
             raise NotImplementedError()
         case None | 'tar':
             return f'{schemaName}.tar'
@@ -45,7 +58,11 @@ def dearchive(schemaName:str, schema:dict) -> str:
             raise NotImplementedError()
         case 'bz':
             raise NotImplementedError()
+        case 'bz2':
+            raise NotImplementedError()
         case 'zip':
+            raise NotImplementedError()
+        case 'xz':
             raise NotImplementedError()
         case None | 'tar':
             if os.path.exists(os.path.join(tmp, f'{schemaName}.tar')):

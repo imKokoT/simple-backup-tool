@@ -78,3 +78,4 @@ if __name__ == '__main__':
               f' - backup.py <schema name> -> make backup from schema')
     else:
         createBackupOf(sys.argv[1])
+        
