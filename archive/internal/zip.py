@@ -9,7 +9,7 @@ def compress(targetPath:str, sch:dict) -> str:
     
     zipPath = f'{targetPath}.zip'
     compressLevel = sch.get('compressLevel', 5)
-    password = bytes(sch.get('password'), 'utf-8') if sch.get('password') else None
+    password = sch.get('password')
 
     zfile = zipfile.ZipFile(
         zipPath, 'w',
@@ -17,7 +17,7 @@ def compress(targetPath:str, sch:dict) -> str:
         compresslevel=compressLevel
         )
     if password:
-        zfile.setpassword(password)
+        programLogger.warning(f'Internal zip archiver does not support password; archive will not encrypted')
     tfile = open(targetPath, 'rb')
     tsize = os.path.getsize(targetPath) 
 
@@ -28,7 +28,6 @@ def compress(targetPath:str, sch:dict) -> str:
             break
         
         zfile.writestr(os.path.basename(targetPath), data)
-        
         processedSize += len(data)
         updateProgressBar(processedSize / tsize)
 
