@@ -19,7 +19,7 @@ def archive(schemaName:str) -> str:
         case '7z':
             raise NotImplementedError()
         case 'gz':
-            raise NotImplementedError()
+            return gz_archiver.compress(f'{tmp}/{schemaName}.tar', schema)
         case 'bz':
             raise NotImplementedError()
         case 'bz2':
@@ -45,13 +45,13 @@ def dearchive(schemaName:str, schema:dict) -> str:
         case '7z':
             raise NotImplementedError()
         case 'gz':
-            raise NotImplementedError()
+            return gz_archiver.decompress(downloaded, schema, schemaName)
         case 'bz':
             raise NotImplementedError()
         case 'bz2':
             raise NotImplementedError()
         case 'zip':
-            raise NotImplementedError()
+            return zip_archiver.decompress(downloaded, schema, schemaName) 
         case 'xz':
             raise NotImplementedError()
         case None | 'tar':

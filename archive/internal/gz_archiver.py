@@ -23,7 +23,7 @@ def compress(targetPath:str, sch:dict) -> str:
     return os.path.basename(zipPath)
 
 
-def decompress(archPath:str, sch:dict, schemaName:str):
+def decompress(archPath:str, sch:dict, schemaName:str) -> str:
     programLogger.info('gz decompressing...')
 
     exportPath = os.path.join(os.path.dirname(archPath), f'{schemaName}.tar')
@@ -36,3 +36,4 @@ def decompress(archPath:str, sch:dict, schemaName:str):
     zfile.close()
     efile.close()
     programLogger.info('decompress finished with success!')
+    return os.path.basename(exportPath)

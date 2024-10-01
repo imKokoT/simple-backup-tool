@@ -42,3 +42,4 @@ def decompress(archPath:str, sch:dict, schemaName:str):
 
     zfile.close()
     programLogger.info('decompress finished with success!')
+    return os.path.basename(exportPath)
