@@ -23,7 +23,7 @@ def archive(schemaName:str) -> str:
         case 'bz':
             raise NotImplementedError()
         case 'bz2':
-            raise bz2_archiver.compress(f'{tmp}/{schemaName}.tar', schema)
+            return bz2_archiver.compress(f'{tmp}/{schemaName}.tar', schema)
         case 'zip':
             return zip_archiver.compress(f'{tmp}/{schemaName}.tar', schema)
         case 'xz':

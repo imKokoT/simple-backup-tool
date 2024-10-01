@@ -21,10 +21,10 @@ When you have finished with creds, now you can create your first backup. SBT use
 ```yaml
 # to define new schema use any name
 new-schema:
-  compressFormat: tar # 7z, gz, bz, zip; null or ignored is tar
+  compressFormat: tar # 7z, gz, bz2, zip; null or ignored is tar
   compressLevel: 5 # don't work with tar; default is 5; can be ignored
   password: null # only 7z & zip; can be ignored
-  # internal only for gz
+  # internal only for gz, bz2, zip
   # external will try to use external program
   mode: external
   destination: 'test/folder/in/your/drive' # google disk backup folder path
