@@ -7,6 +7,7 @@ import schema
 import packer
 import archiver
 from cloud_tools import authenticate, send, getDestination
+from tools import getTMP
 
 
 
@@ -25,12 +26,7 @@ def _cleanup(service, folder:str, schemaName:str):
 def backup(archiveName:str, schemaName:str, schema:dict, creds:Credentials):
     programLogger.info('preparing backup to send to cloud...')
 
-    if DEBUG:
-        if not os.path.exists('./debug'): os.mkdir('./debug')
-        if not os.path.exists('./debug/tmp'): os.mkdir('./debug/tmp')
-        tmp = './debug/tmp'
-    else:
-        raise NotImplementedError()
+    tmp = getTMP()
 
     if not schema.get('destination'):
         programLogger.fatal(f'failed to get "destination" from schema')

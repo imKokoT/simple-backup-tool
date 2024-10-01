@@ -2,18 +2,14 @@ import os
 from schema import getBackupSchema
 from config import *
 from archive.internal import *
+from tools import getTMP
 
 
 def archive(schemaName:str) -> str:
     '''returns archive name'''
     schema = getBackupSchema(schemaName)
 
-    if DEBUG:
-        if not os.path.exists('./debug'): os.mkdir('./debug')
-        if not os.path.exists('./debug/tmp'): os.mkdir('./debug/tmp')
-        tmp = './debug/tmp'
-    else:
-        raise NotImplementedError()
+    tmp = getTMP()
 
     if not schema:
         programLogger.fatal(f'failed to load schema name "{schemaName}"')
@@ -41,13 +37,7 @@ def archive(schemaName:str) -> str:
 
 def dearchive(schemaName:str, schema:dict) -> str:
     '''returns pack name'''
-    if DEBUG:
-        if not os.path.exists('./debug'): os.mkdir('./debug')
-        if not os.path.exists('./debug/tmp'): os.mkdir('./debug/tmp')
-        tmp = './debug/tmp'
-    else:
-        raise NotImplementedError()
-
+    tmp = getTMP()
 
     downloaded = os.path.join(tmp, f'{schemaName}.downloaded')
 

@@ -7,17 +7,13 @@ import schema
 from cloud_tools import authenticate, getDestination, download
 import archiver
 import packer
+from tools import getTMP
 
 
 def restore(schemaName:str, schema:dict, creds:Credentials):
     programLogger.info('preparing for restore from cloud...')
 
-    if DEBUG:
-        if not os.path.exists('./debug'): os.mkdir('./debug')
-        if not os.path.exists('./debug/tmp'): os.mkdir('./debug/tmp')
-        tmp = './debug/tmp'
-    else:
-        raise NotImplementedError()
+    tmp = getTMP()
 
     if not schema.get('destination'):
         programLogger.fatal(f'failed to get "destination" from schema')

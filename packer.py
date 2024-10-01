@@ -6,6 +6,8 @@ import time
 import json
 import io
 
+from tools import getTMP
+
 
 def packAll(schemaName:str):
     programLogger.info('packing process started')
@@ -14,10 +16,7 @@ def packAll(schemaName:str):
         programLogger.fatal(f'packing process failed: no schema "{schemaName}"')
         exit(1)
     
-    if DEBUG:
-        if not os.path.exists('./debug'): os.mkdir('./debug')
-        if not os.path.exists('./debug/tmp'): os.mkdir('./debug/tmp')
-        tmp = './debug/tmp'
+    tmp = getTMP()
 
     archive = tarfile.open(os.path.join(tmp, f'{schemaName}.tar'), 'w')
     
@@ -186,10 +185,7 @@ def unpackAll(schemaName:str, schema:dict):
             print('restored data placed in tmp folder\nunpack process interrupted...')
             exit(0)
     
-    if DEBUG:
-        if not os.path.exists('./debug'): os.mkdir('./debug')
-        if not os.path.exists('./debug/tmp'): os.mkdir('./debug/tmp')
-        tmp = './debug/tmp'
+    tmp = getTMP()
 
     archive = tarfile.open(os.path.join(tmp, f'{schemaName}.tar'), 'r')
 
