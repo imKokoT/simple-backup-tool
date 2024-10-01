@@ -14,7 +14,7 @@ def compress(targetPath:str, sch:dict) -> str:
 
     tfile = open(targetPath, 'rb')
     zfile = open(zipPath, 'wb')
-    data = gzip.compress(tfile.read())
+    data = gzip.compress(tfile.read(), compressLevel)
     zfile.write(data)
 
     tfile.close()

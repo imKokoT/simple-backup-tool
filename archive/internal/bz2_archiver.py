@@ -13,7 +13,7 @@ def compress(targetPath:str, sch:dict) -> str:
 
     tfile = open(targetPath, 'rb')
     zfile = open(zipPath, 'wb')
-    data = bz2.compress(tfile.read())
+    data = bz2.compress(tfile.read(), compressLevel)
     zfile.write(data)
 
     tfile.close()

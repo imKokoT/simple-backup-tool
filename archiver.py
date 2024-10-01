@@ -23,7 +23,7 @@ def archive(schemaName:str) -> str:
         case 'bz':
             raise NotImplementedError()
         case 'bz2':
-            raise NotImplementedError()
+            raise bz2_archiver.compress(f'{tmp}/{schemaName}.tar', schema)
         case 'zip':
             return zip_archiver.compress(f'{tmp}/{schemaName}.tar', schema)
         case 'xz':
@@ -49,7 +49,7 @@ def dearchive(schemaName:str, schema:dict) -> str:
         case 'bz':
             raise NotImplementedError()
         case 'bz2':
-            raise NotImplementedError()
+            return bz2_archiver.decompress(downloaded, schema, schemaName)
         case 'zip':
             return zip_archiver.decompress(downloaded, schema, schemaName) 
         case 'xz':
@@ -64,3 +64,4 @@ def dearchive(schemaName:str, schema:dict) -> str:
         case _:
             programLogger.fatal(f'unknown compression format {schema.get('compressionFormat', None)}')
             exit(1)
+            
