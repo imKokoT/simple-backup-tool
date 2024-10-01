@@ -21,20 +21,12 @@ def compress(targetPath:str, sch:dict) -> str:
     tfile = open(targetPath, 'rb')
     tsize = os.path.getsize(targetPath) 
 
-    processedSize = 0
-    while True:
-        data = tfile.read(COMPRESS_CHUNK_SIZE)
-        if not data:
-            break
-        
-        zfile.writestr(os.path.basename(targetPath), data)
-        processedSize += len(data)
-        updateProgressBar(processedSize / tsize)
+    zfile.writestr(os.path.basename(targetPath), tfile.read())
 
-    zfile.close()
     tfile.close()
+    zfile.close()
     programLogger.info('compress finished with success!')
-    return zipPath
+    return os.path.basename(zipPath)
 
 
 def decompress(archPath:str, sch:dict, schemaName:str):
