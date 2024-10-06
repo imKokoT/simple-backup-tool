@@ -26,8 +26,20 @@ def compress(targetPath:str, sch:dict) -> str:
 
 
 def decompress(archPath:str, sch:dict, schemaName:str) -> str:
-    programLogger.info('gz decompressing...')
+    programLogger.info('7z decompressing...')
 
     exportPath = os.path.join(os.path.dirname(archPath), f'{schemaName}.tar')
-    
+    password = sch.get('password')
+    command = ['7z', 'x', archPath, f'-o{os.path.dirname(exportPath)}']
+    if password:
+        command.append(f'-p{password}')
+
+    result = subprocess.run(command, capture_output=True, text=True)
+
+    if result.returncode == 0:
+        programLogger.info("decompress finished with success!")
+    else:
+        programLogger.fatal(f"external process error: {result.stderr}")
+        exit(1)
+
     return os.path.basename(exportPath)
