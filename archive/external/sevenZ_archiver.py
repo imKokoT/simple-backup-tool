@@ -2,10 +2,21 @@ import os
 import subprocess
 from config import *
 
+
+def _maskPsw(command:list) -> list:
+    masked = command.copy()
+    psw = [e for e in command if e.startswith('-p')]
+    if len(psw) > 0:
+        masked.remove(psw[0])
+        psw[0] = '-p' + '*' * len(psw[0])
+        masked.extend(psw)        
+    return masked
+
+
 def compress(targetPath:str, sch:dict) -> str:
-    
     compressLevel = sch.get('compressLevel', 5)
     password = sch.get('password')
+    args = sch.get('args')
     match sch.get('compressFormat', '7z'):
         case '7z': compressFormat = '7z'
         case 'zip': compressFormat = 'zip'
@@ -29,7 +40,10 @@ def compress(targetPath:str, sch:dict) -> str:
             command.append('-mem=AES256')
         else:
             programLogger.warning(f'7z not supports password for "{sch.get('compressFormat', '7z')}". archive will not encrypted')
+    if args:
+        command.extend(args)
 
+    programLogger.info(f'command line: {' '.join(_maskPsw(command))}')
     result = subprocess.run(command, capture_output=True, text=True)
 
     if result.returncode == 0:
@@ -50,6 +64,7 @@ def decompress(archPath:str, sch:dict, schemaName:str) -> str:
     if password:
         command.append(f'-p{password}')
 
+    programLogger.info(f'command line: {' '.join(_maskPsw(command))}')
     result = subprocess.run(command, capture_output=True, text=True)
 
     if result.returncode == 0:
