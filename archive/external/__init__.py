@@ -1,1 +1,1 @@
-from . import seven_z
+from . import sevenZ_archiver
