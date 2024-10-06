@@ -2,6 +2,9 @@ import os
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+from googleapiclient.http import MediaIoBaseUpload
+import io
+import json
 from config import *
 import schema
 import packer
@@ -10,17 +13,43 @@ from cloud_tools import authenticate, send, getDestination
 from tools import getTMP
 
 
-
 def _cleanup(service, folder:str, schemaName:str):
     programLogger.info('cleaning old cloud backup if exists...')
 
-    query = f"'{folder}' in parents and name='{f'{schemaName}.archive'}' and trashed=false"
+    query = f"'{folder}' in parents and (name='{schemaName}.archive' or name='{schemaName}.meta') and trashed=false"
     response = service.files().list(q=query, spaces='drive').execute()
     files = response.get('files', [])
 
     if files:
-        file_id = files[0]['id']
-        service.files().delete(fileId=file_id).execute()
+        for f in files:
+            file_id = f['id']
+            service.files().delete(fileId=file_id).execute()
+
+
+def _sendMeta(service, folder:str, schema:dict, schemaName:str):
+    programLogger.info('sending backup meta...')
+    stream = io.BytesIO()
+
+    data = {
+        'compressFormat': schema.get('compressFormat'),
+        'password': schema.get('password') is not None,
+        'mode': schema.get('mode'),
+        'program': schema.get('program')
+    }
+    meta = {
+        'name': f'{schemaName}.meta',
+        'parents': [folder],
+        'description': f'Meta made by SBT {VERSION}\n'
+                       f'see https://github.com/imKokoT/simple-backup-tool'
+    }
+    stream.write(bytes(json.dumps(data, separators=(',',':')), 'utf-8'))
+    media = MediaIoBaseUpload(stream, mimetype='application/octet-stream')
+
+    uploadFile = service.files().create(
+        body=meta,
+        media_body=media, 
+        fields='id'
+    ).execute()
 
 
 def backup(archiveName:str, schemaName:str, schema:dict, creds:Credentials):
@@ -42,7 +71,7 @@ def backup(archiveName:str, schemaName:str, schema:dict, creds:Credentials):
 
         programLogger.info('sending backup to cloud...')
         send(service, os.path.join(tmp, archiveName), f'{schemaName}.archive', destinationFolder)
-
+        _sendMeta(service, destinationFolder, schema, schemaName)
     except HttpError as e:
         programLogger.fatal(f'failed to backup; error: {e}')
         exit(1)
