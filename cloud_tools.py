@@ -57,7 +57,9 @@ def send(service, fpath:str, endName:str, folder=None):
     '''
     meta = {
             'name': endName,
-            'parents': [folder]
+            'parents': [folder],
+            'description': f'Backup made by SBT {VERSION}\n'
+                           f'see https://github.com/imKokoT/simple-backup-tool'
         }
     with open(fpath, 'rb') as f:
         media = MediaIoBaseUpload(f, mimetype='application/octet-stream', chunksize=DOWNLOAD_CHUNK_SIZE, resumable=True)

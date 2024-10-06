@@ -6,7 +6,7 @@ import os
 from os import path
 
 # --- MAIN -------------------------------------------------------------------
-VERSION = '0.2a'
+VERSION = '0.3a'
 DEBUG = True
 SCOPES = ['''https://www.googleapis.com/auth/drive''']
 
