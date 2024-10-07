@@ -175,21 +175,20 @@ def unpack(name:str, targetFolder:str, archive:tarfile.TarFile):
 
 def unpackAll(schemaName:str, schema:dict):
     programLogger.info('unpacking process started')
+   
+    tmp = getTMP()
+    archive = tarfile.open(os.path.join(tmp, f'{schemaName}.tar'), 'r')
+
+    packConfig = loadPackConfig(archive)
     
     if ALLOW_LOCAL_REPLACE and ASK_BEFORE_REPLACE:
         print(f'{LYC}Are you sure to rewrite next folders:')
-        for f in schema['folders']:
+        for f in packConfig['packs'].values():
             print(f'{LYC} - {f}')
         yn = input('[y/N] ')
         if yn.strip().lower() != 'y':
             print('restored data placed in tmp folder\nunpack process interrupted...')
-            exit(0)
-    
-    tmp = getTMP()
-
-    archive = tarfile.open(os.path.join(tmp, f'{schemaName}.tar'), 'r')
-
-    packConfig = loadPackConfig(archive)
+            exit(0) 
 
     result = {
         'rewritten': 0,
