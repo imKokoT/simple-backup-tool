@@ -9,6 +9,7 @@ from os import path
 VERSION = '0.3a'
 DEBUG = True
 SCOPES = ['''https://www.googleapis.com/auth/drive''']
+HIDE_PASSWORD_LEN = True
 
 DOWNLOAD_CHUNK_SIZE = 1024*1024*10
 COMPRESS_CHUNK_SIZE = 1024*1024
@@ -54,7 +55,7 @@ _programFileHandler = logging.FileHandler('logs/program.log', 'w', 'utf-8')
 _programFileHandler.setFormatter(logging.Formatter(BASE_LOGGING_FORMAT))
 
 # === Program logger ===
-programLogger = logging.getLogger('Program')
+programLogger = logging.getLogger('SBT')
 programLogger.setLevel(logging.DEBUG)
 programLogger.addHandler(_programFileHandler)
 _temp = logging.StreamHandler()
