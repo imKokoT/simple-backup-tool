@@ -66,11 +66,16 @@ def restore(schemaName:str, schema:dict, creds:Credentials):
     programLogger.info(f'successfully downloaded "{schemaName}.archive" from cloud; it placed in {os.path.join(tmp, f'{schemaName}.downloaded')}')
 
 
-def restoreFromCloud(schemaName:str):
-    sch = schema.getBackupSchema(schemaName)
-    if not sch:
-        programLogger.error(f'No backup schema with name "{schemaName}"')
-        return
+def restoreFromCloud(schemaName:str, from_meta:bool, destination:str=None):
+    if not from_meta:
+        sch = schema.getBackupSchema(schemaName)
+        if not sch:
+            programLogger.error(f'No backup schema with name "{schemaName}"')
+            return
+    else:
+        if not destination:
+            destination = input(f'{YC}enter backup destination: {DC}')
+        sch = dict(destination=destination)
     
     creds = authenticate()
 
@@ -85,9 +90,16 @@ def restoreFromCloud(schemaName:str):
 
 if __name__ == '__main__':
     import sys
+    import argparse
     if len(sys.argv) == 1:
         print(f'Welcome to SBT!  V{VERSION}')
-        print(f'this script restore backup from cloud using your backup schema\n'
-              f' - restore.py <schema name> -> make backup from schema')
+        print(f'this script restore backup from cloud using your backup schema')
     else:
-        restoreFromCloud(sys.argv[1])
+        parser = argparse.ArgumentParser()
+        parser.add_argument('schema_name',  type=str, help='name of schema in schemas.yaml')
+        parser.add_argument('-m', '--restore-from-meta', action='store_true', help='restore backup from meta', required=False)
+        parser.add_argument('-d', '--destination', type=str, help='backup archive destination on Google Drive', required=False)
+        args = parser.parse_args()
+        restoreFromCloud(args.schema_name,
+                        args.restore_from_meta, 
+                        args.destination)
