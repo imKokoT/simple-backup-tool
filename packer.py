@@ -151,30 +151,31 @@ def loadPackConfig(archive:tarfile.TarFile) -> dict:
     return data
 
 
-def unpack(name:str, targetFolder:str, archive:tarfile.TarFile):
-    programLogger.info(f'unpacking "{name}"...')
+def unpackFolder(path:str, index:int, archive:tarfile.TarFile):
+    programLogger.info(f'unpacking "{path}"...')
     
-    if not os.path.exists(os.path.dirname(targetFolder)):
-        programLogger.error(f'failed to unpack because "{os.path.dirname(targetFolder)}" not exists')
+    if not os.path.exists(os.path.dirname(path)):
+        programLogger.error(f'failed to unpack because "{os.path.dirname(path)}" not exists')
         return
     
-    if os.path.exists(targetFolder) and not ALLOW_LOCAL_REPLACE:
-        targetFolder = os.path.join(os.path.dirname(targetFolder), os.path.basename(targetFolder) + '-restored')
-        if os.path.exists(targetFolder):
-            os.rmdir(targetFolder)
-        os.mkdir(targetFolder)
-    elif not os.path.exists(targetFolder):
-        os.mkdir(targetFolder)
+    if os.path.exists(path) and not ALLOW_LOCAL_REPLACE:
+        path = os.path.join(os.path.dirname(path), os.path.basename(path) + '-restored')
+        if os.path.exists(path):
+            os.rmdir(path)
+        os.mkdir(path)
+    elif not os.path.exists(path):
+        os.mkdir(path)
 
     rewrittenCount = 0
     restoredCount = 0
 
     for member in archive.getmembers():
-        if not (member.name.startswith(name) and member.isfile()):
+        memberRoot = f'folders/{hex(index)[2:]}'
+        if not (member.name.startswith(memberRoot) and member.isfile()):
             continue
 
-        relpath = os.path.relpath(member.name, name)
-        targetFilePath = os.path.join(targetFolder, relpath)
+        relpath = os.path.relpath(member.name, memberRoot)
+        targetFilePath = os.path.join(path, relpath)
 
         if os.path.exists(targetFilePath):
             rewrittenCount += 1
@@ -187,7 +188,7 @@ def unpack(name:str, targetFolder:str, archive:tarfile.TarFile):
             with open(targetFilePath, 'wb') as out_file:
                 out_file.write(file_obj.read())
 
-    programLogger.info(f'success! unpacked to "{targetFolder}"\n'
+    programLogger.info(f'success! unpacked to "{path}"\n'
                        f' - rewritten: {rewrittenCount}\n'
                        f' - restored: {restoredCount}')
     return {
@@ -205,24 +206,28 @@ def unpackAll(schemaName:str, schema:dict):
     packConfig = loadPackConfig(archive)
     
     if ALLOW_LOCAL_REPLACE and ASK_BEFORE_REPLACE:
-        print(f'{LYC}Are you sure to rewrite next folders:')
-        for f in packConfig['packs'].values():
+        print(f'{LYC}Are you sure to rewrite next folders and files:')
+        for f in packConfig['folders']:
+            print(f'{LYC} - {f}')
+        for f in packConfig['files']:
             print(f'{LYC} - {f}')
         yn = input('[y/N] ')
         if yn.strip().lower() != 'y':
             print('restored data placed in tmp folder\nunpack process interrupted...')
-            exit(0) 
+            exit(0)
 
     result = {
         'rewritten': 0,
         'restored': 0
     }
     res:dict
-    for name, path in packConfig['packs'].items():
-        res = unpack(name, path, archive)
+    i = 0
+    for folder in packConfig['folders']:
+        res = unpackFolder(folder, i, archive)
 
         result['rewritten'] += res['rewritten']
         result['restored'] += res['restored']
+        i += 1
 
     programLogger.info(f'unpacking finished with success!\n'
                        f' - rewritten total: {result['rewritten']}\n'
