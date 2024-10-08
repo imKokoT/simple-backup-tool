@@ -151,8 +151,33 @@ def loadPackConfig(archive:tarfile.TarFile) -> dict:
     return data
 
 
+def unpackFile(path:str, index:int, archive:tarfile.TarFile):
+    programLogger.info(f'unpacking file "{path}"...')
+
+    if not os.path.exists(os.path.dirname(path)):
+        programLogger.error(f'failed to unpack because "{os.path.dirname(path)}" not exists')
+        return
+    
+    if os.path.exists(path) and not ALLOW_LOCAL_REPLACE:
+        path = os.path.join(os.path.dirname(path), os.path.basename(path) + '-restored')
+
+    member = archive.getmember(f'files/{hex(index)[2:]}')
+
+    rewritten = os.path.exists(path)
+    
+    with archive.extractfile(member) as file_obj:
+        with open(path, 'wb') as out_file:
+            out_file.write(file_obj.read())
+
+    programLogger.info(f'success! unpacked to "{path}"')
+    return {
+        'rewritten': rewritten,
+        'restored': not rewritten
+    }
+
+
 def unpackFolder(path:str, index:int, archive:tarfile.TarFile):
-    programLogger.info(f'unpacking "{path}"...')
+    programLogger.info(f'unpacking folder "{path}"...')
     
     if not os.path.exists(os.path.dirname(path)):
         programLogger.error(f'failed to unpack because "{os.path.dirname(path)}" not exists')
@@ -224,6 +249,13 @@ def unpackAll(schemaName:str, schema:dict):
     i = 0
     for folder in packConfig['folders']:
         res = unpackFolder(folder, i, archive)
+
+        result['rewritten'] += res['rewritten']
+        result['restored'] += res['restored']
+        i += 1
+    i = 0
+    for file in packConfig['files']:
+        res = unpackFile(file, i, archive)
 
         result['rewritten'] += res['rewritten']
         result['restored'] += res['restored']
