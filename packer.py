@@ -19,12 +19,12 @@ def packAll(schemaName:str):
 
     archive = tarfile.open(os.path.join(tmp, f'{schemaName}.tar'), 'w')
     
-    if not sch.get('folders'):
-        programLogger.fatal(f'failed to get "folders" key from schema "{schemaName}"')
+    if not sch.get('targets'):
+        programLogger.fatal(f'failed to get "targets" key from schema "{schemaName}"')
         exit(1)
 
     packedCount = 0
-    packedFolders = []
+    packedTargets = []
     result = {
         'files':0,
         'ignored': 0,
@@ -32,22 +32,24 @@ def packAll(schemaName:str):
         'scannedSize': 0
     }
     res:dict
-    for item in sch['folders']:
-        if os.path.isfile(item):
-            res = packFile(item, archive)
+    packFile.counter = 0
+    packFolder.counter = 0
+    for target in sch['targets']:
+        if os.path.isfile(target):
+            res = packFile(target, archive)
         else:
-            res = packFolder(item, archive)
+            res = packFolder(target, archive)
 
         if res:
-            packedFolders.append(item)
+            packedTargets.append(target)
             for k in res.keys():
                 result[k] += res[k]
             packedCount += 1
 
-    configurePack(archive, sch, packedFolders)
+    configurePack(archive, sch, packedTargets)
 
     programLogger.info(f'packing process finished successfully;\n'
-                       f' - packs created: {packedCount}/{len(sch["folders"])}\n'
+                       f' - packs created: {packedCount}/{len(sch["targets"])}\n'
                        f' - archived and ignored total files: {result['files']}/{result['ignored']}\n'
                        f' - archived total size: {result["size"]}/{result["scannedSize"]}'
                        )
@@ -59,7 +61,7 @@ def packFolder(targetFolder:str, archive:tarfile.TarFile):
         programLogger.error(f'packing failed: target folder "{targetFolder}" not exists')
         return
 
-    programLogger.info(f'packing "{targetFolder}"; reading content...')
+    programLogger.info(f'packing target folder "{targetFolder}"; reading content...')
     files = []
     ignored = 0
     scannedSize = 0
@@ -79,7 +81,7 @@ def packFolder(targetFolder:str, archive:tarfile.TarFile):
     programLogger.info(f'adding to archive...')
     
     for f in files:
-        dpath = os.path.join(os.path.basename(targetFolder),f)
+        dpath = os.path.join(f'folders/{hex(packFolder.counter)[2:]}',f)
         archive.add(os.path.join(targetFolder, f), arcname=dpath)
     
     programLogger.info(f'success')
@@ -97,20 +99,19 @@ def packFile(targetFile:str, archive:tarfile.TarFile):
         return
     programLogger.info(f'packing target file "{targetFile}"')
 
-    isIgnored = False
     size = os.path.getsize(targetFile)
 
-    archive.add(targetFile, f'files/{os.path.basename(targetFile)}')
-
+    archive.add(targetFile, f'files/{hex(packFile.counter)[2:]}')
+    packFile.counter += 1
     return {
-        'files': not isIgnored,
-        'ignored': isIgnored,
-        'size': size if not isIgnored else 0,
+        'files': 1,
+        'ignored': 0,
+        'size': size,
         'scannedSize': size
     }
 
 
-def configurePack(archive:tarfile.TarFile, backupSchema:dict, packedFolders:list):
+def configurePack(archive:tarfile.TarFile, backupSchema:dict, packedTargets:list):
     programLogger.info('configuring pack...')
 
     if not backupSchema.get('destination'):
@@ -120,7 +121,8 @@ def configurePack(archive:tarfile.TarFile, backupSchema:dict, packedFolders:list
     data = {
         'creation-time': time.time(),
         'destination': backupSchema['destination'],
-        'packs': { os.path.basename(p): p for p in packedFolders }
+        'files': [p for p in packedTargets if os.path.isfile(p)],
+        'folders': [p for p in packedTargets if os.path.isdir(p)]
     }
 
     meta = tarfile.TarInfo('config')
