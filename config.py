@@ -12,7 +12,6 @@ SCOPES = ['''https://www.googleapis.com/auth/drive''']
 HIDE_PASSWORD_LEN = True
 
 DOWNLOAD_CHUNK_SIZE = 1024*1024*10
-COMPRESS_CHUNK_SIZE = 1024*1024
 
 # --- restore settings -------------------------------------------------------
 ALLOW_LOCAL_REPLACE = True # if true restored backup will rewrite current local changes, if false will create new folder

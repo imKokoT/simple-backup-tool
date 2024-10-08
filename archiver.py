@@ -3,7 +3,7 @@ from schema import getBackupSchema
 from config import *
 from archive.internal import *
 from archive.external import *
-from tools import getTMP
+from miscellaneous import getTMP
 
 
 def archive(schemaName:str) -> str:
