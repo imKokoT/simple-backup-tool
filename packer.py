@@ -32,11 +32,14 @@ def packAll(schemaName:str):
         'scannedSize': 0
     }
     res:dict
-    for dir in sch['folders']:
-        res = pack(dir, archive)
+    for item in sch['folders']:
+        if os.path.isfile(item):
+            res = packFile(item, archive)
+        else:
+            res = packFolder(item, archive)
 
         if res:
-            packedFolders.append(dir)
+            packedFolders.append(item)
             for k in res.keys():
                 result[k] += res[k]
             packedCount += 1
@@ -51,7 +54,7 @@ def packAll(schemaName:str):
     archive.close()
 
 
-def pack(targetFolder:str, archive:tarfile.TarFile):
+def packFolder(targetFolder:str, archive:tarfile.TarFile):
     if not os.path.exists(targetFolder):
         programLogger.error(f'packing failed: target folder "{targetFolder}" not exists')
         return
@@ -86,6 +89,25 @@ def pack(targetFolder:str, archive:tarfile.TarFile):
         'size': packSize,
         'scannedSize': scannedSize
         }
+
+
+def packFile(targetFile:str, archive:tarfile.TarFile):
+    if not os.path.exists(targetFile):
+        programLogger.error(f'packing failed: target file "{targetFile}" not exists')
+        return
+    programLogger.info(f'packing target file "{targetFile}"')
+
+    isIgnored = False
+    size = os.path.getsize(targetFile)
+
+    archive.add(targetFile, f'files/{os.path.basename(targetFile)}')
+
+    return {
+        'files': not isIgnored,
+        'ignored': isIgnored,
+        'size': size if not isIgnored else 0,
+        'scannedSize': size
+    }
 
 
 def configurePack(archive:tarfile.TarFile, backupSchema:dict, packedFolders:list):
