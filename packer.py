@@ -5,12 +5,16 @@ import schema
 import time
 import json
 import io
+import pathspec
 from miscellaneous import getTMP
 
 
 def packAll(schemaName:str):
     programLogger.info('packing process started')
     sch = schema.getBackupSchema(schemaName)
+    
+    ignore = sch.get('ignore', '')
+
     if not sch: 
         programLogger.fatal(f'packing process failed: no schema "{schemaName}"')
         exit(1)
@@ -38,7 +42,7 @@ def packAll(schemaName:str):
         if os.path.isfile(target):
             res = packFile(target, archive)
         else:
-            res = packFolder(target, archive)
+            res = packFolder(target, archive, ignore)
 
         if res:
             packedTargets.append(target)
@@ -56,7 +60,7 @@ def packAll(schemaName:str):
     archive.close()
 
 
-def packFolder(targetFolder:str, archive:tarfile.TarFile):
+def packFolder(targetFolder:str, archive:tarfile.TarFile, ignore:str):
     if not os.path.exists(targetFolder):
         programLogger.error(f'packing failed: target folder "{targetFolder}" not exists')
         return
@@ -67,14 +71,20 @@ def packFolder(targetFolder:str, archive:tarfile.TarFile):
     scannedSize = 0
     packSize = 0
 
+    spec = pathspec.PathSpec.from_lines('gitignore', ignore.splitlines())
 
     for dpath, _, fnames in os.walk(targetFolder):
         for fname in fnames:
             relative_path = os.path.relpath(os.path.join(dpath, fname), targetFolder)
             files.append(relative_path)
 
-            packSize += os.path.getsize(os.path.join(targetFolder, relative_path))
             scannedSize += os.path.getsize(os.path.join(targetFolder, relative_path))
+
+    ignored = len(files)
+    files  = [p for p in files if not spec.match_file(p)]
+    ignored -= len(files)
+    for p in files:
+        packSize += os.path.getsize(os.path.join(targetFolder, p))
 
     programLogger.info(f'reading success; total files: {len(files)} [{packSize}B/{scannedSize}B]; ignored total: {ignored}')    
 
