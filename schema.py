@@ -19,14 +19,14 @@ def include(schema:dict, include:str) -> dict:
 
 
 def getBackupSchema(schemaName:str) ->dict|None:
-    data:dict
     PATTERN = '*.yaml'
+    data:dict
+    schema = None
 
     if os.path.exists('./configs/schemas.yaml'):
         with open('./configs/schemas.yaml', 'r') as f:
-            data = yaml.safe_load(f)
-        
-    schema = data.get(schemaName)
+            data = yaml.safe_load(f)    
+        schema = data.get(schemaName)
     
     if not schema:
         if not os.path.exists('configs/schemas'):
