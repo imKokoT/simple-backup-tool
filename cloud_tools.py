@@ -73,6 +73,7 @@ def send(service, fpath:str, endName:str, folder=None):
             status, response = uploadFile.next_chunk()
             if status:
                 updateProgressBar(status.progress())
+        updateProgressBar(1)
         print()
 
 def download(service, fpath:str, name:str, folder):
@@ -99,6 +100,7 @@ def download(service, fpath:str, name:str, folder):
     while not done:
         status, done = downloader.next_chunk()
         updateProgressBar(status.progress())
+    updateProgressBar(1)
     print()
 
 
