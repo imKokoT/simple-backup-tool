@@ -1,6 +1,7 @@
 import os
 import subprocess
 from config import *
+import sys
 
 
 def _maskPsw(command:list) -> list:
@@ -47,7 +48,7 @@ def compress(targetPath:str, sch:dict) -> str:
         command.extend(args)
 
     programLogger.info(f'command line: {' '.join(_maskPsw(command))}')
-    result = subprocess.run(command, capture_output=True, text=True)
+    result = subprocess.run(command, text=True, stdout=sys.stdout)
 
     if result.returncode == 0:
         programLogger.info("compress finished with success!")
@@ -68,7 +69,7 @@ def decompress(archPath:str, sch:dict, schemaName:str) -> str:
         command.append(f'-p{password}')
 
     programLogger.info(f'command line: {' '.join(_maskPsw(command))}')
-    result = subprocess.run(command, capture_output=True, text=True)
+    result = subprocess.run(command, text=True, stdout=sys.stdout)
 
     if result.returncode == 0:
         programLogger.info("decompress finished with success!")
