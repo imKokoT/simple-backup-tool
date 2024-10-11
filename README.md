@@ -31,7 +31,7 @@ new-schema:
     *.log
     cache/
   # local folders or files to backup
-  folders: [
+  targets: [
     'path/to/your/local/folder',
     'path/to/your/local/file'
   ]
@@ -55,7 +55,7 @@ compressLevel: 9
 mode: internal
 
 destination: 'test/folder/in/your/drive'
-folders: [
+targets: [
   'path/to/your/local/folder',
   'path/to/your/local/file'
 ]
