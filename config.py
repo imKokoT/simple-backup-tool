@@ -3,14 +3,61 @@ import logging
 import logging.config
 import colorlog
 import os
+import yaml
 from os import path
 
 # --- MAIN -------------------------------------------------------------------
 VERSION = '0.3a'
 DEBUG = True
 SCOPES = ['''https://www.googleapis.com/auth/drive''']
-HIDE_PASSWORD_LEN = True
 
+class Config:
+    __instance = None
+
+    # settings
+    hide_password_len = True
+    download_chunk_size = 1024*1024*10
+
+    allow_local_replace = True # if true restored backup will rewrite current local changes, if false will create new folder
+    ask_before_replace = True # if true will ask before replace files
+    
+
+    def __new__(cls):
+        if cls.__instance is None:
+            cls.__initialized = False
+            cls.__instance = super().__new__(cls)
+        return cls.__instance
+
+
+    def toDict(self) -> dict:
+        temp = {}
+        for k, value in self.__dict__.items():
+            temp[k] = value
+
+
+    def load():
+        if not path.exists('configs/'):
+            os.mkdir('configs')
+        
+        try:
+            with open('configs/config.yaml', 'r', encoding='utf-8') as f:
+                config = yaml.load(f)
+                for k, v in config.items():
+                    setattr(Config(), k, v)
+        except FileNotFoundError:
+            with open('configs/config.yaml', 'w', encoding='utf-8') as f:
+                yaml.dump(Config().toDict(), f)
+        except yaml.YAMLError as e:
+            programLogger.error(f'failed to load config; {e}')
+            yn = input(f'{YC}do want to recreate [y/N]{DC}: ')
+            if yn.strip().lower() != 'y':
+                print('process interrupted...')
+                exit(0)
+            with open('configs/config.yaml', 'w', encoding='utf-8') as f:
+                yaml.dump(Config().toDict(), f)
+
+
+HIDE_PASSWORD_LEN = True
 DOWNLOAD_CHUNK_SIZE = 1024*1024*10
 
 # --- restore settings -------------------------------------------------------
