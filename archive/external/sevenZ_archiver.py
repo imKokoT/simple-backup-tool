@@ -8,7 +8,7 @@ def _maskPsw(command:list) -> list:
     psw = [e for e in command if e.startswith('-p')]
     if len(psw) > 0:
         masked.remove(psw[0])
-        if HIDE_PASSWORD_LEN:
+        if Config().hide_password_len:
             psw[0] =  '-p...'
         else:
             psw[0] = '-p' + '*' * len(psw[0])

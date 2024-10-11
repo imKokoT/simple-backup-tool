@@ -60,7 +60,7 @@ def send(service, fpath:str, endName:str, folder=None):
                            f'see https://github.com/imKokoT/simple-backup-tool'
         }
     with open(fpath, 'rb') as f:
-        media = MediaIoBaseUpload(f, mimetype='application/octet-stream', chunksize=DOWNLOAD_CHUNK_SIZE, resumable=True)
+        media = MediaIoBaseUpload(f, mimetype='application/octet-stream', chunksize=Config().download_chunk_size, resumable=True)
 
         uploadFile = service.files().create(
             body=meta,
@@ -94,7 +94,7 @@ def download(service, fpath:str, name:str, folder):
     request = service.files().get_media(fileId=backup_id)
     fh = io.FileIO(fpath, 'wb')
 
-    downloader = MediaIoBaseDownload(fh, request, chunksize=DOWNLOAD_CHUNK_SIZE)
+    downloader = MediaIoBaseDownload(fh, request, chunksize=Config().download_chunk_size)
     done = False
     while not done:
         status, done = downloader.next_chunk()

@@ -13,26 +13,25 @@ SCOPES = ['''https://www.googleapis.com/auth/drive''']
 
 class Config:
     __instance = None
-
-    # settings
-    hide_password_len = True
-    download_chunk_size = 1024*1024*10
-
-    allow_local_replace = True # if true restored backup will rewrite current local changes, if false will create new folder
-    ask_before_replace = True # if true will ask before replace files
-    
+    __initialized = False
 
     def __new__(cls):
         if cls.__instance is None:
             cls.__initialized = False
             cls.__instance = super().__new__(cls)
+            cls.load()
         return cls.__instance
 
 
-    def toDict(self) -> dict:
-        temp = {}
-        for k, value in self.__dict__.items():
-            temp[k] = value
+    def __init__(self):
+        if Config.__initialized: return 
+        Config.__initialized = True
+        # === settings ===
+        self.hide_password_len = True
+        self.download_chunk_size = 1024*1024*10
+
+        self.allow_local_replace = True # if true restored backup will rewrite current local changes, if false will create new folder
+        self.ask_before_replace = True # if true will ask before replace files
 
 
     def load():
@@ -41,28 +40,21 @@ class Config:
         
         try:
             with open('configs/config.yaml', 'r', encoding='utf-8') as f:
-                config = yaml.load(f)
+                config = yaml.safe_load(f)
                 for k, v in config.items():
                     setattr(Config(), k, v)
         except FileNotFoundError:
             with open('configs/config.yaml', 'w', encoding='utf-8') as f:
-                yaml.dump(Config().toDict(), f)
+                yaml.dump(Config().__dict__, f)
         except yaml.YAMLError as e:
             programLogger.error(f'failed to load config; {e}')
-            yn = input(f'{YC}do want to recreate [y/N]{DC}: ')
+            yn = input(f'{YC}do you want to recreate config? [y/N]{DC}: ')
             if yn.strip().lower() != 'y':
                 print('process interrupted...')
                 exit(0)
             with open('configs/config.yaml', 'w', encoding='utf-8') as f:
-                yaml.dump(Config().toDict(), f)
+                yaml.dump(Config().__dict__, f)
 
-
-HIDE_PASSWORD_LEN = True
-DOWNLOAD_CHUNK_SIZE = 1024*1024*10
-
-# --- restore settings -------------------------------------------------------
-ALLOW_LOCAL_REPLACE = True # if true restored backup will rewrite current local changes, if false will create new folder
-ASK_BEFORE_REPLACE = True # if true will ask before replace files
 
 # --- colorama shortcuts -----------------------------------------------------
 colorama.init(autoreset=True) # init colorama escape codes
