@@ -7,7 +7,7 @@ import yaml
 from os import path
 
 # --- MAIN -------------------------------------------------------------------
-VERSION = '0.3a'
+VERSION = '0.4a'
 DEBUG = True
 SCOPES = ['''https://www.googleapis.com/auth/drive''']
 

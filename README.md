@@ -6,7 +6,7 @@ All application configurations placed in "configs" folder.
 
 ## Requirements
 - Python 3.12+
-- ```pip install colorama colorlog pyyaml google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client```
+- ```pip install colorama colorlog pyyaml pathspec google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client```
 - (*optionally*) [7z](https://7-zip.org/) - for faster compression and more flexibility
 
 ## Creating Google service
@@ -21,21 +21,45 @@ When you have finished with creds, now you can create your first backup. SBT use
 ```yaml
 # to define new schema use any name
 new-schema:
-  compressFormat: 7z # 7z, gz, bz2, zip; null or ignored is tar
+  # include others schema values
+  # you can override params that you have included
+  include: include
+  destination: 'test/folder/in/your/drive' # google disk backup folder path
+  # list of all ignored files or folders; similar to .gitignore functionality
+  # works for target folders, files always required
+  ignore: |
+    *.log
+    cache/
+  # local folders or files to backup
+  folders: [
+    'path/to/your/local/folder',
+    'path/to/your/local/file'
+  ]
+
+include:
+  compressFormat: 7z # 7z, gz, bz2, zip, xz; null or ignored is tar
   compressLevel: 5 # don't work with tar; default is 5; can be ignored
-  password: null # only 7z & zip; can be ignored
+  password: null # only external 7z & zip; can be ignored
   # internal only for gz, bz2, zip
   # external will try to use external program
   mode: external
   program: 7z # now supports only 7z; only external
   args: [] # only external; additional command line arguments at compress process; can be ignored
-  destination: 'test/folder/in/your/drive' # google disk backup folder path
-  # local folders to backup
-  folders: [
-    'path/to/your/local/folder'
-  ]
 ```
 You can backup several folders at once. Backup will be placed in *destination* path. Don't worry, program will create all necessary folders in Drive!
+
+Also you can create schemas in */configs/schemas/* folder. Create a new file with name *your-schema.yaml* and add
+```yaml
+compressFormat: bz2
+compressLevel: 9
+mode: internal
+
+destination: 'test/folder/in/your/drive'
+folders: [
+  'path/to/your/local/folder',
+  'path/to/your/local/file'
+]
+```
 
 ## Create first backup
 SBT has two main scripts: *backup.py* and *restore.py*. To backup run
