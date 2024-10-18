@@ -9,6 +9,28 @@ import pathspec
 from miscellaneous import getTMP
 
 
+def loadIgnorePatterns(directory:str) -> pathspec.PathSpec|None:
+    patterns = []
+    ignoreFilers =(
+        os.path.join(directory, '.sbtignore'),
+        os.path.join(directory, '.gitignore')
+    )
+
+    for f in ignoreFilers:
+        if not os.path.exists(f) or not Config().include_gitignore and os.path.basename(f) == '.gitignore': continue
+        
+        with open(f, 'r', encoding='utf-8') as f:
+            patterns.extend(f.readlines())
+    if len(patterns):
+        return pathspec.PathSpec.from_lines('gitignore', patterns)
+
+
+def shouldIgnore(path:str, specs:dict[str,pathspec.PathSpec]) -> bool:
+    for d, spec in specs.items():
+        if path.startswith(d) and spec.match_file(path):
+            return True
+    return False
+
 def packAll(schemaName:str):
     programLogger.info('packing process started')
     sch = schema.getBackupSchema(schemaName)
@@ -71,17 +93,22 @@ def packFolder(targetFolder:str, archive:tarfile.TarFile, ignore:str):
     scannedSize = 0
     packSize = 0
 
-    spec = pathspec.PathSpec.from_lines('gitignore', ignore.splitlines())
+    specs = {'': pathspec.PathSpec.from_lines('gitignore', ignore.splitlines())}
 
     for dpath, _, fnames in os.walk(targetFolder):
+        spec = loadIgnorePatterns(dpath)
+        if spec:
+            specs[dpath] = spec
+
         for fname in fnames:
             relative_path = os.path.relpath(os.path.join(dpath, fname), targetFolder)
-            files.append(relative_path)
+            if not shouldIgnore(os.path.join(dpath, fname), specs):
+                files.append(relative_path)
 
             scannedSize += os.path.getsize(os.path.join(targetFolder, relative_path))
 
     ignored = len(files)
-    files  = [p for p in files if not spec.match_file(p)]
+    files  = [p for p in files if not specs[''].match_file(p)]
     ignored -= len(files)
     for p in files:
         packSize += os.path.getsize(os.path.join(targetFolder, p))

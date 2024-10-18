@@ -32,6 +32,7 @@ class Config:
 
         self.allow_local_replace = True # if true restored backup will rewrite current local changes, if false will create new folder
         self.ask_before_replace = True # if true will ask before replace files
+        self.include_gitignore = False # if true will include .gitignore files patterns  
 
 
     def load():
