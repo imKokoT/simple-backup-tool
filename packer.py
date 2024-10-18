@@ -89,6 +89,7 @@ def packFolder(targetFolder:str, archive:tarfile.TarFile, ignore:str):
 
     programLogger.info(f'packing target folder "{targetFolder}"; reading content...')
     files = []
+    scanned = 0
     ignored = 0
     scannedSize = 0
     packSize = 0
@@ -104,10 +105,13 @@ def packFolder(targetFolder:str, archive:tarfile.TarFile, ignore:str):
             relative_path = os.path.relpath(os.path.join(dpath, fname), targetFolder)
             if not shouldIgnore(os.path.join(dpath, fname), specs):
                 files.append(relative_path)
+            else:
+                ignored += 1
 
             scannedSize += os.path.getsize(os.path.join(targetFolder, relative_path))
+            scanned += 1
 
-    ignored = len(files)
+    ignored += len(files)
     files  = [p for p in files if not specs[''].match_file(p)]
     ignored -= len(files)
     for p in files:
