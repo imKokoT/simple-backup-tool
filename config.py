@@ -35,6 +35,7 @@ class Config:
         self.include_gitignore = False # if true will include .gitignore files patterns  
 
 
+    # TODO: if new configs exists but not in file, ask for update configs file
     def load():
         if not path.exists('configs/'):
             os.mkdir('configs')

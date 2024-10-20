@@ -80,3 +80,16 @@ python restore.py <your schema name>
 And backup will be restored to local paths, which you select before creating backup. Restore process WILL NOT delete or change all current files BUT will replace or insert all that contains in backup. 
 **WARNING: if local path not exits unpack of this folder will fail, but your downloaded data will placed in *tmp* local program folder in TAR archive *your schema name.tar***.
 Also *restore.py* has additional options, see help with `python restore.py -h` option.
+
+# config.yaml
+Application settings contains at *config.yaml* from configs folder. You can change settings to control this tool.
+ - hide_password_len - if true will hide length of password at encryption process; if false password will hide with \*
+ - download_chunk_size - Google Drive download chunk size; default 10MB 
+ - allow_local_replace - if true restored backup will rewrite current local changes, if false will create new folder
+ - ask_before_replace - if true will ask before replace files
+ - include_gitignore - if true will include .gitignore files patterns
+
+# Advanced ignore settings
+Schema's *ignore* parameter will ignore global and always. But if you don't want to write vary large ignore patterns in schema, you can create *.sbtignore* file at some place in target directory. *.sbtignore* includes *.gitignore* syntax.
+
+Beside this, you can include *.gitignore* files to, BUT you should to enable this function by setting *include_gitignore* to **true** at app config.
