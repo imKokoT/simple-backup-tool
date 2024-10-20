@@ -11,24 +11,31 @@ from miscellaneous import getTMP
 
 def loadIgnorePatterns(directory:str) -> pathspec.PathSpec|None:
     patterns = []
-    ignoreFilers =(
-        os.path.join(directory, '.sbtignore'),
-        os.path.join(directory, '.gitignore')
-    )
 
-    for f in ignoreFilers:
-        if not os.path.exists(f) or not Config().include_gitignore and os.path.basename(f) == '.gitignore': continue
-        
-        with open(f, 'r', encoding='utf-8') as f:
-            patterns.extend(f.readlines())
-    if len(patterns):
-        return pathspec.PathSpec.from_lines('gitignore', patterns)
+    for dpath, _, _ in os.walk(directory):
+        ignoreFilers =(
+            os.path.join(dpath, '.sbtignore'),
+            os.path.join(dpath, '.gitignore')
+        )
+        for ignoreF in ignoreFilers:
+            if not os.path.exists(ignoreF) or not Config().include_gitignore and os.path.basename(ignoreF) == '.gitignore': continue
+            
+            with open(ignoreF, 'r', encoding='utf-8') as f:
+                for l in f.readlines():
+                    l = f'{dpath[len(directory):]}/{l.strip()}'
+                    l = f'!{l.replace('!', '')}' if '!' in l else l
+                    l = l.replace('\\', '/').replace('//', '/')
+                    patterns.append(l)
+        if len(patterns) == 0:
+            return
+
+    return pathspec.PathSpec.from_lines('gitignore', patterns)
 
 
 def shouldIgnore(path:str, specs:dict[str,pathspec.PathSpec], sorted_specs:list) -> bool:
-    specPath = next(filter(lambda d: path.startswith(d), sorted_specs))
-    spec = specs[specPath]
-    return spec.match_file(path[len(specPath):])
+    specPath = next(filter(lambda d: path.startswith(d), sorted_specs), None)
+    spec = specs.get(specPath)
+    return spec and spec.match_file(path[len(specPath):])
 
 
 def packAll(schemaName:str):
@@ -94,14 +101,15 @@ def packFolder(targetFolder:str, archive:tarfile.TarFile, ignore:str):
     scannedSize = 0
     packSize = 0
 
-    specs = {'': pathspec.PathSpec.from_lines('gitignore', ignore.splitlines())}
-    specsPaths = ['']
+    GLOBAL = ' __global__ '
+    specs = {GLOBAL: pathspec.PathSpec.from_lines('gitignore', ignore.splitlines())}
+    specsPaths = [GLOBAL]
 
     for dpath, _, fnames in os.walk(targetFolder):
         spec = loadIgnorePatterns(dpath)
         if spec:
             specs[dpath] = spec
-            specsPaths = sorted(specs.keys(), key=len, reverse=True)
+            specsPaths = sorted(specs.keys(), key=len, reverse=False)
 
         for fname in fnames:
             relative_path = os.path.relpath(os.path.join(dpath, fname), targetFolder)
@@ -114,7 +122,7 @@ def packFolder(targetFolder:str, archive:tarfile.TarFile, ignore:str):
             scanned += 1
 
     ignored += len(files)
-    files  = [p for p in files if not specs[''].match_file(p)]
+    files  = [p for p in files if not specs[GLOBAL].match_file(p)]
     ignored -= len(files)
     for p in files:
         packSize += os.path.getsize(os.path.join(targetFolder, p))
