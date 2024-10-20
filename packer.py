@@ -26,9 +26,10 @@ def loadIgnorePatterns(directory:str) -> pathspec.PathSpec|None:
 
 
 def shouldIgnore(path:str, specs:dict[str,pathspec.PathSpec], sorted_specs:list) -> bool:
-    spec = specs[next(filter(lambda d: path.startswith(d), sorted_specs))]
-    return spec.match_file(path)
-        
+    specPath = next(filter(lambda d: path.startswith(d), sorted_specs))
+    spec = specs[specPath]
+    return spec.match_file(path[len(specPath):])
+
 
 def packAll(schemaName:str):
     programLogger.info('packing process started')
