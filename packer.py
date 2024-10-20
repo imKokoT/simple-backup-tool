@@ -22,9 +22,10 @@ def loadIgnorePatterns(directory:str) -> pathspec.PathSpec|None:
             
             with open(ignoreF, 'r', encoding='utf-8') as f:
                 for l in f.readlines():
-                    l = f'{dpath[len(directory):]}/{l.strip()}'
+                    l = l.strip()
                     l = f'!{l.replace('!', '')}' if '!' in l else l
-                    l = l.replace('\\', '/').replace('//', '/')
+                    l = f'{dpath[len(directory):]}/{'**/'+l if not l.startswith('/') else l}'
+                    l = l.replace('\\', '/')
                     patterns.append(l)
         if len(patterns) == 0:
             return
