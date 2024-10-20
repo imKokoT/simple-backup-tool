@@ -25,11 +25,10 @@ def loadIgnorePatterns(directory:str) -> pathspec.PathSpec|None:
         return pathspec.PathSpec.from_lines('gitignore', patterns)
 
 
-def shouldIgnore(path:str, specs:dict[str,pathspec.PathSpec]) -> bool:
-    for d, spec in specs.items():
-        if path.startswith(d) and spec.match_file(path):
-            return True
-    return False
+def shouldIgnore(path:str, specs:dict[str,pathspec.PathSpec], sorted_specs:list) -> bool:
+    spec = specs[next(filter(lambda d: path.startswith(d), sorted_specs))]
+    return spec.match_file(path)
+        
 
 def packAll(schemaName:str):
     programLogger.info('packing process started')
@@ -95,15 +94,17 @@ def packFolder(targetFolder:str, archive:tarfile.TarFile, ignore:str):
     packSize = 0
 
     specs = {'': pathspec.PathSpec.from_lines('gitignore', ignore.splitlines())}
+    specsPaths = ['']
 
     for dpath, _, fnames in os.walk(targetFolder):
         spec = loadIgnorePatterns(dpath)
         if spec:
             specs[dpath] = spec
+            specsPaths = sorted(specs.keys(), key=len, reverse=True)
 
         for fname in fnames:
             relative_path = os.path.relpath(os.path.join(dpath, fname), targetFolder)
-            if not shouldIgnore(os.path.join(dpath, fname), specs):
+            if not shouldIgnore(os.path.join(dpath, fname), specs, specsPaths):
                 files.append(relative_path)
             else:
                 ignored += 1
