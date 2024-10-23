@@ -32,7 +32,8 @@ class Config:
 
         self.allow_local_replace = True # if true restored backup will rewrite current local changes, if false will create new folder
         self.ask_before_replace = True # if true will ask before replace files
-        self.include_gitignore = False # if true will include .gitignore files patterns  
+        self.include_gitignore = False # if true will include .gitignore files patterns
+        self.ask_for_other_extract_path = True # if true will ask for path if failed to unpack folder  
 
 
     # TODO: if new configs exists but not in file, ask for update configs file

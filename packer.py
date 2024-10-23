@@ -207,8 +207,20 @@ def unpackFile(path:str, index:int, archive:tarfile.TarFile):
     programLogger.info(f'unpacking file "{path}"...')
 
     if not os.path.exists(os.path.dirname(path)):
-        programLogger.error(f'failed to unpack because "{os.path.dirname(path)}" not exists')
-        return
+        if not Config().ask_for_other_extract_path: 
+            programLogger.error(f'failed to unpack because "{os.path.dirname(path)}" not exists')
+            return
+        
+        print(f'{YC}Path "{path}" is invalid, do you want to unpack to other path?')
+        newPath = ''
+        while not os.path.exists(newPath) or not os.path.isdir(newPath):
+            newPath = input('Enter directory path or nothing to skip: ')
+            if newPath.strip() == '':
+                programLogger.info(f'skipped "{path}"')
+                return
+            if not os.path.exists(newPath) or not os.path.isdir(newPath):
+                print(f'{RC}invalid path "{newPath}"!')
+        path = os.path.join(newPath.strip(), os.path.basename(path))
     
     if os.path.exists(path) and not Config().allow_local_replace:
         path = os.path.join(os.path.dirname(path), os.path.basename(path) + '-restored')
@@ -232,8 +244,20 @@ def unpackFolder(path:str, index:int, archive:tarfile.TarFile):
     programLogger.info(f'unpacking folder "{path}"...')
     
     if not os.path.exists(os.path.dirname(path)):
-        programLogger.error(f'failed to unpack because "{os.path.dirname(path)}" not exists')
-        return
+        if not Config().ask_for_other_extract_path: 
+            programLogger.error(f'failed to unpack because "{os.path.dirname(path)}" not exists')
+            return
+        
+        print(f'{YC}Path "{path}" is invalid, do you want to unpack to other path?')
+        newPath = ''
+        while not os.path.exists(newPath) or not os.path.isdir(newPath):
+            newPath = input('Enter directory path or nothing to skip: ')
+            if newPath.strip() == '':
+                programLogger.info(f'skipped "{path}"')
+                return
+            if not os.path.exists(newPath) or not os.path.isdir(newPath):
+                print(f'{RC}invalid path "{newPath}"!')
+        path = os.path.join(newPath.strip(), os.path.basename(path))
     
     if os.path.exists(path) and not Config().allow_local_replace:
         path = os.path.join(os.path.dirname(path), os.path.basename(path) + '-restored')
@@ -301,16 +325,18 @@ def unpackAll(schemaName:str, schema:dict):
     i = 0
     for folder in packConfig['folders']:
         res = unpackFolder(folder, i, archive)
-
-        result['rewritten'] += res['rewritten']
-        result['restored'] += res['restored']
+        
+        if res:
+            result['rewritten'] += res['rewritten']
+            result['restored'] += res['restored']
         i += 1
     i = 0
     for file in packConfig['files']:
         res = unpackFile(file, i, archive)
 
-        result['rewritten'] += res['rewritten']
-        result['restored'] += res['restored']
+        if res:
+            result['rewritten'] += res['rewritten']
+            result['restored'] += res['restored']
         i += 1
 
     programLogger.info(f'unpacking finished with success!\n'

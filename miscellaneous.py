@@ -17,4 +17,4 @@ def getTMP():
         if not os.path.exists('./debug/tmp'): os.mkdir('./debug/tmp')
         return './debug/tmp'
     else:
-        raise NotImplementedError() 
+        raise NotImplementedError()
