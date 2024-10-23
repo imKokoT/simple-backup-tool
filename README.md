@@ -88,6 +88,7 @@ Application settings contains at *config.yaml* from configs folder. You can chan
  - allow_local_replace - if true restored backup will rewrite current local changes, if false will create new folder
  - ask_before_replace - if true will ask before replace files
  - include_gitignore - if true will include .gitignore files patterns
+ - ask_for_other_extract_path - if true will ask for path if failed to unpack folder
 
 # Advanced ignore settings
 Schema's *ignore* parameter will ignore global and always. But if you don't want to write vary large ignore patterns in schema, you can create *.sbtignore* file at some place in target directory. *.sbtignore* includes *.gitignore* syntax.
