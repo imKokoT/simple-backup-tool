@@ -28,7 +28,11 @@ def archive(schemaName:str) -> str:
             case 'bz':
                 raise NotImplementedError()
             case 'bz2':
-                return bz2_archiver.compress(f'{tmp}/{schemaName}.tar', schema)
+                try:
+                    return bz2_archiver.compress(f'{tmp}/{schemaName}.tar', schema)
+                except ModuleNotFoundError:
+                    programLogger.fatal(f'"bz2" module not found; you should install it')
+                    exit(1)
             case 'zip':
                 return zip_archiver.compress(f'{tmp}/{schemaName}.tar', schema)
             case 'xz':
@@ -70,7 +74,11 @@ def dearchive(schemaName:str, schema:dict) -> str:
             case 'bz':
                 raise NotImplementedError()
             case 'bz2':
-                return bz2_archiver.decompress(downloaded, schema, schemaName)
+                try:
+                    return bz2_archiver.decompress(downloaded, schema, schemaName)
+                except ModuleNotFoundError:
+                    programLogger.fatal(f'"bz2" module not found; you should install it')
+                    exit(1)
             case 'zip':
                 return zip_archiver.decompress(downloaded, schema, schemaName) 
             case 'xz':

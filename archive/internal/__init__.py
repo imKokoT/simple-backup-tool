@@ -1,3 +1,8 @@
 from . import zip_archiver
 from . import gz_archiver
-from . import bz2_archiver
+
+try:
+    from . import bz2_archiver
+except ModuleNotFoundError:
+    from config import *
+    programLogger.warning(f'bz2 module not installed!')
