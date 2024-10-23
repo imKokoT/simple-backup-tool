@@ -36,7 +36,14 @@ class Config:
         self.ask_for_other_extract_path = True # if true will ask for path if failed to unpack folder  
 
 
-    # TODO: if new configs exists but not in file, ask for update configs file
+    def save():
+        if not path.exists('configs/'):
+            os.mkdir('configs')
+
+        with open('configs/config.yaml', 'w', encoding='utf-8') as f:
+            yaml.dump(Config().__dict__, f)
+
+
     def load():
         if not path.exists('configs/'):
             os.mkdir('configs')
@@ -46,17 +53,18 @@ class Config:
                 config = yaml.safe_load(f)
                 for k, v in config.items():
                     setattr(Config(), k, v)
+                if config != Config().__dict__:
+                    programLogger.info('updated config.yaml to newer version')
+                    Config.save()
         except FileNotFoundError:
-            with open('configs/config.yaml', 'w', encoding='utf-8') as f:
-                yaml.dump(Config().__dict__, f)
+            Config.save()
         except yaml.YAMLError as e:
             programLogger.error(f'failed to load config; {e}')
             yn = input(f'{YC}do you want to recreate config? [y/N]{DC}: ')
             if yn.strip().lower() != 'y':
                 print('process interrupted...')
                 exit(0)
-            with open('configs/config.yaml', 'w', encoding='utf-8') as f:
-                yaml.dump(Config().__dict__, f)
+            Config.save()
 
 
 # --- colorama shortcuts -----------------------------------------------------
