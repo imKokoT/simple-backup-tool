@@ -11,6 +11,7 @@ import packer
 import archiver
 from cloud_tools import authenticate, send, getDestination
 from miscellaneous import getTMP
+import clean
 
 
 def _cleanup(service, folder:str, schemaName:str):
@@ -93,6 +94,8 @@ def createBackupOf(schemaName:str):
     archName = archiver.archive(schemaName)
 
     backup(archName, schemaName, sch, creds)
+
+    clean.clean(archName)
 
 
 if __name__ == '__main__':

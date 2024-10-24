@@ -11,6 +11,7 @@ from cloud_tools import authenticate, getDestination, download
 import archiver
 import packer
 from miscellaneous import getTMP
+import clean
 
 
 def tryGetMeta(service, folder:str, schemaName:str) -> dict|None:
@@ -83,6 +84,8 @@ def restoreFromCloud(schemaName:str, **kwargs):
     restore(schemaName, sch, creds)
 
     packName = archiver.dearchive(schemaName, sch)
+
+    clean.clean(f'{schemaName}.downloaded')
 
     packer.unpackAll(schemaName, sch)
 
