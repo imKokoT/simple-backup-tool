@@ -6,7 +6,7 @@ import time
 import json
 import io
 import pathspec
-from miscellaneous import getTMP
+from miscellaneous import getTMP, iprint
 
 
 def loadIgnorePatterns(directory:str) -> pathspec.PathSpec|None:
@@ -121,6 +121,10 @@ def packFolder(targetFolder:str, archive:tarfile.TarFile, ignore:str):
 
             scannedSize += os.path.getsize(os.path.join(targetFolder, relative_path))
             scanned += 1
+
+            if DEBUG:
+                iprint(f'{scanned} files scanned')
+    if DEBUG: print()
 
     ignored += len(files)
     files  = [p for p in files if not specs[GLOBAL].match_file(p)]

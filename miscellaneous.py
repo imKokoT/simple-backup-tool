@@ -11,6 +11,11 @@ def updateProgressBar(percentage):
     sys.stdout.flush()
 
 
+def iprint(*strings):
+    sys.stdout.write(f'\r{' '.join(strings)}')
+    sys.stdout.flush()
+
+
 def getTMP():
     if DEBUG:
         if not os.path.exists('./debug'): os.mkdir('./debug')

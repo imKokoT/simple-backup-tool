@@ -1,4 +1,4 @@
-## 0.4a ([commit](https://github.com/imKokoT/simple-backup-tool/commit/98ced2a15aa84257b4d10716a32ec4b772d77cf5))
+## 0.4a  ([commit](https://github.com/imKokoT/simple-backup-tool/commit/98ced2a15aa84257b4d10716a32ec4b772d77cf5))
 added:
 - program config file
 - opportunity to create schema in configs/schemas folder
@@ -18,7 +18,6 @@ fixed:
 
 
 ## 0.2a  ([commit](https://github.com/imKokoT/simple-backup-tool/commit/f26ce98d8ecf5fac3fa3cab1ec0a67ff202cc943))
-v0.2a
 - added 3 internal archivers: zip, gz, bz2
 
 
