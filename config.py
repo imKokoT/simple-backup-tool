@@ -27,6 +27,8 @@ class Config:
         if Config.__initialized: return 
         Config.__initialized = True
         # === settings ===
+        self.human_sizes = False # if true, byte sizes will print in "B", "KB", "MB", "GB", "TB"
+
         self.download_chunk_size = 1024*1024*10
 
         self.allow_local_replace = True # if true restored backup will rewrite current local changes, if false will create new folder

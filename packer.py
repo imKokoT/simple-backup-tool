@@ -6,7 +6,7 @@ import time
 import json
 import io
 import pathspec
-from miscellaneous import getTMP, iprint
+from miscellaneous import getTMP, iprint, humanSize
 
 
 def loadIgnorePatterns(directory:str) -> pathspec.PathSpec|None:
@@ -85,7 +85,7 @@ def packAll(schemaName:str):
     programLogger.info(f'packing process finished successfully;\n'
                        f' - packs created: {packedCount}/{len(sch["targets"])}\n'
                        f' - archived and ignored total files: {result['files']}/{result['ignored']}\n'
-                       f' - archived total size: {result["size"]}/{result["scannedSize"]}'
+                       f' - archived total size: {humanSize(result["size"])}/{humanSize(result["scannedSize"])}'
                        )
     archive.close()
 
@@ -132,7 +132,7 @@ def packFolder(targetFolder:str, archive:tarfile.TarFile, ignore:str):
     for p in files:
         packSize += os.path.getsize(os.path.join(targetFolder, p))
 
-    programLogger.info(f'reading success; total files: {len(files)} [{packSize}B/{scannedSize}B]; ignored total: {ignored}')    
+    programLogger.info(f'reading success; total files: {len(files)} [{humanSize(packSize)}/{humanSize(scannedSize)}]; ignored total: {ignored}')    
 
     programLogger.info(f'adding to archive...')
     
