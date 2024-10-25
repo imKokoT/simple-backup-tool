@@ -1,11 +1,12 @@
 import os
 import tarfile
-from config import *
 import schema
 import time
 import json
 import io
 import pathspec
+import time
+from config import *
 from miscellaneous import getTMP, iprint, humanSize
 
 
@@ -38,6 +39,51 @@ def shouldIgnore(path:str, specs:dict[str,pathspec.PathSpec], sorted_specs:list)
     spec = specs.get(specPath)
     return spec and spec.match_file(path[len(specPath):])
 
+
+def dumpRestoredLog(packConfig:dict, schema):
+    tmp = getTMP()
+    root = f'{tmp}/restored/{schema['__name__']}'
+
+    folders = packConfig['folders']
+    files = packConfig['files']
+
+    with open(f'{root}/dump.log', 'w', encoding='utf-8') as f:
+        f.write(f'DUMP CREATED OF RESTORED BACKUP "{schema['__name__']}"\n'
+                f'\n'
+                f'dump time at {time.ctime()}\n'
+                f'backup created at {time.ctime(packConfig['creation-time'])}\n\n'
+                )
+        f.write('FOLDERS:\n')
+        i = 0
+        for folder in folders:
+            f.write(f' {hex(i)[2:]}\t {folder}\n')
+            i += 1
+        f.write('FILES:\n')
+        i = 0
+        for file in files:
+            f.write(f' {hex(i)[2:]}\t {file}\n')
+            i += 1
+
+
+def modifyRestorePaths(packConfig:dict, schema):
+    tmp = getTMP()
+    root = f'{tmp}/restored/{schema['__name__']}'
+
+    folders = packConfig['folders']
+    files = packConfig['files']
+
+    folders = [os.path.join(
+                    root, 
+                    os.path.basename(folders[i])+f' ({hex(i)[2:]})') 
+               for i in range(0, len(folders))]
+    files = [os.path.join(
+                root, 
+                f'({hex(i)[2:]}) '+os.path.basename(files[i])) 
+             for i in range(0, len(files))]
+
+    packConfig['folders'] = folders
+    packConfig['files'] = files
+    
 
 def packAll(schemaName:str):
     programLogger.info('packing process started')
@@ -306,9 +352,12 @@ def unpackAll(schemaName:str, schema:dict):
     programLogger.info('unpacking process started')
    
     tmp = getTMP()
+    os.makedirs(f'{tmp}/restored/{schemaName}', exist_ok=True)
     archive = tarfile.open(os.path.join(tmp, f'{schemaName}.tar'), 'r')
 
     packConfig = loadPackConfig(archive)
+
+    dumpRestoredLog(packConfig, schema)
     
     if Config().allow_local_replace and Config().ask_before_replace:
         print(f'{LYC}Are you sure to rewrite next folders and files:')
@@ -318,8 +367,14 @@ def unpackAll(schemaName:str, schema:dict):
             print(f'{LYC} - {f}')
         yn = input('[y/N] ')
         if yn.strip().lower() != 'y':
-            print('restored data placed in tmp folder\nunpack process interrupted...')
-            exit(0)
+            print('restored data placed in tmp folder')
+            print(f'{LYC}do you want to unpack all to "{tmp}/restored/{schemaName}":')
+            yn = input('[y/N] ')
+            if yn.strip().lower() == 'y':
+                modifyRestorePaths(packConfig, schema)
+            else:
+                print('unpack process interrupted...')
+                exit(0)
 
     result = {
         'rewritten': 0,
