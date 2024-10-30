@@ -73,11 +73,11 @@ def modifyRestorePaths(packConfig:dict, schema):
     packConfig['files'] = files
 
 
-def modifySingleRestorePath(path:str, schema:dict, packConfig:dict) -> str:
+def modifySingleRestorePath(path:str, schema:dict, packConfig:dict, isFolder:bool) -> str:
     tmp = getTMP()
     root = f'{tmp}/restored/{schema['__name__']}'
 
-    i = packConfig['folders'].index(path) if os.path.isdir(path) else packConfig['files'].index(path)
+    i = packConfig['folders'].index(path) if isFolder else packConfig['files'].index(path)
 
     if os.path.isdir(path):
         newName = os.path.basename(path)+f' ({hex(i)[2:]})'
