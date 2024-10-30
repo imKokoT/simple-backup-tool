@@ -1,0 +1,136 @@
+import tarfile
+import pathspec
+from config import *
+from miscellaneous import getTMP, humanSize, iprint
+from packer.packconfig import configurePack
+from packer.tools import loadIgnorePatterns, shouldIgnore
+import schema
+
+
+def packAll(schemaName:str):
+    programLogger.info('packing process started')
+    sch = schema.getBackupSchema(schemaName)
+    
+    ignore = sch.get('ignore', '')
+
+    if not sch: 
+        programLogger.fatal(f'packing process failed: no schema "{schemaName}"')
+        exit(1)
+    
+    tmp = getTMP()
+
+    archive = tarfile.open(os.path.join(tmp, f'{schemaName}.tar'), 'w')
+    
+    if not sch.get('targets'):
+        programLogger.fatal(f'failed to get "targets" key from schema "{schemaName}"')
+        exit(1)
+
+    packedCount = 0
+    packedTargets = []
+    result = {
+        'files':0,
+        'ignored': 0,
+        'size': 0,
+        'scannedSize': 0
+    }
+    res:dict
+    packFile.counter = 0
+    packFolder.counter = 0
+    for target in sch['targets']:
+        if os.path.isfile(target):
+            res = packFile(target, archive)
+        else:
+            res = packFolder(target, archive, ignore)
+
+        if res:
+            packedTargets.append(target)
+            for k in res.keys():
+                result[k] += res[k]
+            packedCount += 1
+
+    configurePack(archive, sch, packedTargets)
+
+    programLogger.info(f'packing process finished successfully;\n'
+                       f' - packs created: {packedCount}/{len(sch["targets"])}\n'
+                       f' - archived and ignored total files: {result['files']}/{result['ignored']}\n'
+                       f' - archived total size: {humanSize(result["size"])}/{humanSize(result["scannedSize"])}'
+                       )
+    archive.close()
+
+
+def packFolder(targetFolder:str, archive:tarfile.TarFile, ignore:str):
+    if not os.path.exists(targetFolder):
+        programLogger.error(f'packing failed: target folder "{targetFolder}" not exists')
+        return
+
+    programLogger.info(f'packing target folder "{targetFolder}"; reading content...')
+    files = []
+    scanned = 0
+    ignored = 0
+    scannedSize = 0
+    packSize = 0
+
+    GLOBAL = ' __global__ '
+    specs = {GLOBAL: pathspec.PathSpec.from_lines('gitignore', ignore.splitlines())}
+    specsPaths = [GLOBAL]
+
+    for dpath, _, fnames in os.walk(targetFolder):
+        spec = loadIgnorePatterns(dpath)
+        if spec:
+            specs[dpath] = spec
+            specsPaths = sorted(specs.keys(), key=len, reverse=False)
+
+        for fname in fnames:
+            relative_path = os.path.relpath(os.path.join(dpath, fname), targetFolder)
+            if not shouldIgnore(os.path.join(dpath, fname), specs, specsPaths):
+                files.append(relative_path)
+            else:
+                ignored += 1
+
+            scannedSize += os.path.getsize(os.path.join(targetFolder, relative_path))
+            scanned += 1
+
+            if DEBUG:
+                iprint(f'{scanned} files scanned')
+    if DEBUG: print()
+
+    ignored += len(files)
+    files  = [p for p in files if not specs[GLOBAL].match_file(p)]
+    ignored -= len(files)
+    for p in files:
+        packSize += os.path.getsize(os.path.join(targetFolder, p))
+
+    programLogger.info(f'reading success; total files: {len(files)} [{humanSize(packSize)}/{humanSize(scannedSize)}]; ignored total: {ignored}')    
+
+    programLogger.info(f'adding to archive...')
+    
+    for f in files:
+        dpath = os.path.join(f'folders/{hex(packFolder.counter)[2:]}',f)
+        archive.add(os.path.join(targetFolder, f), arcname=dpath)
+    
+    programLogger.info(f'success')
+    return {
+        'files':len(files),
+        'ignored': ignored,
+        'size': packSize,
+        'scannedSize': scannedSize
+        }
+
+
+def packFile(targetFile:str, archive:tarfile.TarFile):
+    if not os.path.exists(targetFile):
+        programLogger.error(f'packing failed: target file "{targetFile}" not exists')
+        return
+    programLogger.info(f'packing target file "{targetFile}"')
+
+    size = os.path.getsize(targetFile)
+
+    archive.add(targetFile, f'files/{hex(packFile.counter)[2:]}')
+    packFile.counter += 1
+    return {
+        'files': 1,
+        'ignored': 0,
+        'size': size,
+        'scannedSize': size
+    }
+
