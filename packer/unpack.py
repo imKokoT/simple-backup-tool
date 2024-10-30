@@ -1,6 +1,6 @@
 import tarfile
 from config import *
-from miscellaneous import getTMP
+from miscellaneous import getTMP, getFolderPath
 from packer.packconfig import loadPackConfig
 from packer.tools import dumpRestoredLog, modifyRestorePaths
 
@@ -14,15 +14,11 @@ def unpackFile(path:str, index:int, archive:tarfile.TarFile):
             return
         
         print(f'{YC}Path "{path}" is invalid, do you want to unpack to other path?')
-        newPath = ''
-        while not os.path.exists(newPath) or not os.path.isdir(newPath):
-            newPath = input('Enter directory path or nothing to skip: ')
-            if newPath.strip() == '':
-                programLogger.info(f'skipped "{path}"')
-                return
-            if not os.path.exists(newPath) or not os.path.isdir(newPath):
-                print(f'{RC}invalid path "{newPath}"!')
-        path = os.path.join(newPath.strip(), os.path.basename(path))
+        newDir = getFolderPath()
+        if not newDir:
+            programLogger.info(f'skipped')
+            return
+        path = os.path.join(newDir.strip(), os.path.basename(path))
     
     if os.path.exists(path) and not Config().allow_local_replace:
         path = os.path.join(os.path.dirname(path), os.path.basename(path) + '-restored')
@@ -51,15 +47,11 @@ def unpackFolder(path:str, index:int, archive:tarfile.TarFile):
             return
         
         print(f'{YC}Path "{path}" is invalid, do you want to unpack to other path?')
-        newPath = ''
-        while not os.path.exists(newPath) or not os.path.isdir(newPath):
-            newPath = input('Enter directory path or nothing to skip: ')
-            if newPath.strip() == '':
-                programLogger.info(f'skipped "{path}"')
-                return
-            if not os.path.exists(newPath) or not os.path.isdir(newPath):
-                print(f'{RC}invalid path "{newPath}"!')
-        path = os.path.join(newPath.strip(), os.path.basename(path))
+        newDir = getFolderPath()
+        if not newDir:
+            programLogger.info(f'skipped')
+            return
+        path = os.path.join(newDir.strip(), os.path.basename(path))
     
     if os.path.exists(path) and not Config().allow_local_replace:
         path = os.path.join(os.path.dirname(path), os.path.basename(path) + '-restored')

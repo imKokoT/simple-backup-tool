@@ -35,6 +35,7 @@ class Config:
         self.ask_before_replace = True # if true will ask before replace files
         self.include_gitignore = False # if true will include .gitignore files patterns
         self.ask_for_other_extract_path = True # if true will ask for path if failed to unpack folder
+        self.restore_to_tmp_if_path_invalid = False # if true will restore target folder or file to tmp/restored
 
         self.hide_password_len = True
         self.auto_remove_archive = True # if true archives, that was created or downloaded, will be deleted; .tar excluded
