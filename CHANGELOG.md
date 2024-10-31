@@ -1,3 +1,17 @@
+
+## 0.5a
+added:
+- .sbtignore and .gitignore include to filter (#8)
+- more flexible restore settings (#9)
+- opportunity to unpack to tmp/restored (#11)
+
+fixed:
+- abort if schemas.yaml not exists
+- abort if bz2 not installed (#7)
+- abort when unpack to not existing directory (#10)
+- logger output, doc's spell, etc
+
+
 ## 0.4a  ([commit](https://github.com/imKokoT/simple-backup-tool/commit/98ced2a15aa84257b4d10716a32ec4b772d77cf5))
 added:
 - program config file
