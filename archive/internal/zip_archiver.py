@@ -5,7 +5,7 @@ from miscellaneous import updateProgressBar
 
 
 def compress(targetPath:str, sch:dict) -> str:
-    programLogger.info('zip compressing...')
+    logger.info('zip compressing...')
     
     zipPath = f'{targetPath}.zip'
     compressLevel = sch.get('compressLevel', 5)
@@ -17,7 +17,7 @@ def compress(targetPath:str, sch:dict) -> str:
         compresslevel=compressLevel
         )
     if password:
-        programLogger.warning(f'Internal zip archiver does not support password; archive will not encrypted')
+        logger.warning(f'Internal zip archiver does not support password; archive will not encrypted')
     tfile = open(targetPath, 'rb')
     tsize = os.path.getsize(targetPath) 
 
@@ -25,12 +25,12 @@ def compress(targetPath:str, sch:dict) -> str:
 
     tfile.close()
     zfile.close()
-    programLogger.info('compress finished with success!')
+    logger.info('compress finished with success!')
     return os.path.basename(zipPath)
 
 
 def decompress(archPath:str, sch:dict, schemaName:str):
-    programLogger.info('zip decompressing...')
+    logger.info('zip decompressing...')
 
     exportPath = os.path.join(os.path.dirname(archPath), f'{schemaName}.tar')
     
@@ -41,5 +41,5 @@ def decompress(archPath:str, sch:dict, schemaName:str):
                   bytes(sch.get('password'), 'utf-8') if sch.get('password') else None)
 
     zfile.close()
-    programLogger.info('decompress finished with success!')
+    logger.info('decompress finished with success!')
     return os.path.basename(exportPath)

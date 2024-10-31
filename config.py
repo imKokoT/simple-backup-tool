@@ -59,12 +59,12 @@ class Config:
                 for k, v in config.items():
                     setattr(Config(), k, v)
                 if config != Config().__dict__:
-                    programLogger.info('updated config.yaml to newer version')
+                    logger.info('updated config.yaml to newer version')
                     Config.save()
         except FileNotFoundError:
             Config.save()
         except yaml.YAMLError as e:
-            programLogger.error(f'failed to load config; {e}')
+            logger.error(f'failed to load config; {e}')
             yn = input(f'{YC}do you want to recreate config? [y/N]{DC}: ')
             if yn.strip().lower() != 'y':
                 print('process interrupted...')
@@ -109,13 +109,13 @@ _programFileHandler = logging.FileHandler('logs/program.log', 'w', 'utf-8')
 _programFileHandler.setFormatter(logging.Formatter(BASE_LOGGING_FORMAT))
 
 # === Program logger ===
-programLogger = logging.getLogger('SBT')
-programLogger.setLevel(logging.DEBUG)
-programLogger.addHandler(_programFileHandler)
+logger = logging.getLogger('SBT')
+logger.setLevel(logging.DEBUG)
+logger.addHandler(_programFileHandler)
 _temp = logging.StreamHandler()
 _temp.setFormatter(colorlog.ColoredFormatter('%(log_color)s'+BASE_LOGGING_FORMAT, 
                                             reset=True, 
                                             log_colors=BASE_LOG_COLORS))
-programLogger.addHandler(_temp)
+logger.addHandler(_temp)
 
 del _temp

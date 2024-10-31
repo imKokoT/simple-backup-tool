@@ -13,7 +13,7 @@ def archive(schemaName:str) -> str:
     tmp = getTMP()
 
     if not schema:
-        programLogger.fatal(f'failed to load schema name "{schemaName}"')
+        logger.fatal(f'failed to load schema name "{schemaName}"')
         exit(1)
     
     mode = schema.get('mode', 'internal')
@@ -31,7 +31,7 @@ def archive(schemaName:str) -> str:
                 try:
                     return bz2_archiver.compress(f'{tmp}/{schemaName}.tar', schema)
                 except ModuleNotFoundError:
-                    programLogger.fatal(f'"bz2" module not found; you should install it')
+                    logger.fatal(f'"bz2" module not found; you should install it')
                     exit(1)
             case 'zip':
                 return zip_archiver.compress(f'{tmp}/{schemaName}.tar', schema)
@@ -40,19 +40,19 @@ def archive(schemaName:str) -> str:
             case None | 'tar':
                 return f'{schemaName}.tar'
             case _:
-                programLogger.fatal(f'unknown compression format {schema.get('compressionFormat', None)}')
+                logger.fatal(f'unknown compression format {schema.get('compressionFormat', None)}')
                 exit(1)        
     elif mode == 'external':
         match program:
             case '7z' | None:
                 return sevenZ_archiver.compress(f'{tmp}/{schemaName}.tar', schema) 
             case _:
-                programLogger.fatal(f'unknown program {program} for external mode')
+                logger.fatal(f'unknown program {program} for external mode')
                 exit(1)
     elif mode == 'custom':
         raise NotImplementedError()
     else:
-        programLogger.fatal(f'unknown mode {mode}')
+        logger.fatal(f'unknown mode {mode}')
         exit(1)
 
 
@@ -77,7 +77,7 @@ def dearchive(schemaName:str, schema:dict) -> str:
                 try:
                     return bz2_archiver.decompress(downloaded, schema, schemaName)
                 except ModuleNotFoundError:
-                    programLogger.fatal(f'"bz2" module not found; you should install it')
+                    logger.fatal(f'"bz2" module not found; you should install it')
                     exit(1)
             case 'zip':
                 return zip_archiver.decompress(downloaded, schema, schemaName) 
@@ -91,17 +91,17 @@ def dearchive(schemaName:str, schema:dict) -> str:
                 
                 return f'{schemaName}.tar'
             case _:
-                programLogger.fatal(f'unknown compression format {schema.get('compressionFormat', None)}')
+                logger.fatal(f'unknown compression format {schema.get('compressionFormat', None)}')
                 exit(1)
     elif mode == 'external':
         match program:
             case '7z' | None:
                 return sevenZ_archiver.decompress(downloaded, schema, schemaName) 
             case _:
-                programLogger.fatal(f'unknown program {program} for external mode')
+                logger.fatal(f'unknown program {program} for external mode')
                 exit(1)
     elif mode == 'custom':
         raise NotImplementedError()
     else:
-        programLogger.fatal(f'unknown mode {mode}')
+        logger.fatal(f'unknown mode {mode}')
         exit(1)

@@ -6,10 +6,10 @@ from config import *
 
 
 def configurePack(archive:tarfile.TarFile, backupSchema:dict, packedTargets:list):
-    programLogger.info('configuring pack...')
+    logger.info('configuring pack...')
 
     if not backupSchema.get('destination'):
-        programLogger.fatal(f'failed to get "destination" param from schema')
+        logger.fatal(f'failed to get "destination" param from schema')
         exit(1)
 
     data = {
@@ -33,10 +33,10 @@ def configurePack(archive:tarfile.TarFile, backupSchema:dict, packedTargets:list
 
 def loadPackConfig(archive:tarfile.TarFile) -> dict:
     '''returns pack's config'''
-    programLogger.info('loading pack\'s config...')
+    logger.info('loading pack\'s config...')
 
     if 'config' not in archive.getnames():
-        programLogger.fatal('bad pack: config not found')
+        logger.fatal('bad pack: config not found')
         exit(1)
 
     configFile = archive.extractfile('config')

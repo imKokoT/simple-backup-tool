@@ -5,4 +5,4 @@ try:
     from . import bz2_archiver
 except ModuleNotFoundError:
     from config import *
-    programLogger.warning(f'bz2 module not installed!')
+    logger.warning(f'bz2 module not installed!')

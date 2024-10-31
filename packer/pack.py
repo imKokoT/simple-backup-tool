@@ -8,13 +8,13 @@ import schema
 
 
 def packAll(schemaName:str):
-    programLogger.info('packing process started')
+    logger.info('packing process started')
     sch = schema.getBackupSchema(schemaName)
     
     ignore = sch.get('ignore', '')
 
     if not sch: 
-        programLogger.fatal(f'packing process failed: no schema "{schemaName}"')
+        logger.fatal(f'packing process failed: no schema "{schemaName}"')
         exit(1)
     
     tmp = getTMP()
@@ -22,7 +22,7 @@ def packAll(schemaName:str):
     archive = tarfile.open(os.path.join(tmp, f'{schemaName}.tar'), 'w')
     
     if not sch.get('targets'):
-        programLogger.fatal(f'failed to get "targets" key from schema "{schemaName}"')
+        logger.fatal(f'failed to get "targets" key from schema "{schemaName}"')
         exit(1)
 
     packedCount = 0
@@ -50,7 +50,7 @@ def packAll(schemaName:str):
 
     configurePack(archive, sch, packedTargets)
 
-    programLogger.info(f'packing process finished successfully;\n'
+    logger.info(f'packing process finished successfully;\n'
                        f' - packs created: {packedCount}/{len(sch["targets"])}\n'
                        f' - archived and ignored total files: {result['files']}/{result['ignored']}\n'
                        f' - archived total size: {humanSize(result["size"])}/{humanSize(result["scannedSize"])}'
@@ -60,10 +60,10 @@ def packAll(schemaName:str):
 
 def packFolder(targetFolder:str, archive:tarfile.TarFile, ignore:str):
     if not os.path.exists(targetFolder):
-        programLogger.error(f'packing failed: target folder "{targetFolder}" not exists')
+        logger.error(f'packing failed: target folder "{targetFolder}" not exists')
         return
 
-    programLogger.info(f'packing target folder "{targetFolder}"; reading content...')
+    logger.info(f'packing target folder "{targetFolder}"; reading content...')
     files = []
     scanned = 0
     ignored = 0
@@ -100,15 +100,15 @@ def packFolder(targetFolder:str, archive:tarfile.TarFile, ignore:str):
     for p in files:
         packSize += os.path.getsize(os.path.join(targetFolder, p))
 
-    programLogger.info(f'reading success; total files: {len(files)} [{humanSize(packSize)}/{humanSize(scannedSize)}]; ignored total: {ignored}')    
+    logger.info(f'reading success; total files: {len(files)} [{humanSize(packSize)}/{humanSize(scannedSize)}]; ignored total: {ignored}')    
 
-    programLogger.info(f'adding to archive...')
+    logger.info(f'adding to archive...')
     
     for f in files:
         dpath = os.path.join(f'folders/{hex(packFolder.counter)[2:]}',f)
         archive.add(os.path.join(targetFolder, f), arcname=dpath)
     
-    programLogger.info(f'success')
+    logger.info(f'success')
     return {
         'files':len(files),
         'ignored': ignored,
@@ -119,9 +119,9 @@ def packFolder(targetFolder:str, archive:tarfile.TarFile, ignore:str):
 
 def packFile(targetFile:str, archive:tarfile.TarFile):
     if not os.path.exists(targetFile):
-        programLogger.error(f'packing failed: target file "{targetFile}" not exists')
+        logger.error(f'packing failed: target file "{targetFile}" not exists')
         return
-    programLogger.info(f'packing target file "{targetFile}"')
+    logger.info(f'packing target file "{targetFile}"')
 
     size = os.path.getsize(targetFile)
 

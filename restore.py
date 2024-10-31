@@ -15,7 +15,7 @@ import clean
 
 
 def tryGetMeta(service, folder:str, schemaName:str) -> dict|None:
-    programLogger.info(f'getting meta...')
+    logger.info(f'getting meta...')
 
     query = f"'{folder}' in parents and name='{schemaName}.meta' and trashed=false"
     response = service.files().list(q=query, spaces='drive').execute()
@@ -31,18 +31,18 @@ def tryGetMeta(service, folder:str, schemaName:str) -> dict|None:
 
 
 def restore(schemaName:str, schema:dict, creds:Credentials):
-    programLogger.info('preparing for restore from cloud...')
+    logger.info('preparing for restore from cloud...')
 
     tmp = getTMP()
 
     if not schema.get('destination'):
-        programLogger.fatal(f'failed to get "destination" from schema')
+        logger.fatal(f'failed to get "destination" from schema')
         exit(1)
     
     downloadedName = f'{schemaName}.downloaded'
 
     try:
-        programLogger.info('building service')
+        logger.info('building service')
         service = build('drive', 'v3', credentials=creds)
         
         destinationFolder = getDestination(service, schema['destination'])
@@ -55,23 +55,23 @@ def restore(schemaName:str, schema:dict, creds:Credentials):
                 elif k != 'password':
                     schema[k] = v
 
-        programLogger.info('getting backup from cloud...')
+        logger.info('getting backup from cloud...')
 
         download(service, os.path.join(tmp, downloadedName), f'{schemaName}.archive', destinationFolder)
 
 
     except HttpError as e:
-        programLogger.fatal(f'failed to backup; error: {e}')
+        logger.fatal(f'failed to backup; error: {e}')
         exit(1)
 
-    programLogger.info(f'successfully downloaded "{schemaName}.archive" from cloud; it placed in {os.path.join(tmp, f'{schemaName}.downloaded')}')
+    logger.info(f'successfully downloaded "{schemaName}.archive" from cloud; it placed in {os.path.join(tmp, f'{schemaName}.downloaded')}')
 
 
 def restoreFromCloud(schemaName:str, **kwargs):
     if not kwargs.get('fromMeta', False):
         sch = schema.getBackupSchema(schemaName)
         if not sch:
-            programLogger.error(f'No backup schema with name "{schemaName}"')
+            logger.error(f'No backup schema with name "{schemaName}"')
             return
     else:
         destination = kwargs.get('destination')
@@ -89,7 +89,7 @@ def restoreFromCloud(schemaName:str, **kwargs):
 
     packer.unpackAll(schemaName, sch)
 
-    programLogger.info('restore process finished with success!')
+    logger.info('restore process finished with success!')
 
 
 if __name__ == '__main__':

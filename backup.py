@@ -15,7 +15,7 @@ import clean
 
 
 def _cleanup(service, folder:str, schemaName:str):
-    programLogger.info('cleaning old cloud backup if exists...')
+    logger.info('cleaning old cloud backup if exists...')
 
     query = f"'{folder}' in parents and (name='{schemaName}.archive' or name='{schemaName}.meta') and trashed=false"
     response = service.files().list(q=query, spaces='drive').execute()
@@ -28,7 +28,7 @@ def _cleanup(service, folder:str, schemaName:str):
 
 
 def _sendMeta(service, folder:str, schema:dict, schemaName:str):
-    programLogger.info('sending backup meta...')
+    logger.info('sending backup meta...')
     stream = io.BytesIO()
 
     data = {
@@ -54,37 +54,37 @@ def _sendMeta(service, folder:str, schema:dict, schemaName:str):
 
 
 def backup(archiveName:str, schemaName:str, schema:dict, creds:Credentials):
-    programLogger.info('preparing backup to send to cloud...')
+    logger.info('preparing backup to send to cloud...')
 
     tmp = getTMP()
 
     if not schema.get('destination'):
-        programLogger.fatal(f'failed to get "destination" from schema')
+        logger.fatal(f'failed to get "destination" from schema')
         exit(1)
 
     try:
-        programLogger.info('building service')
+        logger.info('building service')
         service = build('drive', 'v3', credentials=creds)
 
         destinationFolder = getDestination(service, schema['destination'])
         
         _cleanup(service, destinationFolder, schemaName)
 
-        programLogger.info('sending backup to cloud...')
+        logger.info('sending backup to cloud...')
         send(service, os.path.join(tmp, archiveName), f'{schemaName}.archive', destinationFolder)
         _sendMeta(service, destinationFolder, schema, schemaName)
     except HttpError as e:
-        programLogger.fatal(f'failed to backup; error: {e}')
+        logger.fatal(f'failed to backup; error: {e}')
         exit(1)
 
-    programLogger.info(f'successfully backup "{archiveName}" to cloud; it placed in {f'{schema['destination']}/{schemaName}'}.archive')
+    logger.info(f'successfully backup "{archiveName}" to cloud; it placed in {f'{schema['destination']}/{schemaName}'}.archive')
 
 
 
 def createBackupOf(schemaName:str):
     sch = schema.getBackupSchema(schemaName)
     if not sch:
-        programLogger.error(f'No backup schema with name "{schemaName}"')
+        logger.error(f'No backup schema with name "{schemaName}"')
         return
     
     creds = authenticate()

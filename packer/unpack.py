@@ -6,7 +6,7 @@ from packer.tools import dumpRestoredLog, modifyRestorePaths, modifySingleRestor
 
 
 def unpackAll(schemaName:str, schema:dict):
-    programLogger.info('unpacking process started')
+    logger.info('unpacking process started')
    
     tmp = getTMP()
     os.makedirs(f'{tmp}/restored/{schemaName}', exist_ok=True)
@@ -41,14 +41,14 @@ def unpackAll(schemaName:str, schema:dict):
             result['restored'] += res['restored']
         i += 1
 
-    programLogger.info(f'unpacking finished with success!\n'
+    logger.info(f'unpacking finished with success!\n'
                        f' - rewritten total: {result['rewritten']}\n'
                        f' - restored total: {result["restored"]}')
     archive.close()
 
 
 def unpackFile(path:str, index:int, archive:tarfile.TarFile, schema:dict, packConfig:dict):
-    programLogger.info(f'unpacking file "{path}"...')
+    logger.info(f'unpacking file "{path}"...')
 
     if not os.path.exists(os.path.dirname(path)):
         path = invalidTargetPathHandle(path, schema, packConfig)
@@ -64,7 +64,7 @@ def unpackFile(path:str, index:int, archive:tarfile.TarFile, schema:dict, packCo
         with open(path, 'wb') as out_file:
             out_file.write(file_obj.read())
 
-    programLogger.info(f'success! unpacked to "{path}"')
+    logger.info(f'success! unpacked to "{path}"')
     return {
         'rewritten': rewritten,
         'restored': not rewritten
@@ -72,11 +72,11 @@ def unpackFile(path:str, index:int, archive:tarfile.TarFile, schema:dict, packCo
 
 
 def unpackFolder(path:str, index:int, archive:tarfile.TarFile, schema:dict, packConfig:dict):
-    programLogger.info(f'unpacking folder "{path}"...')
+    logger.info(f'unpacking folder "{path}"...')
     
     if not os.path.exists(os.path.dirname(path)):
         path = invalidTargetPathHandle(path, schema, packConfig)
-    
+
     if os.path.exists(path) and not Config().allow_local_replace:
         path = os.path.join(os.path.dirname(path), os.path.basename(path) + '-restored')
         if os.path.exists(path):
@@ -107,7 +107,7 @@ def unpackFolder(path:str, index:int, archive:tarfile.TarFile, schema:dict, pack
             with open(targetFilePath, 'wb') as out_file:
                 out_file.write(file_obj.read())
 
-    programLogger.info(f'success! unpacked to "{path}"\n'
+    logger.info(f'success! unpacked to "{path}"\n'
                        f' - rewritten: {rewrittenCount}\n'
                        f' - restored: {restoredCount}')
     return {
@@ -138,17 +138,17 @@ def askForLocalReplace(schemaName, schema, packConfig):
 
 def invalidTargetPathHandle(path, schema, packConfig) -> str:
     if not Config().ask_for_other_extract_path and not Config().restore_to_tmp_if_path_invalid: 
-        programLogger.error(f'failed to unpack because "{os.path.dirname(path)}" not exists')
+        logger.error(f'failed to unpack because "{os.path.dirname(path)}" not exists')
         return
     elif Config().restore_to_tmp_if_path_invalid and not Config().ask_for_other_extract_path:
-        programLogger.warning(f'{os.path.dirname(path)} is invalid! files will be restored to tmp/restored')
+        logger.warning(f'{os.path.dirname(path)} is invalid! files will be restored to tmp/restored')
         path = modifySingleRestorePath(path, schema, packConfig, False)
     else:
         print(f'{YC}Path "{path}" is invalid, do you want to unpack to other path?')
         newDir = getFolderPath()
         if not newDir:
             if not Config().restore_to_tmp_if_path_invalid:
-                programLogger.info(f'skipped')
+                logger.info(f'skipped')
                 return
             
             path = modifySingleRestorePath(path, schema, packConfig, False)
