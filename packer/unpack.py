@@ -5,7 +5,7 @@ from packer.packconfig import loadPackConfig
 from packer.tools import dumpRestoredLog, modifyRestorePaths, modifySingleRestorePath
 
 
-def invalidPathHandle(path, schema, packConfig) -> str:
+def invalidTargetPathHandle(path, schema, packConfig) -> str:
     if not Config().ask_for_other_extract_path and not Config().restore_to_tmp_if_path_invalid: 
         programLogger.error(f'failed to unpack because "{os.path.dirname(path)}" not exists')
         return
@@ -31,7 +31,7 @@ def unpackFile(path:str, index:int, archive:tarfile.TarFile, schema:dict, packCo
     programLogger.info(f'unpacking file "{path}"...')
 
     if not os.path.exists(os.path.dirname(path)):
-        path = invalidPathHandle(path, schema, packConfig)
+        path = invalidTargetPathHandle(path, schema, packConfig)
     
     if os.path.exists(path) and not Config().allow_local_replace:
         path = os.path.join(os.path.dirname(path), os.path.basename(path) + '-restored')
@@ -55,7 +55,7 @@ def unpackFolder(path:str, index:int, archive:tarfile.TarFile, schema:dict, pack
     programLogger.info(f'unpacking folder "{path}"...')
     
     if not os.path.exists(os.path.dirname(path)):
-        path = invalidPathHandle(path, schema, packConfig)
+        path = invalidTargetPathHandle(path, schema, packConfig)
     
     if os.path.exists(path) and not Config().allow_local_replace:
         path = os.path.join(os.path.dirname(path), os.path.basename(path) + '-restored')
