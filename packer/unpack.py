@@ -126,10 +126,10 @@ def askForLocalReplace(schemaName, schema, packConfig):
         print(f'{LYC} - {f}')
     yn = input('[y/N] ')
     if yn.strip().lower() != 'y':
-        print('restored data placed in tmp folder')
         print(f'{LYC}do you want to unpack all to "{tmp}/restored/{schemaName}":')
         yn = input('[y/N] ')
         if yn.strip().lower() == 'y':
+            logger.info('restored data placed in tmp/restored folder')
             modifyRestorePaths(packConfig, schema)
         else:
             print('unpack process interrupted...')
