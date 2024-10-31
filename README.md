@@ -5,6 +5,7 @@ for making backups to your Google Drive cloud by imKokoT.
 All application configurations placed in "configs" folder.
 
 ## Requirements
+- supported systems: Windows, Linux
 - Python 3.12+
 - ```pip install colorama colorlog pyyaml pathspec google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client```
 - (*optionally*) [7z](https://7-zip.org/) - for faster compression and more flexibility
@@ -83,14 +84,19 @@ Also *restore.py* has additional options, see help with `python restore.py -h` o
 
 # config.yaml
 Application settings contains at *config.yaml* from configs folder. You can change settings to control this tool.
- - hide_password_len - if true will hide length of password at encryption process; if false password will hide with \*
- - download_chunk_size - Google Drive download chunk size; default 10MB 
+### packer's configs
  - allow_local_replace - if true restored backup will rewrite current local changes, if false will create new folder
  - ask_before_replace - if true will ask before replace files
- - include_gitignore - if true will include .gitignore files patterns
  - ask_for_other_extract_path - if true will ask for path if failed to unpack folder
+ - include_gitignore - if true will include .gitignore files patterns
+ - restore_to_tmp_if_path_invalid - if true will restore target folder or file to tmp/restored
+### miscellaneous
+ - auto_remove_archive - if true archives, that was created or downloaded, will be deleted; .tar excluded
+ - download_chunk_size - Google Drive download chunk size; default 10MB 
+ - hide_password_len - if true will hide length of password at encryption process; if false password will hide with \*
+ - human_sizes - if true, byte sizes will print in "B", "KB", "MB", "GB", "TB"
 
 # Advanced ignore settings
 Schema's *ignore* parameter will ignore global and always. But if you don't want to write vary large ignore patterns in schema, you can create *.sbtignore* file at some place in target directory. *.sbtignore* includes *.gitignore* syntax.
 
-Beside this, you can include *.gitignore* files to, BUT you should to enable this function by setting *include_gitignore* to **true** at app config.
+Beside this, you can include *.gitignore* files too, BUT you should to enable this function by setting *include_gitignore* to **true** at the app config.
