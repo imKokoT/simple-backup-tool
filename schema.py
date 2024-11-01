@@ -19,7 +19,6 @@ def include(schema:dict, include:str) -> dict:
 
 
 def getBackupSchema(schemaName:str) ->dict|None:
-    PATTERN = '*.yaml'
     data:dict
     schema = None
 
@@ -32,8 +31,8 @@ def getBackupSchema(schemaName:str) ->dict|None:
         if not os.path.exists('configs/schemas'):
             os.mkdir('configs/schemas')
 
-        schemas = [p for p in os.listdir('configs/schemas') if fnmatch.fnmatch(p, PATTERN)]
-        schemasNames = [os.path.basename(p.replace('.yaml', '')) for p in schemas]
+        schemas = [p for p in os.listdir('configs/schemas') if fnmatch.fnmatch(p, '*.yml') or fnmatch.fnmatch(p, '*.yaml')]
+        schemasNames = [os.path.basename(p.split('.')[0]) for p in schemas]
         if schemaName not in schemasNames:
             return None
 
