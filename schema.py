@@ -23,6 +23,7 @@ def getBackupSchema(schemaName:str) ->dict|None:
     schema = None
 
     if os.path.exists('./configs/schemas.yaml'):
+        logger.warning(f'schemas.yaml is deprecated, use schemas folder instead; support will be removed at 0.7a!')
         with open('./configs/schemas.yaml', 'r') as f:
             data = yaml.safe_load(f)    
         schema = data.get(schemaName)

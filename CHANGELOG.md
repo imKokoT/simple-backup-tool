@@ -1,4 +1,10 @@
 
+## 0.6a
+added:
+- include schemas with .yml extension
+- 
+
+
 ## 0.5a  ([commit](https://github.com/imKokoT/simple-backup-tool/commit/608cb2f8cfdde57ac6854e1a38f7bd7634b9961f))
 added:
 - .sbtignore and .gitignore include to filter (#8)
