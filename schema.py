@@ -22,12 +22,18 @@ def getBackupSchema(schemaName:str) ->dict|None:
     data:dict
     schema = None
 
+    # TODO: remove this in VERSION 0.7a ----------------------------------------------------------
     if os.path.exists('./configs/schemas.yaml'):
-        logger.warning(f'schemas.yaml is deprecated, use schemas folder instead; support will be removed at 0.7a!')
-        with open('./configs/schemas.yaml', 'r') as f:
-            data = yaml.safe_load(f)    
+        data = load('./configs/schemas.yaml')
         schema = data.get(schemaName)
-    
+
+        if schema:
+            schema['__name__'] = schemaName
+            if schema.get('include'):
+                return include(schema, schema.get('include'))
+    # --------------------------------------------------------------------------------------------
+
+
     if not schema:
         if not os.path.exists('configs/schemas'):
             os.mkdir('configs/schemas')
@@ -37,12 +43,27 @@ def getBackupSchema(schemaName:str) ->dict|None:
         if schemaName not in schemasNames:
             return None
 
-        with open(f'configs/schemas/{schemas[schemasNames.index(schemaName)]}', 'r') as f:
-            schema = yaml.safe_load(f)
+        schema = load(f'configs/schemas/{schemas[schemasNames.index(schemaName)]}')
+
+    return schema
+
+
+def load(fpath:str) -> dict:
+    with open(fpath, 'r', encoding='utf-8') as f:
+        schema = yaml.safe_load(f)
 
     if schema:
-        schema['__name__'] = schemaName
+        schema['__name__'] = os.path.basename(fpath).split('.')[0]
         if schema.get('include'):
             return include(schema, schema.get('include'))
 
     return schema
+
+
+# TODO: remove this in VERSION 0.7a ----------------------------------------------------------
+if __name__ != '__main__' and os.path.exists('./configs/schemas.yaml'):    
+    logger.warning(f'schemas.yaml is deprecated, use schemas folder instead; support will be removed at 0.7a!')
+    if VERSION == '0.7a':
+        logger.debug('remove this!')
+        raise
+# --------------------------------------------------------------------------------------------
