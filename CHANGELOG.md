@@ -2,7 +2,10 @@
 ## 0.6a
 added:
 - include schemas with .yml extension
-- 
+- loading external scheme from path; new option -sp for main scripts
+
+fixed:
+- some spell
 
 
 ## 0.5a  ([commit](https://github.com/imKokoT/simple-backup-tool/commit/608cb2f8cfdde57ac6854e1a38f7bd7634b9961f))

@@ -5,10 +5,11 @@ from packer.packconfig import loadPackConfig
 from packer.tools import dumpRestoredLog, modifyRestorePaths, modifySingleRestorePath
 
 
-def unpackAll(schemaName:str, schema:dict):
+def unpackAll(schema:dict):
     logger.info('unpacking process started')
    
     tmp = getTMP()
+    schemaName = schema['__name__']
     os.makedirs(f'{tmp}/restored/{schemaName}', exist_ok=True)
     archive = tarfile.open(os.path.join(tmp, f'{schemaName}.tar'), 'r')
 
@@ -17,7 +18,7 @@ def unpackAll(schemaName:str, schema:dict):
     dumpRestoredLog(packConfig, schema)
     
     if Config().allow_local_replace and Config().ask_before_replace:
-        askForLocalReplace(schemaName, schema, packConfig)
+        askForLocalReplace(schema, packConfig)
 
     result = {
         'rewritten': 0,
@@ -116,8 +117,9 @@ def unpackFolder(path:str, index:int, archive:tarfile.TarFile, schema:dict, pack
     }
 
 
-def askForLocalReplace(schemaName, schema, packConfig):
+def askForLocalReplace(schema, packConfig):
     tmp = getTMP()
+    schemaName = schema['__name__']
 
     print(f'{LYC}Are you sure to rewrite next folders and files:')
     for f in packConfig['folders']:

@@ -6,16 +6,11 @@ from archive.external import *
 from miscellaneous import getTMP
 
 
-def archive(schemaName:str) -> str:
+def archive(schema:dict) -> str:
     '''returns archive name'''
-    schema = getBackupSchema(schemaName)
-
     tmp = getTMP()
 
-    if not schema:
-        logger.fatal(f'failed to load schema name "{schemaName}"')
-        exit(1)
-    
+    schemaName = schema['__name__']
     mode = schema.get('mode', 'internal')
     program = schema.get('program', '7z')
 
@@ -56,14 +51,15 @@ def archive(schemaName:str) -> str:
         exit(1)
 
 
-def dearchive(schemaName:str, schema:dict) -> str:
+def dearchive(schema:dict) -> str:
     '''returns pack name'''
     tmp = getTMP()
 
-    downloaded = os.path.join(tmp, f'{schemaName}.downloaded')
-
+    schemaName = schema['__name__']
     mode = schema.get('mode', 'internal')
     program = schema.get('program', '7z')
+
+    downloaded = os.path.join(tmp, f'{schemaName}.downloaded')
 
     if mode == 'internal':
         match schema.get('compressFormat'):

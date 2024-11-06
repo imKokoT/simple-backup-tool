@@ -29,10 +29,11 @@ def tryGetMeta(service, folder:str, schemaName:str) -> dict|None:
     return json.loads(str(request,'utf-8'))
 
 
-def restore(schemaName:str, schema:dict, creds:Credentials):
+def restore(schema:dict, creds:Credentials):
     logger.info('preparing for restore from cloud...')
 
     tmp = getTMP()
+    schemaName = schema['__name__']
 
     if not schema.get('destination'):
         logger.fatal(f'failed to get "destination" from schema')
@@ -66,12 +67,15 @@ def restore(schemaName:str, schema:dict, creds:Credentials):
     logger.info(f'successfully downloaded "{schemaName}.archive" from cloud; it placed in {os.path.join(tmp, f'{schemaName}.downloaded')}')
 
 
-def restoreFromCloud(schemaName:str, **kwargs):
+def restoreFromCloud(schemaNameOrPath:str, **kwargs):
     if not kwargs.get('fromMeta', False):
-        sch = schema.getBackupSchema(schemaName)
-        if not sch:
-            logger.error(f'No backup schema with name "{schemaName}"')
-            return
+        if not kwargs.get('schemaPath'):
+            sch = schema.getBackupSchema(schemaNameOrPath)
+            if not sch:
+                logger.error(f'No backup schema with name "{schemaNameOrPath}"')
+                return
+        else:
+            sch = schema.load(schemaNameOrPath)
     else:
         destination = kwargs.get('destination')
         if not destination:
@@ -80,13 +84,13 @@ def restoreFromCloud(schemaName:str, **kwargs):
     
     creds = authenticate()
 
-    restore(schemaName, sch, creds)
+    restore(sch, creds)
 
-    packName = archiver.dearchive(schemaName, sch)
+    archiver.dearchive(sch)
 
-    clean.clean(f'{schemaName}.downloaded')
+    clean.clean(f'{sch['__name__']}.downloaded')
 
-    packer.unpackAll(schemaName, sch)
+    packer.unpackAll(sch)
 
     logger.info('restore process finished with success!')
 
@@ -99,12 +103,15 @@ if __name__ == '__main__':
         print(f'this script restore backup from cloud using your backup schema')
     else:
         parser = argparse.ArgumentParser()
-        parser.add_argument('schema_name',  type=str, help='name of schema in schemas.yaml')
+        parser.add_argument('schema_name',  type=str, help='name of schema')
         parser.add_argument('-m', '--restore-from-meta', action='store_true', help='restore backup from meta', required=False)
         parser.add_argument('-d', '--destination', type=str, help='backup archive destination on Google Drive', required=False)
         parser.add_argument('-p', '--password', type=str, help='password of backup archive', required=False)
+        parser.add_argument('-sp', '--schema-path', action='store_true', help='use schema name as path of external schema; external schema can include app schemas', required=False)
         args = parser.parse_args()
         restoreFromCloud(args.schema_name,
                         fromMeta=args.restore_from_meta, 
                         destination=args.destination,
-                        password=args.password)
+                        password=args.password,
+                        schemaPath = args.schema_path
+                        )

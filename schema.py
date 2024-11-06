@@ -49,6 +49,10 @@ def getBackupSchema(schemaName:str) ->dict|None:
 
 
 def load(fpath:str) -> dict:
+    if not os.path.exists(fpath):
+        logger.fatal(f'failed to load schema "{fpath}" because in not exists')
+        exit(1)    
+
     with open(fpath, 'r', encoding='utf-8') as f:
         schema = yaml.safe_load(f)
 

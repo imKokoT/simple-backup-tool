@@ -7,13 +7,13 @@ from packer.tools import loadIgnorePatterns, shouldIgnore
 import schema
 
 
-def packAll(schemaName:str):
+def packAll(schema:dict):
     logger.info('packing process started')
-    sch = schema.getBackupSchema(schemaName)
     
-    ignore = sch.get('ignore', '')
+    ignore = schema.get('ignore', '')
+    schemaName = schema.get('__name__')
 
-    if not sch: 
+    if not schema: 
         logger.fatal(f'packing process failed: no schema "{schemaName}"')
         exit(1)
     
@@ -21,7 +21,7 @@ def packAll(schemaName:str):
 
     archive = tarfile.open(os.path.join(tmp, f'{schemaName}.tar'), 'w')
     
-    if not sch.get('targets'):
+    if not schema.get('targets'):
         logger.fatal(f'failed to get "targets" key from schema "{schemaName}"')
         exit(1)
 
@@ -36,7 +36,7 @@ def packAll(schemaName:str):
     res:dict
     packFile.counter = 0
     packFolder.counter = 0
-    for target in sch['targets']:
+    for target in schema['targets']:
         if os.path.isfile(target):
             res = packFile(target, archive)
         else:
@@ -48,10 +48,10 @@ def packAll(schemaName:str):
                 result[k] += res[k]
             packedCount += 1
 
-    configurePack(archive, sch, packedTargets)
+    configurePack(archive, schema, packedTargets)
 
     logger.info(f'packing process finished successfully;\n'
-                       f' - packs created: {packedCount}/{len(sch["targets"])}\n'
+                       f' - packs created: {packedCount}/{len(schema["targets"])}\n'
                        f' - archived and ignored total files: {result['files']}/{result['ignored']}\n'
                        f' - archived total size: {humanSize(result["size"])}/{humanSize(result["scannedSize"])}'
                        )
