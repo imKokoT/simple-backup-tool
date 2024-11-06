@@ -1,6 +1,7 @@
 import os
 import fnmatch
 import yaml
+from yaml.scanner import ScannerError
 from config import *
 
 
@@ -54,7 +55,15 @@ def load(fpath:str) -> dict:
         exit(1)    
 
     with open(fpath, 'r', encoding='utf-8') as f:
-        schema = yaml.safe_load(f)
+        try:
+            schema = yaml.safe_load(f)
+        except ScannerError as e:
+            logger.fatal(f'schema from path "{fpath}" has bad format! Error:\n{e}')
+            exit(1)
+
+    if type(schema) is not dict:
+        logger.fatal(f'schema from path "{fpath}" has wrong format! It must be dict-like.')
+        exit(1)
 
     if schema:
         schema['__name__'] = os.path.basename(fpath).split('.')[0]

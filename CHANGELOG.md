@@ -6,6 +6,7 @@ added:
 
 fixed:
 - some spell
+- abort if schema has wrong format with unclear error (#16)
 
 
 ## 0.5a  ([commit](https://github.com/imKokoT/simple-backup-tool/commit/608cb2f8cfdde57ac6854e1a38f7bd7634b9961f))
