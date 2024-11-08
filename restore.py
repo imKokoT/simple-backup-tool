@@ -59,8 +59,6 @@ def restore(schema:dict, creds:Credentials):
         logger.info('getting backup from cloud...')
 
         download(service, os.path.join(tmp, downloadedName), f'{schemaName}.archive', destinationFolder)
-
-
     except HttpError as e:
         logger.fatal(f'failed to backup; error: {e}')
         exit(1)

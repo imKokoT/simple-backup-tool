@@ -35,6 +35,7 @@ def send(service, fpath:str, endName:str, folder=None):
         updateProgressBar(1)
         print()
 
+
 def download(service, fpath:str, name:str, folder):
     '''
     @param fpath: path, where to save the file
