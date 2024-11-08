@@ -28,7 +28,7 @@ Is permanent and everyone, who has key can access your drive. It is more about b
 2. Access your service account settings by [following this link](https://console.cloud.google.com/iam-admin/serviceaccounts) and selecting *your service* -> *Actions* tab -> *Manage keys*.
 3. Create new key at tab *Keys* and click on *ADD KEY* -> *Create new key* -> *Json*. Your key will be created and downloaded. Place it to *configs/secrets* folder and rename to *your-secret-service.service*
 
-**Warning: tool distinguishes user-based and service creds by file extension - *.cred* and *.service* respectively!**
+**WARNING: tool distinguishes user-based and service creds by file extension - *.cred* and *.service* respectively!**
 
 ## Configure backup schema
 When you have finished with creds, now you can create your first backup. SBT use *configs/schemas* folder to save all backup schemas files with its configurations. Create *new-schema.yaml* in configs folder and place next template:
