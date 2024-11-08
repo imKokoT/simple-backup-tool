@@ -6,7 +6,8 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from config import *
 import schema
-from cloud_tools import authenticate, getDestination, download
+from cloud.authenticate import authenticate
+from cloud.drive import download, getDestination
 import archiver
 import packer
 from miscellaneous import getTMP

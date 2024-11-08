@@ -9,7 +9,8 @@ from config import *
 import schema
 import packer
 import archiver
-from cloud_tools import authenticate, send, getDestination
+from cloud.authenticate import authenticate
+from cloud.drive import send, getDestination
 from miscellaneous import getTMP
 import clean
 
