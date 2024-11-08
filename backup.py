@@ -94,7 +94,7 @@ def createBackupOf(schemaNameOrPath:str, **kwargs):
         logger.error(f'No backup schema with name "{schemaNameOrPath}"')
         return
     
-    creds = authenticate()
+    creds = authenticate(sch)
 
     packer.packAll(sch)
     

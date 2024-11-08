@@ -81,7 +81,7 @@ def restoreFromCloud(schemaNameOrPath:str, **kwargs):
             destination = input(f'{YC}enter backup destination: {DC}')
         sch = dict(destination=destination, password=kwargs.get('password'))
     
-    creds = authenticate()
+    creds = authenticate(sch)
 
     restore(sch, creds)
 
