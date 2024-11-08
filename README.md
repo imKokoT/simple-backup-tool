@@ -11,58 +11,57 @@ All application configurations placed in "configs" folder.
 - (*optionally*) [7z](https://7-zip.org/) - for faster compression and more flexibility
 
 ## Creating Google service
-Before you start to configure application, firstly you must to create Google application service in [Google Console](https://console.cloud.google.com/) to get access to your Drive. **Don't worry it's free**. 
+Before you start to configure application, firstly you must to create Google application service in [Google Console](https://console.cloud.google.com/) to get access to your Drive. **Don't worry it's free**.
 1. Firstly you must to create new project by [following this link](https://console.cloud.google.com/projectcreate).
 2. Attach **Google Drive API** support by [following this link](https://console.cloud.google.com/apis/library/drive.googleapis.com).
-3. Create OAuth2 credentials by [following this link](https://console.cloud.google.com/apis/credentials) and clicking on *CREATE CREDENTIALS*. Also you must *configure consent screen* if you have not.
-4. Download client secrets json file and place it to configs folder and rename to *client-secrets.json*
+
+SBT supports two types of accounts: user-based and service account. 
+
+#### User-based
+OAuth2 account requires authorization via browser to confirm access. It is more about personal usage. It also needs to regular refresh your token.
+1. Create OAuth2 client credentials by [following this link](https://console.cloud.google.com/apis/credentials) and clicking on *CREATE CREDENTIALS* and on *OAuth Client ID*. Also you must *configure consent screen* if you have not.
+2. Download client secrets json file and place it to *configs/secrets* folder, and rename to *your-secret.cred*
+
+#### Service account
+Is permanent and everyone, who has key can access your drive. It is more about backend usage (or you are to lazy for token refreshing, or want to automate backup process).
+1. Create OAuth2 service account by [following this link](https://console.cloud.google.com/apis/credentials) and clicking on *CREATE CREDENTIALS* and on *Service account*. Also you must *configure consent screen* if you have not.
+2. Access your service account settings by [following this link](https://console.cloud.google.com/iam-admin/serviceaccounts) and selecting *your service* -> *Actions* tab -> *Manage keys*.
+3. Create new key at tab *Keys* and click on *ADD KEY* -> *Create new key* -> *Json*. Your key will be created and downloaded. Place it to *configs/secrets* folder and rename to *your-secret-service.service*
+
+**Warning: tool distinguishes user-based and service creds by file extension - *.cred* and *.service* respectively!**
 
 ## Configure backup schema
-When you have finished with creds, now you can create your first backup. SBT use *schemas.yaml* file to save all backup schemas and its configurations. Create *schemas.yaml* in configs folder and place next template:
+When you have finished with creds, now you can create your first backup. SBT use *configs/schemas* folder to save all backup schemas files with its configurations. Create *new-schema.yaml* in configs folder and place next template:
 ```yaml
-# to define new schema use any name
-new-schema:
-  secret: main # secret.json from secrets folder; can be ignored if in config.yml has defined default secret
-  # include others schema values
-  # you can override params that you have included
-  include: include
-  destination: 'test/folder/in/your/drive' # google disk backup folder path
-  # list of all ignored files or folders; similar to .gitignore functionality
-  # works for target folders, files always required
-  ignore: |
-    *.log
-    cache/
-  # local folders or files to backup
-  targets: [
-    'path/to/your/local/folder',
-    'path/to/your/local/file'
-  ]
-
-include:
-  compressFormat: 7z # 7z, gz, bz2, zip, xz; null or ignored is tar
-  compressLevel: 5 # don't work with tar; default is 5; can be ignored
-  password: null # only external 7z & zip; can be ignored
-  # internal only for gz, bz2, zip
-  # external will try to use external program
-  mode: external
-  program: 7z # now supports only 7z; only external
-  args: [] # only external; additional command line arguments at compress process; can be ignored
-```
-You can backup several folders at once. Backup will be placed in *destination* path. Don't worry, program will create all necessary folders in Drive!
-
-Also you can create schemas in */configs/schemas/* folder. Create a new file with name *your-schema.yaml* and add
-```yaml
-secret: main
-compressFormat: bz2
-compressLevel: 9
-mode: internal
-
-destination: 'test/folder/in/your/drive'
+secret: your-secret # or your-secret-service secret from secrets folder; can be ignored if in config.yaml has defined default secret
+# include others schema values
+# you can override params that you have included
+include: include
+destination: 'test/folder/in/your/drive' # google disk backup folder path
+# list of all ignored files or folders; similar to .gitignore functionality
+# works for target folders, files always required
+ignore: |
+  *.log
+  cache/
+# local folders or files to backup
 targets: [
   'path/to/your/local/folder',
   'path/to/your/local/file'
 ]
 ```
+And *include.yaml*:
+```yaml
+compressFormat: 7z # 7z, gz, bz2, zip, xz; null or ignored is tar
+compressLevel: 5 # don't work with tar; default is 5; can be ignored
+password: null # only external 7z & zip; can be ignored
+# internal only for gz, bz2, zip
+# external will try to use external program
+mode: external
+program: 7z # now supports only 7z; only external
+args: [] # only external; additional command line arguments at compress process; can be ignored
+```
+You can backup several folders and files at once. Backup will be placed in *destination* path. Don't worry, program will create all necessary folders in Drive!
+
 
 ## Create first backup
 SBT has two main scripts: *backup.py* and *restore.py*. To backup run
@@ -74,6 +73,7 @@ Or to get docs:
 python backup.py
 ```
 If you have done all right, backup will created successfully.
+Also *backup.py* has additional options, see help with `python backup.py -h` option.
 
 ## Restore your data
 To restore simply run
@@ -81,7 +81,7 @@ To restore simply run
 python restore.py <your schema name>
 ```
 And backup will be restored to local paths, which you select before creating backup. Restore process WILL NOT delete or change all current files BUT will replace or insert all that contains in backup. 
-**WARNING: if local path not exits unpack of this folder will fail, but your downloaded data will placed in *tmp* local program folder in TAR archive *your schema name.tar***.
+**WARNING: if local path not exits unpack of this folder will fail, but your downloaded data will placed in *tmp* local program folder in TAR archive *your schema name.tar* OR in *tmp/restored/your schema name* folder**.
 Also *restore.py* has additional options, see help with `python restore.py -h` option.
 
 # config.yaml
