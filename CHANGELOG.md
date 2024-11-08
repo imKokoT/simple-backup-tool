@@ -4,6 +4,7 @@ added:
 - include schemas with .yml extension
 - loading external scheme from path; new option -sp for main scripts
 - multi-account support; now you can use multiple secrets json, which placed in configs/secrets/ folder (#6)
+- added service account support (#5); to separate service and user-based accounts added deferent extensions '.cred' and '.service' 
 - new schema parameter 'secret' to define which secret.json you want to use 
 - new config 'default_secret', which will used if 'secret' param will not defined at schema
 
