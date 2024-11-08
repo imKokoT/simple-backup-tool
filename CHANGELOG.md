@@ -1,5 +1,8 @@
 
 ## 0.6a
+important changes:
+- schemas.yaml is deprecated, and support will be removed in near future
+
 added:
 - include schemas with .yml extension
 - loading external scheme from path; new option -sp for main scripts
