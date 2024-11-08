@@ -20,7 +20,7 @@ def authenticate() -> Credentials:
     return creds
 
 
-def failedGetCreds(creds:Credentials):
+def failedGetCreds(creds:Credentials) -> Credentials:
     if creds and creds.expired and creds.refresh_token:
         logger.info('token expired, refreshing...')
         try:

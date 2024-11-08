@@ -86,6 +86,9 @@ Also *restore.py* has additional options, see help with `python restore.py -h` o
 
 # config.yaml
 Application settings contains at *config.yaml* from configs folder. You can change settings to control this tool.
+### cloud configs
+ - *default_secret* - default secret, which will used if 'secret' param will not defined at schema  
+ - *download_chunk_size* - Google Drive download chunk size; default 10MB
 ### packer's configs
  - *allow_local_replace* - if true, restored backup will rewrite current local changes, if false will create new folder
  - *ask_before_replace* - if true, will ask before replace files
@@ -94,7 +97,6 @@ Application settings contains at *config.yaml* from configs folder. You can chan
  - *restore_to_tmp_if_path_invalid* - if true, will restore target folder or file to tmp/restored
 ### miscellaneous
  - *auto_remove_archive* - if true, archives, that was created or downloaded, will be deleted; .tar excluded
- - *download_chunk_size* - Google Drive download chunk size; default 10MB 
  - *hide_password_len* - if true, will hide length of password at encryption process; if false password will hide with \*
  - *human_sizes* - if true, byte sizes will print in "B", "KB", "MB", "GB", "TB"
 

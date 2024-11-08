@@ -24,19 +24,23 @@ class Config:
     def __init__(self):
         if Config.__initialized: return 
         Config.__initialized = True
+
         # === settings ===
-        self.human_sizes = False # if true, byte sizes will print in "B", "KB", "MB", "GB", "TB"
+        # cloud
+        self.download_chunk_size = 1024*1024*10 # Google Drive download chunk size; default 10MB 
+        self.default_secret = None # default secret, which will used if 'secret' param will not defined at schema  
 
-        self.download_chunk_size = 1024*1024*10
-
+        # packer
         self.allow_local_replace = True # if true restored backup will rewrite current local changes, if false will create new folder
         self.ask_before_replace = True # if true will ask before replace files
         self.include_gitignore = False # if true will include .gitignore files patterns
         self.ask_for_other_extract_path = True # if true will ask for path if failed to unpack folder
         self.restore_to_tmp_if_path_invalid = False # if true will restore target folder or file to tmp/restored
 
+        # miscellanies
         self.hide_password_len = True
         self.auto_remove_archive = True # if true archives, that was created or downloaded, will be deleted; .tar excluded
+        self.human_sizes = False # if true, byte sizes will print in "B", "KB", "MB", "GB", "TB"
 
 
     def save():
