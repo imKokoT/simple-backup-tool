@@ -22,6 +22,7 @@ When you have finished with creds, now you can create your first backup. SBT use
 ```yaml
 # to define new schema use any name
 new-schema:
+  secret: main # secret.json from secrets folder; can be ignored if in config.yml has defined default secret
   # include others schema values
   # you can override params that you have included
   include: include
@@ -51,6 +52,7 @@ You can backup several folders at once. Backup will be placed in *destination* p
 
 Also you can create schemas in */configs/schemas/* folder. Create a new file with name *your-schema.yaml* and add
 ```yaml
+secret: main
 compressFormat: bz2
 compressLevel: 9
 mode: internal
