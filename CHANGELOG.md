@@ -11,6 +11,7 @@ added:
 fixed:
 - some spell
 - abort if schema has wrong format with unclear error (#16)
+- abort if system has no web browser (#17)
 
 other changes:
 - schemas.yaml is deprecated, and support will be removed in near future

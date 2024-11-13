@@ -1,3 +1,4 @@
+import webbrowser
 import google.auth
 import google.auth.exceptions
 from google.oauth2.credentials import Credentials
@@ -25,7 +26,12 @@ def loadSecret(name:str) -> Credentials:
 
     if secretType == 'cred':
         flow = InstalledAppFlow.from_client_secrets_file(secretPath, SCOPES)
-        creds = flow.run_local_server(port=0)
+        try:
+            raise webbrowser.Error
+            creds = flow.run_local_server(port=0)
+        except webbrowser.Error as e:
+            logger.error(f'failed to open webbrowser; error: {e}')
+            creds = flow.run_local_server(port=0, open_browser=False)
         return creds
     else:
         return service_account.Credentials.from_service_account_file(secretPath, scopes=SCOPES)
