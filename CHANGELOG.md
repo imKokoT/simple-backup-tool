@@ -1,5 +1,10 @@
 
-## 0.6a
+## 0.7a
+other changes:
+- removed support of schemas.yaml
+
+
+## 0.6a  ([commit](https://github.com/imKokoT/simple-backup-tool/commit/5b3654221d8aec004100f9f0dc07c26b736cf39b))
 added:
 - include schemas with .yml extension
 - loading external scheme from path; new option -sp for main scripts

@@ -23,18 +23,6 @@ def getBackupSchema(schemaName:str) ->dict|None:
     data:dict
     schema = None
 
-    # TODO: remove this in VERSION 0.7a ----------------------------------------------------------
-    if os.path.exists('./configs/schemas.yaml'):
-        data = load('./configs/schemas.yaml')
-        schema = data.get(schemaName)
-
-        if schema:
-            schema['__name__'] = schemaName
-            if schema.get('include'):
-                return include(schema, schema.get('include'))
-    # --------------------------------------------------------------------------------------------
-
-
     if not schema:
         if not os.path.exists('configs/schemas'):
             os.mkdir('configs/schemas')
@@ -71,12 +59,3 @@ def load(fpath:str) -> dict:
             return include(schema, schema.get('include'))
 
     return schema
-
-
-# TODO: remove this in VERSION 0.7a ----------------------------------------------------------
-if __name__ != '__main__' and os.path.exists('./configs/schemas.yaml'):    
-    logger.warning(f'schemas.yaml is deprecated, use schemas folder instead; support will be removed at 0.7a!')
-    if VERSION == '0.7a':
-        logger.debug('remove this!')
-        raise
-# --------------------------------------------------------------------------------------------
