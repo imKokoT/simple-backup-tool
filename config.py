@@ -60,7 +60,7 @@ class Config:
                 config = yaml.safe_load(f)
                 for k, v in config.items():
                     setattr(Config(), k, v)
-                    if k not in Config.__dict__.keys():
+                    if k not in Config().__dict__.keys():
                         logger.warning(f'detected unknown parameter "{k}" in config.yaml')
                 if config != Config().__dict__:
                     logger.info('updated config.yaml to newer version')
