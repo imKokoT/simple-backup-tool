@@ -31,6 +31,8 @@ def loadSecret(name:str) -> Credentials:
         except webbrowser.Error as e:
             logger.error(f'failed to open webbrowser; error: {e}')
             creds = flow.run_local_server(port=0, open_browser=False)
+        
+        saveToken(name, creds)
         return creds
     else:
         return service_account.Credentials.from_service_account_file(secretPath, scopes=SCOPES)
@@ -79,7 +81,6 @@ def failedCreateCreds(creds:Credentials, secretName:str) -> Credentials:
     else:
         logger.info('getting token...')
         creds = loadSecret(secretName)
-        saveToken(secretName, creds)
     return creds
 
 
