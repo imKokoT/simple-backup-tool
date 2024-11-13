@@ -59,11 +59,12 @@ def authenticate(schema:dict) -> Credentials:
     if not os.path.exists(f'{tmp}/tokens/'):
         os.mkdir(f'{tmp}/tokens')
 
-    if os.path.exists(tokenPath)and os.path.exists(f'./configs/secrets/{secretName}.cred'):
+    if os.path.exists(tokenPath) and os.path.exists(f'./configs/secrets/{secretName}.cred'):
         creds = Credentials.from_authorized_user_file(tokenPath, SCOPES)
 
     if not creds or not creds.valid:
         creds = failedCreateCreds(creds, secretName)
+    
     logger.info('success!')
     return creds
 
@@ -75,10 +76,10 @@ def failedCreateCreds(creds:Credentials, secretName:str) -> Credentials:
             creds.refresh(Request())
         except google.auth.exceptions.RefreshError:
             creds = _reauthenticate(secretName)
-            saveToken(secretName, creds)
     else:
         logger.info('getting token...')
         creds = loadSecret(secretName)
+        saveToken(secretName, creds)
     return creds
 
 
