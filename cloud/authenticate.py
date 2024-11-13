@@ -27,7 +27,6 @@ def loadSecret(name:str) -> Credentials:
     if secretType == 'cred':
         flow = InstalledAppFlow.from_client_secrets_file(secretPath, SCOPES)
         try:
-            raise webbrowser.Error
             creds = flow.run_local_server(port=0)
         except webbrowser.Error as e:
             logger.error(f'failed to open webbrowser; error: {e}')
