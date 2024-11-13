@@ -5,7 +5,7 @@ from os import path
 from logger import logger
 
 # --- MAIN -------------------------------------------------------------------
-VERSION = '0.5a'
+VERSION = '0.6a'
 DEBUG = True
 SCOPES = ['''https://www.googleapis.com/auth/drive''']
 
