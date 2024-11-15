@@ -2,6 +2,7 @@ import os
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+from google.auth.exceptions import RefreshError
 from googleapiclient.http import MediaIoBaseUpload
 import io
 import json
@@ -78,6 +79,9 @@ def backup(archiveName:str, schema:dict, creds:Credentials):
         send(service, os.path.join(tmp, archiveName), f'{schemaName}.archive', destinationFolder)
         _sendMeta(service, destinationFolder, schema)
     except HttpError as e:
+        logger.fatal(f'failed to backup; error: {e}')
+        exit(1)
+    except RefreshError as e:
         logger.fatal(f'failed to backup; error: {e}')
         exit(1)
 

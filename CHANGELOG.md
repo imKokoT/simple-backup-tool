@@ -2,7 +2,7 @@
 ## 0.7a
 fixed:
 - config's warning logs
-- not saves the token if first authenticated
+- not saves the token if first authenticated for users creds
 
 other changes:
 - removed support of schemas.yaml

@@ -9,20 +9,20 @@ from config import *
 from miscellaneous import getTMP
 
 
-def loadSecret(name:str) -> Credentials:
+def loadSecret(secretName:str, schema:dict) -> Credentials:
     if not os.path.exists(f'./configs/secrets'):
         os.mkdir(f'./configs/secrets')
     
     secretType = None
-    if os.path.exists(f'./configs/secrets/{name}.cred'):
+    if os.path.exists(f'./configs/secrets/{secretName}.cred'):
         secretType = 'cred'
-    elif os.path.exists(f'./configs/secrets/{name}.service'):
+    elif os.path.exists(f'./configs/secrets/{secretName}.service'):
         secretType = 'service'
     else:
-        logger.fatal(f'failed; no json secret OAuth2 user (.cred) or service (.service) file named "{name}" at secrets folder; get it from Google Cloud Console project')
+        logger.fatal(f'failed; no json secret OAuth2 user (.cred) or service (.service) file named "{secretName}" at secrets folder; get it from Google Cloud Console project')
         exit(1)
 
-    secretPath = f'./configs/secrets/{name}.{secretType}'
+    secretPath = f'./configs/secrets/{secretName}.{secretType}'
 
     if secretType == 'cred':
         flow = InstalledAppFlow.from_client_secrets_file(secretPath, SCOPES)
@@ -32,7 +32,7 @@ def loadSecret(name:str) -> Credentials:
             logger.error(f'failed to open webbrowser; error: {e}')
             creds = flow.run_local_server(port=0, open_browser=False)
         
-        saveToken(name, creds)
+        saveToken(secretName, creds)
         return creds
     else:
         return service_account.Credentials.from_service_account_file(secretPath, scopes=SCOPES)
@@ -65,27 +65,27 @@ def authenticate(schema:dict) -> Credentials:
         creds = Credentials.from_authorized_user_file(tokenPath, SCOPES)
 
     if not creds or not creds.valid:
-        creds = failedCreateCreds(creds, secretName)
+        creds = failedCreateCreds(creds, secretName, schema)
     
     logger.info('success!')
     return creds
 
 
-def failedCreateCreds(creds:Credentials, secretName:str) -> Credentials:
+def failedCreateCreds(creds:Credentials, secretName:str, schema:dict) -> Credentials:
     if creds and creds.expired and creds.refresh_token:
         logger.info('token expired, refreshing...')
         try:
             creds.refresh(Request())
         except google.auth.exceptions.RefreshError:
-            creds = _reauthenticate(secretName)
+            creds = _reauthenticate(secretName, schema)
     else:
         logger.info('getting token...')
-        creds = loadSecret(secretName)
+        creds = loadSecret(secretName, schema)
     return creds
 
 
-def _reauthenticate(secretName:str) -> Credentials:
-    creds = loadSecret(secretName)
+def _reauthenticate(secretName:str, schema:dict) -> Credentials:
+    creds = loadSecret(secretName, schema)
     saveToken(secretName, creds)
     
     return creds

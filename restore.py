@@ -4,6 +4,7 @@ from getpass import getpass
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+from google.auth.exceptions import RefreshError
 from config import *
 import schema
 from cloud.authenticate import authenticate
@@ -60,7 +61,10 @@ def restore(schema:dict, creds:Credentials):
 
         download(service, os.path.join(tmp, downloadedName), f'{schemaName}.archive', destinationFolder)
     except HttpError as e:
-        logger.fatal(f'failed to backup; error: {e}')
+        logger.fatal(f'failed to restore; error: {e}')
+        exit(1)
+    except RefreshError as e:
+        logger.fatal(f'failed to restore; error: {e}')
         exit(1)
 
     logger.info(f'successfully downloaded "{schemaName}.archive" from cloud; it placed in {os.path.join(tmp, f'{schemaName}.downloaded')}')
