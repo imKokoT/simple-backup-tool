@@ -9,23 +9,19 @@ VERSION = '0.6a'
 DEBUG = True
 SCOPES = ['''https://www.googleapis.com/auth/drive''']
 
-class Config:
-    __instance = None
-    __initialized = False
 
-    def __new__(cls):
-        if cls.__instance is None:
-            cls.__initialized = False
-            cls.__instance = super().__new__(cls)
-            cls.load()
-        return cls.__instance
+class Singleton(type):
+    __instances = {}
+
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls.__instances:
+            instance = super().__call__(*args, **kwargs)
+            cls.__instances[cls] = instance
+        return cls.__instances[cls]
 
 
+class Config(metaclass=Singleton):
     def __init__(self):
-        if Config.__initialized: return 
-        Config.__initialized = True
-
-        # === settings ===
         # cloud
         self.download_chunk_size = 1024*1024*10 # Google Drive download chunk size; default 10MB 
         self.default_secret = None # default secret, which will used if 'secret' param will not defined at schema  
