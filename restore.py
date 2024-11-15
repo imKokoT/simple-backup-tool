@@ -47,7 +47,7 @@ def restore(schema:dict, creds:Credentials):
         logger.info('building service')
         service = build('drive', 'v3', credentials=creds)
         
-        destinationFolder = getDestination(service, schema['destination'])
+        destinationFolder = getDestination(service, schema['destination'], schema.get('root'))
 
         meta = tryGetMeta(service, destinationFolder, schemaName)
         if meta:

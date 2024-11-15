@@ -15,6 +15,7 @@ def configurePack(archive:tarfile.TarFile, backupSchema:dict, packedTargets:list
     data = {
         'creation-time': time.time(),
         'destination': backupSchema['destination'],
+        'root': backupSchema.get('destination'),
         'files': [p for p in packedTargets if os.path.isfile(p)],
         'folders': [p for p in packedTargets if os.path.isdir(p)]
     }

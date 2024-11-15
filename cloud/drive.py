@@ -36,7 +36,7 @@ def send(service, fpath:str, endName:str, folder=None):
         print()
 
 
-def download(service, fpath:str, name:str, folder):
+def download(service, fpath:str, name:str, folder:str):
     '''
     @param fpath: path, where to save the file
     @param name: file name in cloud
@@ -64,16 +64,14 @@ def download(service, fpath:str, name:str, folder):
     print()
 
 
-def getDestination(service, path:str):
+def getDestination(service, path:str, root:str|None):
     logger.info('getting destination folder')
     
     folders = path.split('/')
     folders = [e for e in folders if e != '']
 
-    parent = None  # Start with the root folder
-
     for folder in folders:
-        parent = _getOrCreate(service, folder, parent)
+        parent = _getOrCreate(service, folder, root)
 
     return parent
 

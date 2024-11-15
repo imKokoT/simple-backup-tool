@@ -1,5 +1,8 @@
 
 ## 0.7a
+added:
+- new param 'root' to schema to define root folder id
+
 fixed:
 - config's warning logs
 - not saves the token if first authenticated for users creds

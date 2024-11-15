@@ -71,7 +71,7 @@ def backup(archiveName:str, schema:dict, creds:Credentials):
         logger.info('building service')
         service = build('drive', 'v3', credentials=creds)
 
-        destinationFolder = getDestination(service, schema['destination'])
+        destinationFolder = getDestination(service, schema['destination'], schema.get('root'))
         
         _cleanup(service, destinationFolder, schemaName)
 
