@@ -89,7 +89,8 @@ def backup(archiveName:str, schema:dict, creds:Credentials):
         logger.fatal(f'failed to backup; error: {e}')
         exit(1)
 
-    logger.info(f'successfully backup "{archiveName}" to cloud; it placed in {f'{schema['destination']}/{schemaName}'}.archive')
+    logger.info(f'successfully backup "{archiveName}" to cloud; it placed in '
+                f'{schema['root'] if schema.get('root') else ''}{f'{schema['destination']}/{schemaName}'}.archive')
 
 
 def createBackupOf(schemaNameOrPath:str, **kwargs):
