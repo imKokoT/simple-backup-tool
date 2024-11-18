@@ -6,6 +6,7 @@ added:
 fixed:
 - config's warning logs
 - not saves the token if first authenticated for users creds
+- service not differentiate between accounts (#20) 
 
 other changes:
 - removed support of schemas.yaml

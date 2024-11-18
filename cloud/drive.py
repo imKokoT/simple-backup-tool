@@ -77,10 +77,9 @@ def getDestination(service, path:str, root:str|None):
 
 
 def _getOrCreate(service, folderName:str, parent=None):
+    query = f"name='{folderName}' and mimeType='application/vnd.google-apps.folder' and trashed=false"
     if parent:
-        query = f"'{parent}' in parents and name='{folderName}' and mimeType='application/vnd.google-apps.folder' and trashed=false"
-    else:
-        query = f"name='{folderName}' and mimeType='application/vnd.google-apps.folder' and trashed=false"
+        query = f"'{parent}' in parents and " + query
     
     response = service.files().list(q=query, spaces='drive').execute()
     files = response.get('files', [])

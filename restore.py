@@ -47,15 +47,15 @@ def restore(schema:dict, creds:Credentials):
         logger.info('building service')
         service = build('drive', 'v3', credentials=creds)
         
+        if hasattr(creds, 'service_account_email') and not schema.get('root'):
+            logger.fatal(f'service cannot differentiate between accounts; you must define "root" parameter in schema with targeting shared folder id')
+            exit(1)
+
         destinationFolder = getDestination(service, schema['destination'], schema.get('root'))
 
         meta = tryGetMeta(service, destinationFolder, schemaName)
         if meta:
-            for k, v in meta.items():
-                if k == 'password' and v and not schema.get('password'):
-                    schema['password'] = getpass(f'{YC}Archive encrypted with password; enter password: {RC}')
-                elif k != 'password':
-                    schema[k] = v
+            _updateSchema(schema, meta)
 
         logger.info('getting backup from cloud...')
 
@@ -68,6 +68,14 @@ def restore(schema:dict, creds:Credentials):
         exit(1)
 
     logger.info(f'successfully downloaded "{schemaName}.archive" from cloud; it placed in {os.path.join(tmp, f'{schemaName}.downloaded')}')
+
+
+def _updateSchema(schema, meta):
+    for k, v in meta.items():
+        if k == 'password' and v and not schema.get('password'):
+            schema['password'] = getpass(f'{YC}Archive encrypted with password; enter password: {RC}')
+        elif k != 'password':
+            schema[k] = v
 
 
 def restoreFromCloud(schemaNameOrPath:str, **kwargs):
