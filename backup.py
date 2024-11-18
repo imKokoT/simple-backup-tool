@@ -71,7 +71,7 @@ def backup(archiveName:str, schema:dict, creds:Credentials):
         logger.info('building service')
         service = build('drive', 'v3', credentials=creds)
 
-        if hasattr(creds, 'service_account_email') and not schema.get('root'):
+        if schema['__secret_type__'] == 'service' and not schema.get('root'):
             logger.fatal(f'service cannot differentiate between accounts; you must define "root" parameter in schema with targeting shared folder id')
             exit(1)
 

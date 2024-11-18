@@ -25,6 +25,7 @@ def loadSecret(secretName:str, schema:dict) -> Credentials:
     secretPath = f'./configs/secrets/{secretName}.{secretType}'
 
     if secretType == 'cred':
+        schema['__secret_type__'] = 'cred'
         flow = InstalledAppFlow.from_client_secrets_file(secretPath, SCOPES)
         try:
             creds = flow.run_local_server(port=0)
@@ -35,6 +36,7 @@ def loadSecret(secretName:str, schema:dict) -> Credentials:
         saveToken(secretName, creds)
         return creds
     else:
+        schema['__secret_type__'] = 'service'
         return service_account.Credentials.from_service_account_file(secretPath, scopes=SCOPES)
 
 
