@@ -17,6 +17,8 @@ class Singleton(type):
         if cls not in cls.__instances:
             instance = super().__call__(*args, **kwargs)
             cls.__instances[cls] = instance
+            if hasattr(cls, 'onInstanceCreated') and callable(getattr(cls, 'onInstanceCreated')):
+                cls.onInstanceCreated()
         return cls.__instances[cls]
 
 
@@ -71,6 +73,9 @@ class Config(metaclass=Singleton):
                 exit(0)
             Config.save()
 
+
+    def onInstanceCreated():
+        Config.load()
 
 # --- colorama shortcuts -----------------------------------------------------
 colorama.init(autoreset=True) # init colorama escape codes
