@@ -2,7 +2,7 @@ import re
 from config import *
 
 
-def deleteAllServiceArchives(service, schema:dict):
+def deleteAllNotSharedServiceArchives(service, schema:dict):
     '''delete all not shared archives and its meta'''
     folderId = 'root'
     p = re.compile(r'\.(meta|archive)$')
@@ -24,7 +24,7 @@ def deleteAllServiceArchives(service, schema:dict):
 
     for item in items:    
         if item['mimeType'] == 'application/vnd.google-apps.folder':
-            deleteAllServiceArchives(service, folder_id=item['id'])
+            deleteAllNotSharedServiceArchives(service, folder_id=item['id'])
         
         if re.search(p, item['name']):
             logger.debug(f"Deleting: {item['name']}[id:{item['id']}] ({item['mimeType']})")

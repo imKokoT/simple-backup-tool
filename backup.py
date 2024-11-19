@@ -6,14 +6,15 @@ from google.auth.exceptions import RefreshError
 from googleapiclient.http import MediaIoBaseUpload
 import io
 import json
-from cloud.clean import deleteAllServiceArchives
+from cloud import getStorageQuota
+from cloud.clean import deleteAllNotSharedServiceArchives
 from config import *
 import schema
 import packer
 import archiver
 from cloud.authenticate import authenticate
 from cloud.drive import send, getDestination
-from miscellaneous import getTMP
+from miscellaneous import getTMP, humanSize
 import clean
 
 
@@ -77,7 +78,10 @@ def backup(archiveName:str, schema:dict, creds:Credentials):
             exit(1)
 
         if schema['__secret_type__'] == 'service':
-            deleteAllServiceArchives(service, schema)
+            deleteAllNotSharedServiceArchives(service, schema)
+
+        quota = getStorageQuota(service)
+        logger.info(f'storage quota: total: limit={humanSize(quota['limit'])}, usage={humanSize(quota['usage'])}')
 
         destinationFolder = getDestination(service, schema['destination'], schema.get('root'))
         
@@ -86,6 +90,9 @@ def backup(archiveName:str, schema:dict, creds:Credentials):
         logger.info('sending backup to cloud...')
         send(service, os.path.join(tmp, archiveName), f'{schemaName}.archive', destinationFolder)
         _sendMeta(service, destinationFolder, schema)
+        
+        quota = getStorageQuota(service)
+        logger.info(f'storage quota after sending: total: limit={humanSize(quota['limit'])}, usage={humanSize(quota['usage'])}')
     except HttpError as e:
         logger.fatal(f'failed to backup; error: {e}')
         exit(1)
