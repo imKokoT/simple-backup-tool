@@ -1,7 +1,52 @@
 import io
+import json
 from googleapiclient.http import MediaIoBaseUpload, MediaIoBaseDownload
 from config import *
 from miscellaneous import updateProgressBar
+
+
+def sendMeta(service, folder:str, schema:dict):
+    logger.info('sending backup meta...')
+    stream = io.BytesIO()
+
+    schemaName = schema['__name__']
+
+    data = {
+        'compressFormat': schema.get('compressFormat'),
+        'password': schema.get('password') is not None,
+        'mode': schema.get('mode'),
+        'program': schema.get('program')
+    }
+    meta = {
+        'name': f'{schemaName}.meta',
+        'parents': [folder],
+        'description': f'Meta made by SBT {VERSION}\n'
+                       f'see https://github.com/imKokoT/simple-backup-tool'
+    }
+    stream.write(bytes(json.dumps(data, separators=(',',':')), 'utf-8'))
+    media = MediaIoBaseUpload(stream, mimetype='application/octet-stream')
+
+    uploadFile = service.files().create(
+        body=meta,
+        media_body=media, 
+        fields='id'
+    ).execute()
+
+
+def tryGetMeta(service, folder:str, schemaName:str) -> dict|None:
+    logger.info(f'getting meta...')
+
+    query = f"'{folder}' in parents and name='{schemaName}.meta' and trashed=false"
+    response = service.files().list(q=query, spaces='drive').execute()
+    files = response.get('files', [])
+
+    if not files:
+        return False
+    
+    metaId = files[0]['id']
+    request = service.files().get_media(fileId=metaId).execute()
+
+    return json.loads(str(request,'utf-8'))
 
 
 def send(service, fpath:str, endName:str, folder=None):

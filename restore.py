@@ -8,27 +8,11 @@ from google.auth.exceptions import RefreshError
 from config import *
 import schema
 from cloud.authenticate import authenticate
-from cloud.drive import download, getDestination
+from cloud.drive import download, getDestination, tryGetMeta
 import archiver
 import packer
 from miscellaneous import getTMP
 import clean
-
-
-def tryGetMeta(service, folder:str, schemaName:str) -> dict|None:
-    logger.info(f'getting meta...')
-
-    query = f"'{folder}' in parents and name='{schemaName}.meta' and trashed=false"
-    response = service.files().list(q=query, spaces='drive').execute()
-    files = response.get('files', [])
-
-    if not files:
-        return False
-    
-    metaId = files[0]['id']
-    request = service.files().get_media(fileId=metaId).execute()
-
-    return json.loads(str(request,'utf-8'))
 
 
 def restore(schema:dict, creds:Credentials):

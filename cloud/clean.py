@@ -2,6 +2,19 @@ import re
 from config import *
 
 
+def cleanup(service, folder:str, schemaName:str):
+    logger.info('cleaning old cloud backup if exists...')
+
+    query = f"'{folder}' in parents and (name='{schemaName}.archive' or name='{schemaName}.meta') and trashed=false"
+    response = service.files().list(q=query, spaces='drive').execute()
+    files = response.get('files', [])
+
+    if files:
+        for f in files:
+            file_id = f['id']
+            service.files().delete(fileId=file_id).execute()
+
+
 def deleteAllNotSharedServiceArchives(service, schema:dict):
     '''delete all not shared archives and its meta'''
     folderId = 'root'
