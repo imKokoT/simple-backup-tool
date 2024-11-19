@@ -2,6 +2,7 @@
 ## 0.7a
 added:
 - new param 'root' to schema to define root folder id
+- cleaning not shared archives of service account
 
 fixed:
 - config's warning logs

@@ -6,6 +6,7 @@ from google.auth.exceptions import RefreshError
 from googleapiclient.http import MediaIoBaseUpload
 import io
 import json
+from cloud.clean import deleteAllServiceArchives
 from config import *
 import schema
 import packer
@@ -75,6 +76,9 @@ def backup(archiveName:str, schema:dict, creds:Credentials):
             logger.fatal(f'service cannot differentiate between accounts; you must define "root" parameter in schema with targeting shared folder id')
             exit(1)
 
+        if schema['__secret_type__'] == 'service':
+            deleteAllServiceArchives(service, schema)
+
         destinationFolder = getDestination(service, schema['destination'], schema.get('root'))
         
         _cleanup(service, destinationFolder, schemaName)
@@ -90,7 +94,7 @@ def backup(archiveName:str, schema:dict, creds:Credentials):
         exit(1)
 
     logger.info(f'successfully backup "{archiveName}" to cloud; it placed in '
-                f'{schema['root'] if schema.get('root') else ''}{f'{schema['destination']}/{schemaName}'}.archive')
+                f'{schema['root'] if schema.get('root') else ''}/{f'{schema['destination']}/{schemaName}'}.archive')
 
 
 def createBackupOf(schemaNameOrPath:str, **kwargs):
