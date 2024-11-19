@@ -81,7 +81,7 @@ def backup(archiveName:str, schema:dict, creds:Credentials):
             deleteAllNotSharedServiceArchives(service, schema)
 
         quota = getStorageQuota(service)
-        logger.info(f'storage quota: total: limit={humanSize(quota['limit'])}, usage={humanSize(quota['usage'])}')
+        logger.info(f'storage quota: limit={humanSize(quota['limit'])}, usage={humanSize(quota['usage'])}')
 
         destinationFolder = getDestination(service, schema['destination'], schema.get('root'))
         
@@ -92,7 +92,7 @@ def backup(archiveName:str, schema:dict, creds:Credentials):
         _sendMeta(service, destinationFolder, schema)
         
         quota = getStorageQuota(service)
-        logger.info(f'storage quota after sending: total: limit={humanSize(quota['limit'])}, usage={humanSize(quota['usage'])}')
+        logger.info(f'storage quota after sending: limit={humanSize(quota['limit'])}, usage={humanSize(quota['usage'])}')
     except HttpError as e:
         logger.fatal(f'failed to backup; error: {e}')
         exit(1)

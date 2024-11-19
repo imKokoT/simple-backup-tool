@@ -5,7 +5,7 @@ added:
 - cleaning not shared archives of service account
 
 fixed:
-- config's warning logs
+- logs
 - not saves the token if first authenticated for users creds
 - service not differentiate between accounts (#20) 
 
