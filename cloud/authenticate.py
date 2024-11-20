@@ -46,7 +46,7 @@ def loadSecret(secretName:str, schema:dict) -> Credentials:
 def getSecretName(schema) -> str:
     secretName = schema.get('secret')
     if not secretName and Config().default_secret:
-        secretName = Config().default_secret
+        return Config().default_secret
     else:
         if secretName:
             return secretName

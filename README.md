@@ -25,7 +25,7 @@ OAuth2 account requires authorization via browser to confirm access. It is more 
 #### Service account
 Is permanent and everyone, who has key can access your backups. It is more about backend usage (or you are to lazy for token refreshing, or want to automate backup process). Also your backups store in service account's Drive storage. This is mean that your Drive space will not affected, BUT service account has same quota like for gmail.com accounts with 15GB limit.
 
-> [Note!]
+> **Note!**
 > Service account has default storage limit with 15GB, BUT it does not mean that you can't buy more space. Unfortunately it is slightly complex task than buy more space at One Drive for personal account.
 
 1. Create OAuth2 service account by [following this link](https://console.cloud.google.com/apis/credentials) and clicking on *CREATE CREDENTIALS* and on *Service account*. Also you must *configure consent screen* if you have not.

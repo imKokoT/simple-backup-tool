@@ -2,7 +2,7 @@ import colorama
 
 
 # --- MAIN -------------------------------------------------------------------
-VERSION = '0.6a'
+VERSION = '0.7a'
 DEBUG = True
 SCOPES = ['''https://www.googleapis.com/auth/drive''']
 
