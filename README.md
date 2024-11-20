@@ -23,10 +23,15 @@ OAuth2 account requires authorization via browser to confirm access. It is more 
 2. Download client secrets json file and place it to *configs/secrets* folder, and rename to *your-secret.cred*
 
 #### Service account
-Is permanent and everyone, who has key can access your drive. It is more about backend usage (or you are to lazy for token refreshing, or want to automate backup process).
+Is permanent and everyone, who has key can access your backups. It is more about backend usage (or you are to lazy for token refreshing, or want to automate backup process). Also your backups store in service account's Drive storage. This is mean that your Drive space will not affected, BUT service account has same quota like for gmail.com accounts with 15GB limit.
+
+> [Note!]
+> Service account has default storage limit with 15GB, BUT it does not mean that you can't buy more space. Unfortunately it is slightly complex task than buy more space at One Drive for personal account.
+
 1. Create OAuth2 service account by [following this link](https://console.cloud.google.com/apis/credentials) and clicking on *CREATE CREDENTIALS* and on *Service account*. Also you must *configure consent screen* if you have not.
 2. Access your service account settings by [following this link](https://console.cloud.google.com/iam-admin/serviceaccounts) and selecting *your service* -> *Actions* tab -> *Manage keys*.
 3. Create new key at tab *Keys* and click on *ADD KEY* -> *Create new key* -> *Json*. Your key will be created and downloaded. Place it to *configs/secrets* folder and rename to *your-secret-service.service*
+4. Share your folder for your service account with role *Editor* and save folder's id. You can directly copy folder's id from its link after `https://drive.google.com/drive/u/0/folders/`.
 
 **WARNING: tool distinguishes user-based and service creds by file extension - *.cred* and *.service* respectively!**
 
@@ -37,6 +42,7 @@ secret: your-secret # or your-secret-service secret from secrets folder; can be 
 # include others schema values
 # you can override params that you have included
 include: include
+root: your_folder_id_in_drive # the root folder id; can be ignored for personal cred secret; required for service secret;
 destination: 'test/folder/in/your/drive' # google disk backup folder path
 # list of all ignored files or folders; similar to .gitignore functionality
 # works for target folders, files always required
@@ -99,6 +105,7 @@ Application settings contains at *config.yaml* from configs folder. You can chan
  - *auto_remove_archive* - if true, archives, that was created or downloaded, will be deleted; .tar excluded
  - *hide_password_len* - if true, will hide length of password at encryption process; if false password will hide with \*
  - *human_sizes* - if true, byte sizes will print in "B", "KB", "MB", "GB", "TB"
+ - *max_logs* - max session logs in logs folder
 
 # Advanced ignore settings
 Schema's *ignore* parameter will ignore global and always. But if you don't want to write vary large ignore patterns in schema, you can create *.sbtignore* file at some place in target directory. *.sbtignore* includes *.gitignore* syntax.
