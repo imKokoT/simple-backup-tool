@@ -16,16 +16,16 @@ def cleanup(service, folder:str, schemaName:str):
             service.files().delete(fileId=file_id).execute()
 
 
-def deleteAllNotSharedServiceArchives(service, schema:dict):
+def deleteAllNotSharedServiceArchives(service, schema:dict, folderId:str = 'root'):
     '''delete all not shared archives and its meta'''
-    folderId = 'root'
     p = re.compile(r'\.(meta|archive)$')
 
     if schema['__secret_type__'] != 'service':
         logger.error(f'abort deletion of not shared all archives because service account key is not using!')
         return
-
-    logger.info('deleting not shared archives of service account storage')
+    
+    if folderId == 'root':
+        logger.info('deleting not shared archives of service account storage')
 
     query = f"'{folderId}' in parents and trashed=false"
     response = service.files().list(
@@ -38,7 +38,7 @@ def deleteAllNotSharedServiceArchives(service, schema:dict):
 
     for item in items:    
         if item['mimeType'] == 'application/vnd.google-apps.folder':
-            deleteAllNotSharedServiceArchives(service, folder_id=item['id'])
+            deleteAllNotSharedServiceArchives(service, schema, folderId=item['id'])
         
         if re.search(p, item['name']):
             logger.debug(f"Deleting: {item['name']}[id:{item['id']}] ({item['mimeType']})")
