@@ -1,27 +1,13 @@
 import os
 import fnmatch
 import yaml
+import platform
 from yaml.scanner import ScannerError
 from properties import *
 from logger import logger
 
 
-def include(schema:dict, include:str) -> dict:
-    t = getBackupSchema(include)
-    if not t:
-        logger.fatal(f'failed to include "{include}" for "{schema['__name__']}", because it not exists')
-        exit(1)
-    
-    for k, v in t.items():
-        if schema.get(k):
-            continue
-        schema[k] = v
-    
-    return schema
-
-
 def getBackupSchema(schemaName:str) ->dict|None:
-    data:dict
     schema = None
 
     if not schema:
@@ -34,6 +20,11 @@ def getBackupSchema(schemaName:str) ->dict|None:
             return None
 
         schema = load(f'configs/schemas/{schemas[schemasNames.index(schemaName)]}')
+
+        # handle ~ alias
+        if platform.system() == 'Linux' and schema.get('targets'):
+            home = os.getenv('HOME')
+            schema['targets'] = [p.replace('~', home) for p in schema['targets']]
 
     return schema
 
@@ -59,4 +50,18 @@ def load(fpath:str) -> dict:
         if schema.get('include'):
             return include(schema, schema.get('include'))
 
+    return schema
+
+
+def include(schema:dict, include:str) -> dict:
+    t = getBackupSchema(include)
+    if not t:
+        logger.fatal(f'failed to include "{include}" for "{schema['__name__']}", because it not exists')
+        exit(1)
+    
+    for k, v in t.items():
+        if schema.get(k):
+            continue
+        schema[k] = v
+    
     return schema
