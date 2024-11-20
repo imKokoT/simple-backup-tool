@@ -5,15 +5,25 @@ from app_config import Config
 from properties import *
 
 
-def updateProgressBar(percentage):
+def updateProgressBar(percentage:int, end:bool=False):
+    '''if percentage is None or end is true, progress bar will finish with 100%'''
+    percentage = 1 if percentage is None else percentage
+
     bar_length = shutil.get_terminal_size().columns - 8
     blocks = int(percentage * bar_length)
     progress_bar = "█" * blocks + "░" * (bar_length - blocks)
     sys.stdout.write(f"\r  {int(percentage * 100)}%  {progress_bar}")
     sys.stdout.flush()
 
+    if end:
+        updateProgressBar(percentage=1)
+        return
+    if percentage >= 1:
+        print()
+
 
 def iprint(*strings):
+    '''inline print'''
     sys.stdout.write(f'\r{' '.join(strings)}')
     sys.stdout.flush()
 
