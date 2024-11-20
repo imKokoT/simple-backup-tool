@@ -1,8 +1,12 @@
+import datetime
 import logging
 import logging.config
 import colorlog
 import os
 from os import path
+from properties import *
+import app_config
+
 
 if not path.exists('logs'):
     os.mkdir('logs')
@@ -15,17 +19,24 @@ BASE_LOG_COLORS ={
         'ERROR': 'red',
         'CRITICAL': 'bold_red',
     }
-_programFileHandler = logging.FileHandler('logs/program.log', 'w', 'utf-8')
-_programFileHandler.setFormatter(logging.Formatter(BASE_LOGGING_FORMAT))
-
-# === Program logger ===
 logger = logging.getLogger('SBT')
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.DEBUG if DEBUG else logging.INFO)
+
+_programFileHandler = logging.FileHandler(
+    f'logs/program_{str(datetime.datetime.now().replace(microsecond=0)).replace(':','.')}.log', 
+    'w', 'utf-8')
+_programFileHandler.setFormatter(logging.Formatter(BASE_LOGGING_FORMAT))
 logger.addHandler(_programFileHandler)
+
 _temp = logging.StreamHandler()
 _temp.setFormatter(colorlog.ColoredFormatter('%(log_color)s'+BASE_LOGGING_FORMAT, 
                                             reset=True, 
                                             log_colors=BASE_LOG_COLORS))
 logger.addHandler(_temp)
 
-del _temp
+if __name__ != '__main__':
+    logs = [f'./logs/{l}' for l in os.listdir('./logs') if l.startswith('program')]
+    logs.sort(key=lambda x: os.path.getctime(x))
+
+    if len(logs) > app_config.Config().max_logs:
+        os.remove(logs[0])

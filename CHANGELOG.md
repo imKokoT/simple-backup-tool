@@ -3,6 +3,8 @@
 added:
 - new param 'root' to schema to define root folder id
 - cleaning not shared archives of service account
+- time incrementing log files
+- new config 'max_logs'
 
 fixed:
 - logs
