@@ -1,6 +1,8 @@
 import os
 import subprocess
-from config import *
+from app_config import Config
+from logger import logger
+from properties import *
 import sys
 
 

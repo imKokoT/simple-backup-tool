@@ -1,6 +1,6 @@
 import os
 from schema import getBackupSchema
-from config import *
+from properties import *
 from archive.internal import *
 from archive.external import *
 from miscellaneous import getTMP

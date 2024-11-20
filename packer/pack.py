@@ -1,6 +1,8 @@
+import os
 import tarfile
 import pathspec
-from config import *
+from properties import *
+from logger import logger
 from miscellaneous import getTMP, humanSize, iprint
 from packer.packconfig import configurePack
 from packer.tools import loadIgnorePatterns, shouldIgnore

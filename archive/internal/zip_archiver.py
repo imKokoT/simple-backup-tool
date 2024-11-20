@@ -1,7 +1,8 @@
 import zipfile
 import os
-from config import *
+from properties import *
 from miscellaneous import updateProgressBar
+from logger import logger
 
 
 def compress(targetPath:str, sch:dict) -> str:

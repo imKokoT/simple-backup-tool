@@ -1,5 +1,6 @@
 import os
-from config import *
+from properties import *
+from logger import logger
 from miscellaneous import getTMP
 
 

@@ -1,6 +1,8 @@
 import bz2
 import os
-from config import *
+from properties import *
+from logger import logger
+
 
 def compress(targetPath:str, sch:dict) -> str:
     logger.info('bz2 compressing...')

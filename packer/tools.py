@@ -1,7 +1,10 @@
+import os
 import time
 import pathspec
-from config import *
+from app_config import Config
+from properties import *
 from miscellaneous import getTMP
+from logger import logger
 
 
 def loadIgnorePatterns(directory:str) -> pathspec.PathSpec|None:

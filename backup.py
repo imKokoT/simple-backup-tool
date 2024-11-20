@@ -3,11 +3,9 @@ from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from google.auth.exceptions import RefreshError
-from googleapiclient.http import MediaIoBaseUpload
-import io
-import json
 from cloud import getStorageQuota
-from config import *
+from properties import *
+from logger import logger
 import schema
 import packer
 import archiver

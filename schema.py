@@ -2,7 +2,8 @@ import os
 import fnmatch
 import yaml
 from yaml.scanner import ScannerError
-from config import *
+from properties import *
+from logger import logger
 
 
 def include(schema:dict, include:str) -> dict:

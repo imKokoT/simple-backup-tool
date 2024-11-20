@@ -1,25 +1,7 @@
-import colorama
 import os
 import yaml
-from os import path
-from logger import logger
-
-# --- MAIN -------------------------------------------------------------------
-VERSION = '0.6a'
-DEBUG = True
-SCOPES = ['''https://www.googleapis.com/auth/drive''']
-
-
-class Singleton(type):
-    __instances = {}
-
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls.__instances:
-            instance = super().__call__(*args, **kwargs)
-            cls.__instances[cls] = instance
-            if hasattr(cls, 'onInstanceCreated') and callable(getattr(cls, 'onInstanceCreated')):
-                cls.onInstanceCreated()
-        return cls.__instances[cls]
+import logger
+from properties import *
 
 
 class Config(metaclass=Singleton):
@@ -39,10 +21,11 @@ class Config(metaclass=Singleton):
         self.hide_password_len = True
         self.auto_remove_archive = True # if true archives, that was created or downloaded, will be deleted; .tar excluded
         self.human_sizes = False # if true, byte sizes will print in "B", "KB", "MB", "GB", "TB"
+        self.max_logs = 10 # max program log files that can be saved in logs folder
 
 
     def save():
-        if not path.exists('configs/'):
+        if not os.path.exists('configs/'):
             os.mkdir('configs')
 
         with open('configs/config.yaml', 'w', encoding='utf-8') as f:
@@ -50,7 +33,7 @@ class Config(metaclass=Singleton):
 
 
     def load():
-        if not path.exists('configs/'):
+        if not os.path.exists('configs/'):
             os.mkdir('configs')
         
         try:
@@ -59,14 +42,14 @@ class Config(metaclass=Singleton):
                 for k, v in config.items():
                     setattr(Config(), k, v)
                     if k not in Config().__dict__.keys():
-                        logger.warning(f'detected unknown parameter "{k}" in config.yaml')
+                        logger.logger.warning(f'detected unknown parameter "{k}" in config.yaml')
                 if config != Config().__dict__:
-                    logger.info('updated config.yaml to newer version')
+                    logger.logger.info('updated config.yaml to newer version')
                     Config.save()
         except FileNotFoundError:
             Config.save()
         except yaml.YAMLError as e:
-            logger.error(f'failed to load config; {e}')
+            logger.logger.error(f'failed to load config; {e}')
             yn = input(f'{YC}do you want to recreate config? [y/N]{DC}: ')
             if yn.strip().lower() != 'y':
                 print('process interrupted...')
@@ -76,25 +59,3 @@ class Config(metaclass=Singleton):
 
     def onInstanceCreated():
         Config.load()
-
-# --- colorama shortcuts -----------------------------------------------------
-colorama.init(autoreset=True) # init colorama escape codes
-DC = colorama.Style.RESET_ALL
-
-RC = colorama.Fore.RED
-GC = colorama.Fore.GREEN
-BC = colorama.Fore.BLUE
-YC = colorama.Fore.YELLOW
-CC = colorama.Fore.CYAN
-BKC = colorama.Fore.BLUE
-MC = colorama.Fore.MAGENTA
-WC = colorama.Fore.WHITE
-
-LRC = colorama.Fore.LIGHTRED_EX
-LGC = colorama.Fore.LIGHTGREEN_EX
-LBC = colorama.Fore.LIGHTBLUE_EX
-LYC = colorama.Fore.LIGHTYELLOW_EX
-LCC = colorama.Fore.LIGHTCYAN_EX
-LBKC = colorama.Fore.LIGHTBLACK_EX
-LMC = colorama.Fore.LIGHTMAGENTA_EX
-LWC = colorama.Fore.LIGHTWHITE_EX

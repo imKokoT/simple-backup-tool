@@ -5,7 +5,8 @@ from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from google.auth.exceptions import RefreshError
-from config import *
+from properties import *
+from logger import logger
 import schema
 from cloud.authenticate import authenticate
 from cloud.drive import download, getDestination, tryGetMeta

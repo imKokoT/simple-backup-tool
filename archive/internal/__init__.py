@@ -4,5 +4,6 @@ from . import gz_archiver
 try:
     from . import bz2_archiver
 except ModuleNotFoundError:
-    from config import *
+    from logger import logger
     logger.warning(f'bz2 module not installed!')
+    

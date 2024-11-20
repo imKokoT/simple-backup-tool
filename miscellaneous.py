@@ -1,6 +1,8 @@
+import os
 import sys
 import shutil
-from config import *
+from app_config import Config
+from properties import *
 
 
 def updateProgressBar(percentage):

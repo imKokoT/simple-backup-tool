@@ -1,3 +1,5 @@
+import os
+from logger import logger
 import webbrowser
 import google.auth
 import google.auth.exceptions
@@ -5,7 +7,8 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from google.oauth2 import service_account
-from config import *
+from app_config import Config
+from properties import *
 from miscellaneous import getTMP
 
 

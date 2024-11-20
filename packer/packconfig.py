@@ -1,8 +1,10 @@
 import io
 import json
+import os
 import tarfile
 import time
-from config import *
+from properties import *
+from logger import logger
 
 
 def configurePack(archive:tarfile.TarFile, backupSchema:dict, packedTargets:list):

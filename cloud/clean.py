@@ -1,5 +1,6 @@
 import re
-from config import *
+from logger import logger
+from properties import *
 
 
 def cleanup(service, folder:str, schemaName:str):

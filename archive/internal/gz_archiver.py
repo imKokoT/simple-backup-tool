@@ -1,6 +1,7 @@
 import gzip
 import os
-from config import *
+from properties import *
+from logger import logger
 
 
 def compress(targetPath:str, sch:dict) -> str:

@@ -1,7 +1,9 @@
 import io
 import json
+from logger import logger
 from googleapiclient.http import MediaIoBaseUpload, MediaIoBaseDownload
-from config import *
+from app_config import Config
+from properties import *
 from miscellaneous import updateProgressBar
 
 
