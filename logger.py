@@ -23,7 +23,7 @@ logger = logging.getLogger('SBT')
 logger.setLevel(logging.DEBUG if DEBUG else logging.INFO)
 
 _programFileHandler = logging.FileHandler(
-    f'logs/program_{str(datetime.datetime.now().replace(microsecond=0)).replace(':','.')}.log', 
+    f'logs/session_{str(datetime.datetime.now().replace(microsecond=0)).replace(':','.')}.log', 
     'w', 'utf-8')
 _programFileHandler.setFormatter(logging.Formatter(BASE_LOGGING_FORMAT))
 logger.addHandler(_programFileHandler)
@@ -35,7 +35,7 @@ _temp.setFormatter(colorlog.ColoredFormatter('%(log_color)s'+BASE_LOGGING_FORMAT
 logger.addHandler(_temp)
 
 if __name__ != '__main__':
-    logs = [f'./logs/{l}' for l in os.listdir('./logs') if l.startswith('program')]
+    logs = [f'./logs/{l}' for l in os.listdir('./logs') if l.startswith('session')]
     logs.sort(key=lambda x: os.path.getctime(x))
 
     if len(logs) > app_config.Config().max_logs:

@@ -10,6 +10,7 @@ fixed:
 - logs
 - not saves the token if first authenticated for users creds
 - service not differentiate between accounts (#20) 
+- ~ path handle support of targets (#18)
 
 other changes:
 - removed support of schemas.yaml
