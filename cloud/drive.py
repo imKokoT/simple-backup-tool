@@ -112,8 +112,9 @@ def getDestination(service, path:str, root:str|None):
     folders = path.split('/')
     folders = [e for e in folders if e != '']
 
+    parent = root
     for folder in folders:
-        parent = _getOrCreate(service, folder, root)
+        parent = _getOrCreate(service, folder, parent)
 
     return parent
 
