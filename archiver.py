@@ -33,8 +33,10 @@ def archive(schema:dict) -> str:
                 exit(1)        
     elif mode == 'external':
         match program:
-            case '7z' | None:
-                return sevenZ_archiver.compress(f'{tmp}/{schemaName}.tar', schema) 
+            case '7z':
+                return sevenZ_archiver.compress(f'{tmp}/{schemaName}.tar', schema)
+            case 'zpaq':
+                return zpaq_archiver.compress(f'{tmp}/{schemaName}.tar', schema)
             case _:
                 logger.fatal(f'unknown program {program} for external mode')
                 exit(1)
@@ -79,8 +81,10 @@ def dearchive(schema:dict) -> str:
                 exit(1)
     elif mode == 'external':
         match program:
-            case '7z' | None:
+            case '7z':
                 return sevenZ_archiver.decompress(downloaded, schema, schemaName) 
+            case 'zpaq':
+                pass
             case _:
                 logger.fatal(f'unknown program "{program}" for external mode')
                 exit(1)

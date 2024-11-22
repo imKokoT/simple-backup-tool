@@ -2,6 +2,7 @@
 ## 0.8a 
 added:
 - multiline string format of schema's 'targets' param
+- zpaq external archiver
 
 
 ## 0.7a  ([commit](https://github.com/imKokoT/simple-backup-tool/commit/18e9be75b5076aade2f05a4427ef28037c109df8))
