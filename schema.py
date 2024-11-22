@@ -10,21 +10,24 @@ from logger import logger
 def getBackupSchema(schemaName:str) ->dict|None:
     schema = None
 
-    if not schema:
-        if not os.path.exists('configs/schemas'):
-            os.mkdir('configs/schemas')
+    if not os.path.exists('configs/schemas'):
+        os.mkdir('configs/schemas')
 
-        schemas = [p for p in os.listdir('configs/schemas') if fnmatch.fnmatch(p, '*.yml') or fnmatch.fnmatch(p, '*.yaml')]
-        schemasNames = [os.path.basename(p.split('.')[0]) for p in schemas]
-        if schemaName not in schemasNames:
-            return None
+    schemas = [p for p in os.listdir('configs/schemas') if fnmatch.fnmatch(p, '*.yml') or fnmatch.fnmatch(p, '*.yaml')]
+    schemasNames = [os.path.basename(p.split('.')[0]) for p in schemas]
+    if schemaName not in schemasNames:
+        return None
 
-        schema = load(f'configs/schemas/{schemas[schemasNames.index(schemaName)]}')
+    schema = load(f'configs/schemas/{schemas[schemasNames.index(schemaName)]}')
 
+    if schema:
         # handle ~ alias
         if platform.system() == 'Linux' and schema.get('targets'):
             home = os.getenv('HOME')
             schema['targets'] = [p.replace('~', home) for p in schema['targets']]
+        # handle target is multiline string format
+        if type(schema.get('targets')) is str:
+            schema['targets'] = [p.strip() for p in schema['targets'].split('\n') if p.strip() != '']
 
     return schema
 

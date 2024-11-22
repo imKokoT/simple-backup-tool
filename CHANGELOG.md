@@ -1,5 +1,10 @@
 
-## 0.7a
+## 0.8a 
+added:
+- multiline string format of schema's 'targets' param
+
+
+## 0.7a  ([commit](https://github.com/imKokoT/simple-backup-tool/commit/18e9be75b5076aade2f05a4427ef28037c109df8))
 added:
 - new param 'root' to schema to define root folder id
 - cleaning not shared archives of service account
