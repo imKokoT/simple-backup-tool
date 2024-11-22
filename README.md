@@ -9,6 +9,7 @@ All application configurations placed in "configs" folder.
 - Python 3.12+
 - ```pip install colorama colorlog pyyaml pathspec google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client```
 - (*optionally*) [7z](https://7-zip.org/) - for faster compression and more flexibility
+- (*optionally*) [zpaq](https://github.com/zpaq/zpaq) - for better compress ratio
 
 ## Creating Google service
 Before you start to configure application, firstly you must to create Google application service in [Google Console](https://console.cloud.google.com/) to get access to your Drive. **Don't worry it's free**.
