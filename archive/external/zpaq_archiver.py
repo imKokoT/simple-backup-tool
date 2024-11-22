@@ -53,5 +53,25 @@ def compress(targetPath:str, sch:dict) -> str:
     return os.path.basename(zipPath)
 
 
-def decompress(archPath:str, sch:dict, schemaName:str) -> str:
-    pass
+def decompress(archPath:str, sch:dict) -> str:
+    logger.info('zpaq subprocess decompressing...')
+    schemaName = sch['__name__']
+
+    exportPath = os.path.join(os.path.dirname(archPath), f'{schemaName}.tar')
+    password = sch.get('password')
+    command = ['zpaq', 'x', archPath, os.path.dirname(exportPath), '-f']
+    if password:
+        command.extend(('-key', password))
+
+    logger.info(f'command line: {' '.join(_maskPsw(command))}')
+
+    result = subprocess.run(command, text=True, stdout=sys.stdout)
+
+    if result.returncode == 0:
+        logger.info("decompress finished with success!")
+    else:
+        logger.fatal(f"external process error: {result.stderr}")
+        exit(1)
+
+    return os.path.basename(exportPath)
+

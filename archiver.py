@@ -84,7 +84,7 @@ def dearchive(schema:dict) -> str:
             case '7z':
                 return sevenZ_archiver.decompress(downloaded, schema, schemaName) 
             case 'zpaq':
-                pass
+                return zpaq_archiver.decompress(downloaded, schema)
             case _:
                 logger.fatal(f'unknown program "{program}" for external mode')
                 exit(1)
