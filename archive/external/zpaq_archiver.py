@@ -22,7 +22,13 @@ def _maskPsw(command:list) -> list:
 def compress(targetPath:str, sch:dict) -> str:
     compressLevel = sch.get('compressLevel', 5)
     password = sch.get('password')
-    args = sch.get('args')
+    args = sch.get('c_args')
+    # TODO: remove in 0.11a -----------------------------------------
+    if not args:
+        args = sch.get('args')
+        if args:
+            logger.warning(f'"args" parameter in schema {sch['__name__']} deprecated and will be removed in 0.11a! use c_args instead')
+    # ---------------------------------------------------------------
     compressFormat = sch.get('compressFormat', 'zpaq')
     if compressFormat != 'zpaq':
         logger.fatal(f'compression format "{sch['compressFormat']}" not supports in zpaq or in this tool')
@@ -54,12 +60,16 @@ def compress(targetPath:str, sch:dict) -> str:
 
 
 def decompress(archPath:str, sch:dict) -> str:
+    args = sch.get('d_args')
+
     logger.info('zpaq subprocess decompressing...')
     schemaName = sch['__name__']
 
     exportPath = os.path.join(os.path.dirname(archPath), f'{schemaName}.tar')
     password = sch.get('password')
     command = ['zpaq', 'x', archPath, os.path.dirname(exportPath), '-f']
+    if args:
+        command.extend(args)
     if password:
         command.extend(('-key', password))
 

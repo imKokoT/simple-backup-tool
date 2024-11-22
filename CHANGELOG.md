@@ -3,6 +3,7 @@
 added:
 - multiline string format of schema's 'targets' param
 - zpaq external archiver
+- c_args and d_args schema's params of compress and decompress external additional arguments; args param deprecated 
 
 
 ## 0.7a  ([commit](https://github.com/imKokoT/simple-backup-tool/commit/18e9be75b5076aade2f05a4427ef28037c109df8))

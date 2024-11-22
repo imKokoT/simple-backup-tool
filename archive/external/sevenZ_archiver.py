@@ -22,7 +22,13 @@ def _maskPsw(command:list) -> list:
 def compress(targetPath:str, sch:dict) -> str:
     compressLevel = sch.get('compressLevel', 5)
     password = sch.get('password')
-    args = sch.get('args')
+    args = sch.get('c_args')
+    # TODO: remove in 0.11a -----------------------------------------
+    if not args:
+        args = sch.get('args')
+        if args:
+            logger.warning(f'"args" parameter in schema {sch['__name__']} deprecated and will be removed in 0.11a! use c_args instead')
+    # ---------------------------------------------------------------
     match sch.get('compressFormat', '7z'):
         case '7z': compressFormat = '7z'
         case 'zip': compressFormat = 'zip'
@@ -62,11 +68,15 @@ def compress(targetPath:str, sch:dict) -> str:
 
 
 def decompress(archPath:str, sch:dict, schemaName:str) -> str:
+    args = sch.get('d_args')
+
     logger.info('7z subprocess decompressing...')
 
     exportPath = os.path.join(os.path.dirname(archPath), f'{schemaName}.tar')
     password = sch.get('password')
     command = ['7z', 'x', '-y', archPath, f'-o{os.path.dirname(exportPath)}']
+    if args:
+        command.extend(args)
     if password:
         command.append(f'-p{password}')
 
