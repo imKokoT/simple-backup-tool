@@ -50,21 +50,22 @@ ignore: |
   *.log
   cache/
 # local folders or files to backup
-targets: [
-  'path/to/your/local/folder',
-  'path/to/your/local/file'
-]
+targets: |
+  path/to/your/local/folder
+  path/to/your/local/file
 ```
 And *include.yaml*:
 ```yaml
-compressFormat: 7z # 7z, gz, bz2, zip, xz; null or ignored is tar
+compressFormat: 7z # 7z, gz, bz2, zip, xz, zpaq; null or ignored is tar
 compressLevel: 5 # don't work with tar; default is 5; can be ignored
 password: null # only external 7z & zip; can be ignored
 # internal only for gz, bz2, zip
 # external will try to use external program
+# custom will to run your custom program; 'program' param is path to your program; requires c_args and d_args  
 mode: external
-program: 7z # now supports only 7z; only external
-args: [] # only external; additional command line arguments at compress process; can be ignored
+program: 7z # supports 7z, zpaq; only external
+c_args: [] # only external; additional command line arguments at compress process; can be ignored
+d_args: [] # only external; additional command line arguments at decompress process; can be ignored
 ```
 You can backup several folders and files at once. Backup will be placed in *destination* path. Don't worry, program will create all necessary folders in Drive!
 
