@@ -35,10 +35,10 @@ def compress(targetPath:str, sch:dict) -> str:
         os.remove(zipPath)
     command = ['zpaq', 'a', zipPath, targetPath, f'-m{compressLevel}']
     
-    if password:
-        command.append(f'-key {password}')
     if args:
         command.extend(args)
+    if password:
+        command.extend(('-key', password))
 
     logger.info(f'command line: {' '.join(_maskPsw(command))}')
 
