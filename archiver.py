@@ -41,7 +41,7 @@ def archive(schema:dict) -> str:
                 logger.fatal(f'unknown program {program} for external mode')
                 exit(1)
     elif mode == 'custom':
-        raise NotImplementedError()
+        return custom_archiver.compress(f'{tmp}/{schemaName}.tar', schema)
     else:
         logger.fatal(f'unknown mode {mode}')
         exit(1)
@@ -89,7 +89,7 @@ def dearchive(schema:dict) -> str:
                 logger.fatal(f'unknown program "{program}" for external mode')
                 exit(1)
     elif mode == 'custom':
-        raise NotImplementedError()
+        return custom_archiver.decompress(downloaded, schema)
     else:
         logger.fatal(f'unknown mode {mode}')
         exit(1)
