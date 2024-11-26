@@ -1,5 +1,4 @@
 import os
-import json
 from getpass import getpass
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build

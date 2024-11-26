@@ -81,4 +81,45 @@ def compress(targetPath:str, sch:dict) -> str:
 
 
 def decompress(archPath:str, sch:dict) -> str:
-    pass
+    args = sch.get('d_args')
+    password = sch.get('password')
+    program = sch.get('program')
+    if not program:
+        logger.fatal(f'custom mode requires "program" parameter in schema with path to your archiver!')
+        exit(1)
+    if not args:
+        logger.fatal(f'custom mode requires "args" parameter in schema with command line decompress arguments!')
+        exit(1)
+
+    logger.info('zpaq subprocess decompressing...')
+    schemaName = sch['__name__']
+
+    exportPath = os.path.join(os.path.dirname(archPath), f'{schemaName}.tar')
+    command = [program] + args
+
+    i = 0
+    while i < len(args):
+        command[i] = command[i].replace('@iname', archPath)
+        command[i] = command[i].replace('@oname', exportPath)
+        i += 1
+    displayCommand = copy(command)
+    i = 0
+    while i < len(args):
+        if password:
+            command[i] = command[i].replace('@pwd', password)
+        i += 1
+
+    logger.info(f'command line: {' '.join(displayCommand)}')
+    try:
+        result = subprocess.run(command, text=True, stdout=sys.stdout)
+    except FileNotFoundError:
+        logger.fatal(f'program "{program}" not found')
+        exit(1)
+
+    if result.returncode == 0:
+        logger.info("compress finished with success!")
+    else:
+        logger.fatal(f"external process error: {result.stderr}")
+        exit(1)
+
+    return os.path.basename(exportPath)
