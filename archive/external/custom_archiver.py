@@ -1,3 +1,4 @@
+from copy import copy
 import os
 import subprocess
 from app_config import Config
@@ -55,11 +56,15 @@ def compress(targetPath:str, sch:dict) -> str:
             command[i] = command[i].replace('@lvl', str(compressLevel))
         if compressFormat:
             command[i] = command[i].replace('@format', compressFormat)
+        i += 1
+    displayCommand = copy(command)
+    i = 0
+    while i < len(args):
         if password:
             command[i] = command[i].replace('@pwd', password)
         i += 1
 
-    logger.info(f'command line: {program} {' '.join(_maskPsw(args))}')
+    logger.info(f'command line: {' '.join(displayCommand)}')
     try:
         result = subprocess.run(command, text=True, stdout=sys.stdout)
     except FileNotFoundError:
