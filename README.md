@@ -59,17 +59,21 @@ And *include.yaml*:
 ```yaml
 compressFormat: 7z # 7z, gz, bz2, zip, xz, zpaq; null or ignored is tar
 compressLevel: 5 # don't work with tar; default is 5; can be ignored
-password: null # only external 7z & zip; can be ignored
+password: null # if format or archiver supports password, your archive will be encrypted 
 # internal only for gz, bz2, zip
-# external will try to use external program
+# external will try to use external program; supports 7z, zpaq
 # custom will to run your custom program; 'program' param is path to your program; requires c_args and d_args  
 mode: external
-program: 7z # supports 7z, zpaq; only external
-c_args: [] # only external; additional command line arguments at compress process; can be ignored
-d_args: [] # only external; additional command line arguments at decompress process; can be ignored
+program: 7z # name of program
+c_args: [] # additional command line arguments at compress process; can be ignored
+d_args: [] # additional command line arguments at decompress process; can be ignored
 ```
 You can backup several folders and files at once. Backup will be placed in *destination* path. Don't worry, program will create all necessary folders in Drive!
 
+### Advanced ignore settings
+Schema's *ignore* parameter will ignore global and always. But if you don't want to write vary large ignore patterns in schema, you can create *.sbtignore* file at some place in target directory. *.sbtignore* includes *.gitignore* syntax.
+
+Beside this, you can include *.gitignore* files too, BUT you should to enable this function by setting *include_gitignore* to **true** at the app config.
 
 ## Create first backup
 SBT has two main scripts: *backup.py* and *restore.py*. To backup run
@@ -109,7 +113,3 @@ Application settings contains at *config.yaml* from configs folder. You can chan
  - *human_sizes* - if true, byte sizes will print in "B", "KB", "MB", "GB", "TB"
  - *max_logs* - max session logs in logs folder
 
-# Advanced ignore settings
-Schema's *ignore* parameter will ignore global and always. But if you don't want to write vary large ignore patterns in schema, you can create *.sbtignore* file at some place in target directory. *.sbtignore* includes *.gitignore* syntax.
-
-Beside this, you can include *.gitignore* files too, BUT you should to enable this function by setting *include_gitignore* to **true** at the app config.
