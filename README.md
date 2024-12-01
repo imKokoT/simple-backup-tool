@@ -88,20 +88,21 @@ If you want to use your own archiver to archive your backups, you can use **cust
 - @oname - (**required**) output pack name (or extracted file), replaces with *\<schema name\>.tar*
 - @pwd - *password* parameter
 
-**WARNING: *@iname* and *@oname* must be placed right in arguments, else backup or restore chain will be broken or tool will behave unpredictably**
+**WARNING: *@iname* and *@oname* must be placed correctly in arguments, else backup or restore chain will be broken or tool will behave unpredictably!**
 
 Example for zpaq:
 ```yaml
+compressFormat: zpaq
 compressLevel: 5
 password: password
 mode: custom
 program: zpaq
-args: ['a', '@oname', '@iname', '-t1', '-m@lvl', '-key', '@pwd']
+args: ['a', '@oname.@format', '@iname', '-t1', '-m@lvl', '-key', '@pwd']
 d_args: ['x', '@iname', '@oname', '-t1', '-f', '-key', '@pwd']
 ```
 
-### Advanced targets selecting filter settings
-Besides that you can use *ignore* parameter to filter what you don't want to place in the backup, you can filter what you select. BUT this function NOT RECOMMENDED, because it can increase scan time and make your backup more uncomfortable to restore, as that moment tool safes patterns as set of different target files. Also anything you place in targets as search pattern will be included to your backup. 
+### Advanced target's selecting filter settings
+Besides that you can use *ignore* parameter to filter what you don't want to place in the backup, you can filter what you select. BUT this function NOT RECOMMENDED, because it can increase scan time and make your backup more uncomfortable to restore, as that moment tool saves patterns as set of different target files. Also anything you place in targets as search pattern will be included to your backup. 
 
 ## Create first backup
 SBT has two main scripts: *backup.py* and *restore.py*. To backup run
