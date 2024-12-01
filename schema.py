@@ -42,9 +42,17 @@ def preprocessSchema(schema:dict):
     # unwrap target paths
     if not schema.get('targets'):
         return
+    
     paths = filterSimplePaths(schema['targets'])
     patterns = [p for p in schema['targets'] if p not in paths]
+    
+    if len(patterns):
+        logger.info('unwrapping targets')
+    else:
+        return
+    
     for pattern in patterns:
+        logger.debug(f'unwrapping "{pattern}"')
         preroot = pattern.split('/')
         root = []
         for part in preroot:
@@ -55,7 +63,9 @@ def preprocessSchema(schema:dict):
         spec = pathspec.PathSpec.from_lines('gitwildmatch', [pattern[len(root)+1:]])
 
         tree = spec.match_tree(root)
-        paths.update([f'{root}/{p}' for p in tree])
+        exp = [f'{root}/{p}' for p in tree]
+        paths.update(exp)
+        logger.debug(f'unwrapped {len(exp)} targets')
     
     schema['targets'] = list(paths)
 
