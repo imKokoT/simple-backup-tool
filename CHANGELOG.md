@@ -2,6 +2,7 @@
 ## 0.8a 
 added:
 - multiline string format of schema's 'targets' param
+- schema's 'targets' param git match patterns (#12)
 - zpaq external archiver (#13)
 - c_args and d_args schema's params of compress and decompress external additional arguments; args param deprecated 
 - custom mode with opportunity to use own archiver

@@ -1,6 +1,7 @@
 import os
 import fnmatch
 import yaml
+import pathspec
 import platform
 from yaml.scanner import ScannerError
 from properties import *
@@ -21,15 +22,42 @@ def getBackupSchema(schemaName:str) ->dict|None:
     schema = load(f'configs/schemas/{schemas[schemasNames.index(schemaName)]}')
 
     if schema:
-        # handle ~ alias
-        if platform.system() == 'Linux' and schema.get('targets'):
-            home = os.getenv('HOME')
-            schema['targets'] = [p.replace('~', home) for p in schema['targets']]
-        # handle target is multiline string format
-        if type(schema.get('targets')) is str:
-            schema['targets'] = [p.strip() for p in schema['targets'].split('\n') if p.strip() != '']
+        preprocessSchema(schema)
 
     return schema
+
+
+def filterSimplePaths(paths) -> set:
+    return {p for p in paths if not any(char in p for char in '!*?[]')}
+
+
+def preprocessSchema(schema:dict):
+    # handle ~ alias
+    if platform.system() == 'Linux' and schema.get('targets'):
+        home = os.getenv('HOME')
+        schema['targets'] = [p.replace('~', home) for p in schema['targets']]
+    # handle target is multiline string format
+    if type(schema.get('targets')) is str:
+        schema['targets'] = [p.strip() for p in schema['targets'].split('\n') if p.strip() != '']
+    # unwrap target paths
+    if not schema.get('targets'):
+        return
+    paths = filterSimplePaths(schema['targets'])
+    patterns = [p for p in schema['targets'] if p not in paths]
+    for pattern in patterns:
+        preroot = pattern.split('/')
+        root = []
+        for part in preroot:
+            if any(char in part for char in '!*?[]'):
+                break
+            root.append(part)
+        root = '/'.join(root)
+        spec = pathspec.PathSpec.from_lines('gitwildmatch', [pattern[len(root)+1:]])
+
+        tree = spec.match_tree(root)
+        paths.update([f'{root}/{p}' for p in tree])
+    
+    schema['targets'] = list(paths)
 
 
 def load(fpath:str) -> dict:
