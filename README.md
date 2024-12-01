@@ -75,6 +75,31 @@ Schema's *ignore* parameter will ignore global and always. But if you don't want
 
 Beside this, you can include *.gitignore* files too, BUT you should to enable this function by setting *include_gitignore* to **true** at the app config.
 
+### custom mode
+If you want to use your own archiver to archive your backups, you can use **custom mode**. Custom mode requires *program*, *c_args* and *d_args*. *program* parameter uses as path to your program. In *c_args* and *d_args* you place arguments to compress and decompress your backup. However *c_args* and *d_args* has **template** values, which starts from *@*:
+##### compress templates
+- @iname - (**required**) pack name (or input file), replaces with *\<schema name\>.tar*
+- @oname - (**required**) output archive name (or output archive), replaces with *\<schema name\>.tar.\<compress format\>*
+- @format - *compressFormat* parameter
+- @lvl - *compressLevel* parameter
+- @pwd - *password* parameter
+##### decompress templates
+- @iname - (**required**) archive name (or input file), replaces with *\<schema name\>.downloaded*
+- @oname - (**required**) output pack name (or extracted file), replaces with *\<schema name\>.tar*
+- @pwd - *password* parameter
+
+**WARNING: *@iname* and *@oname* must be placed right in arguments, else backup or restore chain will be broken or tool will behave unpredictably**
+
+Example for zpaq:
+```yaml
+compressLevel: 5
+password: password
+mode: custom
+program: zpaq
+args: ['a', '@oname', '@iname', '-t1', '-m@lvl', '-key', '@pwd']
+d_args: ['x', '@iname', '@oname', '-t1', '-f', '-key', '@pwd']
+```
+
 ## Create first backup
 SBT has two main scripts: *backup.py* and *restore.py*. To backup run
 ```sh
@@ -112,4 +137,3 @@ Application settings contains at *config.yaml* from configs folder. You can chan
  - *hide_password_len* - if true, will hide length of password at encryption process; if false password will hide with \*
  - *human_sizes* - if true, byte sizes will print in "B", "KB", "MB", "GB", "TB"
  - *max_logs* - max session logs in logs folder
-
