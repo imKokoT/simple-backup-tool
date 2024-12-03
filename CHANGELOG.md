@@ -10,6 +10,7 @@ added:
 fixed:
 - abort if try to unpack files to tmp folder
 - restored files numeration in tmp folder
+- abort if refresh token without reauthorization
 
 ## 0.7a  ([commit](https://github.com/imKokoT/simple-backup-tool/commit/18e9be75b5076aade2f05a4427ef28037c109df8))
 added:

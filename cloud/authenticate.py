@@ -81,6 +81,8 @@ def failedCreateCreds(creds:Credentials, secretName:str, schema:dict) -> Credent
         logger.info('token expired, refreshing...')
         try:
             creds.refresh(Request())
+            schema['__secret_type__'] = 'cred'
+            saveToken(secretName, creds)
         except google.auth.exceptions.RefreshError:
             creds = _reauthenticate(secretName, schema)
     else:
