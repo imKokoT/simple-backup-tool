@@ -64,7 +64,7 @@ def compress(targetPath:str, sch:dict) -> str:
             command[i] = command[i].replace('@pwd', password)
         i += 1
 
-    logger.info(f'command line: {' '.join(displayCommand)}')
+    logger.info(f'command line: {' '.join(_maskPsw(displayCommand))}')
     try:
         result = subprocess.run(command, text=True, stdout=sys.stdout)
     except FileNotFoundError:
@@ -91,7 +91,7 @@ def decompress(archPath:str, sch:dict) -> str:
         logger.fatal(f'custom mode requires "args" parameter in schema with command line decompress arguments!')
         exit(1)
 
-    logger.info('zpaq subprocess decompressing...')
+    logger.info(f'Custom archiver "{sch['program']}" subprocess decompressing...')
     schemaName = sch['__name__']
 
     exportPath = os.path.join(os.path.dirname(archPath), f'{schemaName}.tar')
@@ -109,7 +109,7 @@ def decompress(archPath:str, sch:dict) -> str:
             command[i] = command[i].replace('@pwd', password)
         i += 1
 
-    logger.info(f'command line: {' '.join(displayCommand)}')
+    logger.info(f'command line: {' '.join(_maskPsw(displayCommand))}')
     try:
         result = subprocess.run(command, text=True, stdout=sys.stdout)
     except FileNotFoundError:
