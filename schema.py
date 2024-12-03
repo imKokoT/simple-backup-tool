@@ -60,7 +60,7 @@ def preprocessSchema(schema:dict):
                 break
             root.append(part)
         root = '/'.join(root)
-        spec = pathspec.PathSpec.from_lines('gitwildmatch', [pattern[len(root)+1:]])
+        spec = pathspec.PathSpec.from_lines('gitwildmatch', [pattern[len(root):]])
 
         tree = spec.match_tree(root)
         exp = [f'{root}/{p}' for p in tree]
