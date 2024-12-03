@@ -97,7 +97,7 @@ compressLevel: 5
 password: password
 mode: custom
 program: zpaq
-args: ['a', '@oname.@format', '@iname', '-t1', '-m@lvl', '-key', '@pwd']
+args: ['a', '@oname', '@iname', '-t1', '-m@lvl', '-key', '@pwd']
 d_args: ['x', '@iname', '@oname', '-t1', '-f', '-key', '@pwd']
 ```
 
