@@ -65,12 +65,12 @@ def _updateSchema(schema, meta):
 def restoreFromCloud(schemaNameOrPath:str, **kwargs):
     if not kwargs.get('fromMeta', False):
         if not kwargs.get('schemaPath'):
-            sch = schema.getBackupSchema(schemaNameOrPath)
+            sch = schema.getBackupSchema(schemaNameOrPath, skipUnwrap=True)
             if not sch:
                 logger.error(f'No backup schema with name "{schemaNameOrPath}"')
                 return
         else:
-            sch = schema.load(schemaNameOrPath)
+            sch = schema.load(schemaNameOrPath, skipUnwrap=True)
     else:
         destination = kwargs.get('destination')
         if not destination:

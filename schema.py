@@ -8,7 +8,7 @@ from properties import *
 from logger import logger
 
 
-def getBackupSchema(schemaName:str) ->dict|None:
+def getBackupSchema(schemaName:str, skipUnwrap:bool = False) ->dict|None:
     schema = None
 
     if not os.path.exists('configs/schemas'):
@@ -19,10 +19,7 @@ def getBackupSchema(schemaName:str) ->dict|None:
     if schemaName not in schemasNames:
         return None
 
-    schema = load(f'configs/schemas/{schemas[schemasNames.index(schemaName)]}')
-
-    if schema:
-        preprocessSchema(schema)
+    schema = load(f'configs/schemas/{schemas[schemasNames.index(schemaName)]}', skipUnwrap)
 
     return schema
 
@@ -31,15 +28,7 @@ def filterSimplePaths(paths) -> set:
     return {p for p in paths if not any(char in p for char in '!*?[]')}
 
 
-def preprocessSchema(schema:dict):
-    # handle ~ alias
-    if platform.system() == 'Linux' and schema.get('targets'):
-        home = os.getenv('HOME')
-        schema['targets'] = [p.replace('~', home) for p in schema['targets']]
-    # handle target is multiline string format
-    if type(schema.get('targets')) is str:
-        schema['targets'] = [p.strip() for p in schema['targets'].split('\n') if p.strip() != '']
-    # unwrap target paths
+def unwrapTargets(schema:dict):
     if not schema.get('targets'):
         return
     
@@ -70,7 +59,7 @@ def preprocessSchema(schema:dict):
     schema['targets'] = list(paths)
 
 
-def load(fpath:str) -> dict:
+def load(fpath:str, skipUnwrap:bool = False) -> dict:
     if not os.path.exists(fpath):
         logger.fatal(f'failed to load schema "{fpath}" because in not exists')
         exit(1)    
@@ -88,14 +77,25 @@ def load(fpath:str) -> dict:
 
     if schema:
         schema['__name__'] = os.path.basename(fpath).split('.')[0]
+        
+        # handle ~ alias
+        if platform.system() == 'Linux' and schema.get('targets'):
+            home = os.getenv('HOME')
+            schema['targets'] = [p.replace('~', home) for p in schema['targets']]
+        # handle target is multiline string format
+        if type(schema.get('targets')) is str:
+            schema['targets'] = [p.strip() for p in schema['targets'].split('\n') if p.strip() != '']
+
+        if not skipUnwrap:
+            unwrapTargets(schema)
+
         if schema.get('include'):
             return include(schema, schema.get('include'))
-
     return schema
 
 
 def include(schema:dict, include:str) -> dict:
-    t = getBackupSchema(include)
+    t = getBackupSchema(include, True)
     if not t:
         logger.fatal(f'failed to include "{include}" for "{schema['__name__']}", because it not exists')
         exit(1)
