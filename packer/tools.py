@@ -69,8 +69,8 @@ def modifyRestorePaths(packConfig:dict, schema):
     folders = packConfig['folders']
     files = packConfig['files']
 
-    folders = [modifySingleRestorePath(p, schema, packConfig) for p in folders]
-    files = [modifySingleRestorePath(p, schema, packConfig) for p in files]
+    folders = [modifySingleRestorePath(p, schema, packConfig, True) for p in folders]
+    files = [modifySingleRestorePath(p, schema, packConfig, False) for p in files]
 
     packConfig['folders'] = folders
     packConfig['files'] = files
@@ -92,7 +92,7 @@ def modifySingleRestorePath(path:str, schema:dict, packConfig:dict, isFolder:boo
         else:
             name = baseName[0]
             ext = ''
-        newName = f'{name} ({i}){ext}'
+        newName = f'{name} ({hex(i)[2:]}){ext}'
 
     newPath = os.path.join(root, newName)
 
