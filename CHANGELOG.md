@@ -1,5 +1,9 @@
 
-## 0.8a 
+## 0.9a
+fixed:
+- abort at build service process if token exists and authorization succeed
+
+## 0.8a ([commit](https://github.com/imKokoT/simple-backup-tool/commit/22b9e205291c1926baa9f663eced4cd23477d808)) 
 added:
 - multiline string format of schema's 'targets' param
 - schema's 'targets' param git match patterns (#12)

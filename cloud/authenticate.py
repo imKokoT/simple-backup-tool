@@ -67,6 +67,7 @@ def authenticate(schema:dict) -> Credentials:
         os.mkdir(f'{tmp}/tokens')
 
     if os.path.exists(tokenPath) and os.path.exists(f'./configs/secrets/{secretName}.cred'):
+        schema['__secret_type__'] = 'cred'
         creds = Credentials.from_authorized_user_file(tokenPath, SCOPES)
 
     if not creds or not creds.valid:
