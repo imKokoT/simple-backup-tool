@@ -3,6 +3,7 @@
 fixed:
 - abort at build service process if token exists and authorization succeed
 
+
 ## 0.8a ([commit](https://github.com/imKokoT/simple-backup-tool/commit/22b9e205291c1926baa9f663eced4cd23477d808)) 
 added:
 - multiline string format of schema's 'targets' param
@@ -15,6 +16,7 @@ fixed:
 - abort if try to unpack files to tmp folder
 - restored files numeration in tmp folder
 - abort if refresh token without reauthorization
+
 
 ## 0.7a  ([commit](https://github.com/imKokoT/simple-backup-tool/commit/18e9be75b5076aade2f05a4427ef28037c109df8))
 added:
