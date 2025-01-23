@@ -27,6 +27,7 @@ def encrypt(schema:dict, archiveName:str) -> str:
 
     archivePath = f'{tmp}/{archiveName}'
     ArchiveTMPPath = f'{archivePath}.tmp'
+    logger.info(f'encrypting...')
     with open(archivePath, 'rb') as ifile, open(ArchiveTMPPath, 'wb') as ofile:
         ofile.write(iv)
 
@@ -45,3 +46,38 @@ def encrypt(schema:dict, archiveName:str) -> str:
 
     logger.info(f"encryption completed with success!")
     return archivePath
+
+
+def decrypt(schema:dict):
+    logger.info('initialize decryption process with AES-256')
+    tmp = getTMP()
+    schemaName = schema['__name__']
+    downloaded = f'{tmp}/{schemaName}.downloaded'
+    downloadedTMP = f'{downloaded}.tmp'
+
+    if not schema.get('password'):
+        logger.fatal(f'failed to decrypt: decryption process require "password" parameter!')
+        exit(1)
+    # TODO: implement salt
+    key = keygen(schema['password'], b'')
+    
+    logger.info('decrypting...')
+    with open(downloaded, 'rb') as ifile, open(downloadedTMP, 'wb') as ofile:
+        iv = ifile.read(IV_SIZE)
+        cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
+        decryptor = cipher.decryptor()
+        unpadder = padding.PKCS7(algorithms.AES.block_size).unpadder()
+
+        while chunk := ifile.read(CHUNK_SIZE):
+            decrypted_chunk = decryptor.update(chunk)
+            if len(decrypted_chunk) < CHUNK_SIZE:
+                decrypted_chunk = unpadder.update(decrypted_chunk) + unpadder.finalize()
+
+            ofile.write(decrypted_chunk)
+        ofile.write(decryptor.finalize())
+
+    logger.info(f'deleting duplicate')
+    os.remove(downloaded)
+    os.rename(downloadedTMP, downloaded)
+
+    logger.info(f"decryption completed with success!")
