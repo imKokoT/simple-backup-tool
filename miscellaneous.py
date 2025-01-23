@@ -5,9 +5,9 @@ from app_config import Config
 from properties import *
 
 
-def updateProgressBar(percentage:int, end:bool=False):
+def updateProgressBar(percentage:float, end:bool=False):
     '''if percentage is None or end is true, progress bar will finish with 100%'''
-    percentage = 1 if percentage is None else percentage
+    percentage = 1 if percentage is None else (1 if percentage > 1 else percentage)
 
     bar_length = shutil.get_terminal_size().columns - 8
     blocks = int(percentage * bar_length)

@@ -31,13 +31,16 @@ def encrypt(schema:dict, archiveName:str) -> str:
     with open(archivePath, 'rb') as ifile, open(ArchiveTMPPath, 'wb') as ofile:
         ofile.write(iv)
 
+        chunkI = 0
+        fSize = os.path.getsize(archivePath)
         while chunk := ifile.read(CHUNK_SIZE):
             if len(chunk) < CHUNK_SIZE:
                 chunk = padder.update(chunk) + padder.finalize()
 
             encrypted_chunk = encryptor.update(chunk)
             ofile.write(encrypted_chunk)
-            # updateProgressBar()
+            chunkI += 1
+            updateProgressBar(chunkI/(fSize/CHUNK_SIZE))
         ofile.write(encryptor.finalize())
 
     logger.info(f'deleting duplicate')
@@ -68,12 +71,16 @@ def decrypt(schema:dict):
         decryptor = cipher.decryptor()
         unpadder = padding.PKCS7(algorithms.AES.block_size).unpadder()
 
+        chunkI = 0
+        fSize = os.path.getsize(downloaded)
         while chunk := ifile.read(CHUNK_SIZE):
             decrypted_chunk = decryptor.update(chunk)
             if len(decrypted_chunk) < CHUNK_SIZE:
                 decrypted_chunk = unpadder.update(decrypted_chunk) + unpadder.finalize()
 
             ofile.write(decrypted_chunk)
+            chunkI += 1
+            updateProgressBar(chunkI/(fSize/CHUNK_SIZE))
         ofile.write(decryptor.finalize())
 
     logger.info(f'deleting duplicate')
