@@ -13,12 +13,20 @@ def sendMeta(service, folder:str, schema:dict):
 
     schemaName = schema['__name__']
 
-    data = {
-        'compressFormat': schema.get('compressFormat'),
-        'password': schema.get('password') is not None,
-        'mode': schema.get('mode'),
-        'program': schema.get('program')
-    }
+    if schema.get('encryption'):
+        data = {
+            'compressFormat': schema.get('compressFormat'),
+            'encryption': schema['encryption'],
+            'mode': schema.get('mode'),
+            'program': schema.get('program')
+        }
+    else:
+        data = {
+            'compressFormat': schema.get('compressFormat'),
+            'password': schema.get('password') is not None,
+            'mode': schema.get('mode'),
+            'program': schema.get('program')
+        }
     meta = {
         'name': f'{schemaName}.meta',
         'parents': [folder],

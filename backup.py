@@ -14,6 +14,7 @@ from cloud.authenticate import authenticate
 from cloud.drive import send, getDestination, sendMeta
 from miscellaneous import getTMP, humanSize
 import clean
+import encryptor
 
 
 def backup(archiveName:str, schema:dict, creds:Credentials):
@@ -43,6 +44,7 @@ def backup(archiveName:str, schema:dict, creds:Credentials):
         destinationFolder = getDestination(service, schema['destination'], schema.get('root'))
         
         cleanup(service, destinationFolder, schemaName)
+        logger.info(f'storage quota after cleanup: limit={humanSize(quota['limit'])}, usage={humanSize(quota['usage'])}')
 
         logger.info('sending backup to cloud...')
         send(service, os.path.join(tmp, archiveName), f'{schemaName}.archive', destinationFolder)
@@ -76,6 +78,8 @@ def createBackupOf(schemaNameOrPath:str, **kwargs):
     packer.packAll(sch)
     
     archName = archiver.archive(sch)
+
+    archName = encryptor.encrypt(sch, archName)
 
     backup(archName, sch, creds)
 
