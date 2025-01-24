@@ -78,9 +78,8 @@ def load(fpath:str, skipUnwrap:bool = False) -> dict:
 
     if schema:
         schema['__name__'] = os.path.basename(fpath).split('.')[0]
-        logger.debug(f'handle schema\'s keys "{schema['__name__']}"')
+        logger.debug(f'processing "{schema["__name__"]}" keys')
 
-        
         # handle ~ alias
         if platform.system() == 'Linux' and schema.get('targets'):
             home = os.getenv('HOME')
@@ -93,7 +92,20 @@ def load(fpath:str, skipUnwrap:bool = False) -> dict:
             unwrapTargets(schema)
 
         if schema.get('include'):
-            return include(schema, schema.get('include'))
+            schema = include(schema, schema.get('include'))
+    
+    logger.debug(f'postprocessing "{schema["__name__"]}" keys')
+    # detect encryption
+    if schema.get('encryption'):
+        if not schema.get('password') and not schema.get('_enc_keyword'):
+            logger.fatal(f'encryption enabled, "password" parameter required!')
+            exit(1)
+        if not schema.get('_enc_keyword'):
+            logger.debug('encryption detected')
+            schema['_enc_keyword'] = schema.pop('password')
+        else:
+            schema.pop('password')
+    
     return schema
 
 

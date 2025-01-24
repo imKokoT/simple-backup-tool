@@ -13,12 +13,8 @@ def encrypt(schema:dict, archiveName:str) -> str:
     logger.info('initialize encryption process with AES-256')
     iv = bytesgen(IV_SIZE)
 
-    if not schema.get('password'):
-        logger.fatal(f'failed to encrypt: encryption process require "password" parameter!')
-        exit(1)
-
     # TODO: implement salt
-    key = keygen(schema['password'], b'')
+    key = keygen(schema['_enc_keyword'], b'')
     cipher = Cipher(algorithms.AES(key), modes.CBC(iv))
     encryptor = cipher.encryptor()    
     padder = padding.PKCS7(algorithms.AES.block_size).padder()
@@ -59,11 +55,8 @@ def decrypt(schema:dict):
     downloaded = f'{tmp}/{schemaName}.downloaded'
     downloadedTMP = f'{downloaded}.tmp'
 
-    if not schema.get('password'):
-        logger.fatal(f'failed to decrypt: decryption process require "password" parameter!')
-        exit(1)
     # TODO: implement salt
-    key = keygen(schema['password'], b'')
+    key = keygen(schema['_enc_keyword'], b'')
     
     logger.info('decrypting...')
     with open(downloaded, 'rb') as ifile, open(downloadedTMP, 'wb') as ofile:
