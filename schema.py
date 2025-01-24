@@ -60,6 +60,7 @@ def unwrapTargets(schema:dict):
 
 
 def load(fpath:str, skipUnwrap:bool = False) -> dict:
+    logger.debug(f'loading schema "{fpath}"')
     if not os.path.exists(fpath):
         logger.fatal(f'failed to load schema "{fpath}" because in not exists')
         exit(1)    
@@ -77,6 +78,8 @@ def load(fpath:str, skipUnwrap:bool = False) -> dict:
 
     if schema:
         schema['__name__'] = os.path.basename(fpath).split('.')[0]
+        logger.debug(f'handle schema\'s keys "{schema['__name__']}"')
+
         
         # handle ~ alias
         if platform.system() == 'Linux' and schema.get('targets'):
@@ -95,11 +98,13 @@ def load(fpath:str, skipUnwrap:bool = False) -> dict:
 
 
 def include(schema:dict, include:str) -> dict:
+    logger.debug(f'trying to include schema "{include}"')
     t = getBackupSchema(include, True)
     if not t:
         logger.fatal(f'failed to include "{include}" for "{schema['__name__']}", because it not exists')
         exit(1)
     
+    logger.debug(f'updating keys')
     for k, v in t.items():
         if schema.get(k):
             continue
