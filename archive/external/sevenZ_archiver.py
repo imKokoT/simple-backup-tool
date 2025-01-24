@@ -40,6 +40,8 @@ def compress(targetPath:str, sch:dict) -> str:
             exit(1)
 
     zipPath = f'{targetPath}.{sch.get('compressFormat', '7z')}'
+    if os.path.exists(zipPath):
+        os.remove(zipPath)
     logger.info(f'{sch.get('compressFormat', '7z')} with 7z subprocess compressing...')
     
     command = ['7z', 'a', '-y', f'-t{compressFormat}', f'-mx={compressLevel}', zipPath, targetPath]
