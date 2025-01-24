@@ -1,5 +1,4 @@
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import padding
 from .keygen import bytesgen, keygen
 from logger import logger
@@ -20,7 +19,7 @@ def encrypt(schema:dict, archiveName:str) -> str:
 
     # TODO: implement salt
     key = keygen(schema['password'], b'')
-    cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
+    cipher = Cipher(algorithms.AES(key), modes.CBC(iv))
     encryptor = cipher.encryptor()    
     padder = padding.PKCS7(algorithms.AES.block_size).padder()
     tmp = getTMP()
@@ -41,6 +40,8 @@ def encrypt(schema:dict, archiveName:str) -> str:
             ofile.write(encrypted_chunk)
             chunkI += 1
             updateProgressBar(chunkI/(fSize/CHUNK_SIZE))
+        
+        logger.info('finalizing...')
         ofile.write(encryptor.finalize())
 
     logger.info(f'deleting duplicate')
@@ -67,7 +68,7 @@ def decrypt(schema:dict):
     logger.info('decrypting...')
     with open(downloaded, 'rb') as ifile, open(downloadedTMP, 'wb') as ofile:
         iv = ifile.read(IV_SIZE)
-        cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
+        cipher = Cipher(algorithms.AES(key), modes.CBC(iv))
         decryptor = cipher.decryptor()
         unpadder = padding.PKCS7(algorithms.AES.block_size).unpadder()
 
@@ -81,6 +82,8 @@ def decrypt(schema:dict):
             ofile.write(decrypted_chunk)
             chunkI += 1
             updateProgressBar(chunkI/(fSize/CHUNK_SIZE))
+            
+        logger.info('finalizing...')
         ofile.write(decryptor.finalize())
 
     logger.info(f'deleting duplicate')
