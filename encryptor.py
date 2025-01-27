@@ -16,7 +16,24 @@ def encrypt(schema:dict, archName:str) -> str:
         case 'aes': return encryption.aes.encrypt(schema, archName)
         case 'chacha20': return encryption.chacha20.encrypt(schema, archName)
         case _:
-            logger.fatal(f'unsupported encryption algorism "{schema["encryption"]}"')
+            logger.fatal(f'unsupported algorism "{schema["encryption"]}"')
             exit(1)
 
-def decrypt(schema:dict): ...
+def decrypt(schema:dict):
+    try:
+        import cryptography as _
+    except ModuleNotFoundError:
+        logger.fatal(f'decryption not available, use "pip install cryptography"')
+        exit(1)
+    
+    try:
+        match schema['encryption']:
+            case 'aes': return encryption.aes.decrypt(schema)
+            case 'chacha20': return encryption.chacha20.decrypt(schema)
+            case _:
+                logger.fatal(f'unsupported algorism "{schema["encryption"]}"')
+                exit(1)
+    except ValueError as e:
+        logger.debug(f'decryption process exited with error: {e}')
+        logger.error('failed to decrypt archive; possibly wrong password')
+        exit(1)

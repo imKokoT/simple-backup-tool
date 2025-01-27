@@ -4,6 +4,7 @@ from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from google.auth.exceptions import RefreshError
+import encryptor
 from properties import *
 from logger import logger
 import schema
@@ -54,11 +55,17 @@ def restore(schema:dict, creds:Credentials):
     logger.info(f'successfully downloaded "{schemaName}.archive" from cloud; it placed in {os.path.join(tmp, f'{schemaName}.downloaded')}')
 
 
-def _updateSchema(schema, meta):
+def _updateSchema(schema:dict, meta):
     for k, v in meta.items():
         if k == 'password' and v and not schema.get('password'):
             schema['password'] = getpass(f'{YC}Archive encrypted with password; enter password: {RC}')
-        elif k != 'password':
+        elif k == 'encryption':
+            if v != schema.get('encryption'):
+                logger.warning(f'meta.encryption={v}, but schema.encryption={schema.get('encryption')}; meta\'s value taken')
+                schema['encryption'] = v
+            if not schema.get('_enc_keyword'):
+                schema['_enc_keyword'] = getpass(f'{YC}Archive encrypted with "{meta['encryption']}"; enter password: {RC}')
+        else:
             schema[k] = v
 
 
@@ -80,6 +87,8 @@ def restoreFromCloud(schemaNameOrPath:str, **kwargs):
     creds = authenticate(sch)
 
     restore(sch, creds)
+
+    encryptor.decrypt(sch)
 
     archiver.dearchive(sch)
 

@@ -1,5 +1,8 @@
 
 ## 0.9a
+added:
+- AES-256, ChaCha20 encryption algorithms
+
 fixed:
 - abort at build service process if token exists and authorization succeed
 - abort if 7z can not open archive
