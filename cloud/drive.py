@@ -46,7 +46,7 @@ def sendMeta(service, folder:str, schema:dict):
 def tryGetMeta(service, folder:str, schemaName:str) -> dict|None:
     logger.info(f'getting meta...')
 
-    query = f"'{folder}' in parents and name='{schemaName}.meta' and trashed=false"
+    query = f"'{folder}' in parents and name='{schemaName}.meta' and trashed=false and 'me' in owners"
     response = service.files().list(q=query, spaces='drive').execute()
     files = response.get('files', [])
 
@@ -95,7 +95,7 @@ def download(service, fpath:str, name:str, folder:str):
     @param folder: folder where will place the file 
     '''
     logger.info(f'downloading {name} from cloud...')
-    query = f"'{folder}' in parents and name='{name}' and trashed=false"
+    query = f"'{folder}' in parents and name='{name}' and trashed=false and 'me' in owners"
     response = service.files().list(q=query, spaces='drive').execute()
     files = response.get('files', [])
 
@@ -128,7 +128,7 @@ def getDestination(service, path:str, root:str|None):
 
 
 def _getOrCreate(service, folderName:str, parent=None):
-    query = f"name='{folderName}' and mimeType='application/vnd.google-apps.folder' and trashed=false"
+    query = f"name='{folderName}' and mimeType='application/vnd.google-apps.folder' and trashed=false and 'me' in owners"
     if parent:
         query = f"'{parent}' in parents and " + query
     
