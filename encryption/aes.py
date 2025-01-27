@@ -45,7 +45,7 @@ def encrypt(schema:dict, archiveName:str) -> str:
     os.rename(ArchiveTMPPath, archivePath)
 
     logger.info(f"encryption completed with success!")
-    return archivePath
+    return archiveName
 
 
 def decrypt(schema:dict):

@@ -1,6 +1,5 @@
 from encryption.keygen import bytesgen, keygen
-from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-from cryptography.hazmat.primitives import padding
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms
 from logger import logger
 from miscellaneous import getTMP, updateProgressBar
 import os
@@ -40,7 +39,7 @@ def encrypt(schema:dict, archiveName:str) -> str:
     os.rename(ArchiveTMPPath, archivePath)
 
     logger.info(f"encryption completed with success!")
-    return archivePath
+    return archiveName
 
 
 def decrypt(schema:dict):
