@@ -14,7 +14,7 @@ def encrypt(schema:dict, archName:str) -> str:
     
     match schema['encryption']:
         case 'aes': return encryption.aes.encrypt(schema, archName)
-        case 'chacha20': return encryption.chacha20.encrypt(schema, archName)
+        case 'chacha20': return encryption.chacha20poly1305.encrypt(schema, archName)
         case _:
             logger.fatal(f'unsupported algorism "{schema["encryption"]}"')
             exit(1)
@@ -29,7 +29,7 @@ def decrypt(schema:dict):
     try:
         match schema['encryption']:
             case 'aes': return encryption.aes.decrypt(schema)
-            case 'chacha20': return encryption.chacha20.decrypt(schema)
+            case 'chacha20': return encryption.chacha20poly1305.decrypt(schema)
             case _:
                 logger.fatal(f'unsupported algorism "{schema["encryption"]}"')
                 exit(1)

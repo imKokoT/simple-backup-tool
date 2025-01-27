@@ -1,11 +1,20 @@
+# ChaCha20-Poly1305
 from encryption.keygen import bytesgen, keygen
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms
+from cryptography.hazmat.primitives.poly1305 import Poly1305
 from logger import logger
 from miscellaneous import getTMP, updateProgressBar
 import os
 
 CHUNK_SIZE = 1024 * 1024
 NONCE_SIZE = 16
+
+
+def _generatePoly1305Key(key, nonce):
+    cipher = Cipher(algorithms.ChaCha20(key, nonce), mode=None)
+    encryptor = cipher.encryptor()
+    return encryptor.update(b'\x00' * 32)
+
 
 def encrypt(schema:dict, archiveName:str) -> str:
     logger.info('initialize encryption process with ChaCha20')
@@ -15,8 +24,8 @@ def encrypt(schema:dict, archiveName:str) -> str:
     key = keygen(schema['_enc_keyword'], b'')
     cipher = Cipher(algorithms.ChaCha20(key, nonce), mode=None)
     encryptor = cipher.encryptor()
+    
     tmp = getTMP()
-
     archivePath = f'{tmp}/{archiveName}'
     ArchiveTMPPath = f'{archivePath}.tmp'
     logger.info(f'encrypting...')
@@ -27,6 +36,11 @@ def encrypt(schema:dict, archiveName:str) -> str:
         fSize = os.path.getsize(archivePath)
         while chunk := ifile.read(CHUNK_SIZE):
             encrypted_chunk = encryptor.update(chunk)
+            poly = Poly1305(_generatePoly1305Key(key, nonce))
+            poly.update(encrypted_chunk)
+            tag = poly.finalize()
+
+            ofile.write(tag)
             ofile.write(encrypted_chunk)
             chunkI += 1
             updateProgressBar(chunkI/(fSize/CHUNK_SIZE))
@@ -60,8 +74,17 @@ def decrypt(schema:dict):
         
         chunkI = 0
         fSize = os.path.getsize(downloaded)
-        while chunk := ifile.read(CHUNK_SIZE):
-            decrypted_chunk = decryptor.update(chunk)
+        while chunk := ifile.read(CHUNK_SIZE + 16):
+            tag = chunk[:16]
+            data = chunk[16:]
+            poly = Poly1305(_generatePoly1305Key(key, nonce))
+            poly.update(data)
+            try:
+                poly.verify(tag)
+            except Exception as e:
+                raise ValueError("tag verification failed!") from e
+            decrypted_chunk = decryptor.update(data)
+            
             ofile.write(decrypted_chunk)
             chunkI += 1
             updateProgressBar(chunkI/(fSize/CHUNK_SIZE))
