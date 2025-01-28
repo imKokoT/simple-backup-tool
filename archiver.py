@@ -15,22 +15,22 @@ def archive(schema:dict) -> str:
     program = schema.get('program', '7z')
 
     if mode == 'internal':
-        match schema.get('compressFormat'):
-            case 'gz':
-                return gz_archiver.compress(f'{tmp}/{schemaName}.tar', schema)
-            case 'bz2':
-                try:
-                    return bz2_archiver.compress(f'{tmp}/{schemaName}.tar', schema)
-                except ModuleNotFoundError:
-                    logger.fatal(f'"bz2" module not found; you should install it')
-                    exit(1)
-            case 'zip':
-                return zip_archiver.compress(f'{tmp}/{schemaName}.tar', schema)
-            case None | 'tar':
-                return f'{schemaName}.tar'
-            case _:
-                logger.fatal(f'unsupported compression format {schema.get('compressionFormat', None)}')
-                exit(1)        
+        try:
+            match schema.get('compressFormat'):
+                case 'gz':
+                    return gz_archiver.compress(f'{tmp}/{schemaName}.tar', schema)
+                case 'bz2':
+                        return bz2_archiver.compress(f'{tmp}/{schemaName}.tar', schema)
+                case 'zip':
+                    return zip_archiver.compress(f'{tmp}/{schemaName}.tar', schema)
+                case None | 'tar':
+                    return f'{schemaName}.tar'
+                case _:
+                    logger.fatal(f'unsupported compression format {schema.get('compressionFormat', None)}')
+                    exit(1)        
+        except ModuleNotFoundError as e:
+            logger.fatal(f'module not found; you should to install it; error: {e}')
+            exit(1)
     elif mode == 'external':
         match program:
             case '7z':
@@ -58,27 +58,29 @@ def dearchive(schema:dict) -> str:
     downloaded = os.path.join(tmp, f'{schemaName}.downloaded')
 
     if mode == 'internal':
-        match schema.get('compressFormat'):
-            case 'gz':
-                return gz_archiver.decompress(downloaded, schema, schemaName)
-            case 'bz2':
-                try:
+        try:
+            match schema.get('compressFormat'):
+                case 'gz':
+                    return gz_archiver.decompress(downloaded, schema, schemaName)
+                case 'bz2':
                     return bz2_archiver.decompress(downloaded, schema, schemaName)
-                except ModuleNotFoundError:
-                    logger.fatal(f'"bz2" module not found; you should install it')
-                    exit(1)
-            case 'zip':
-                return zip_archiver.decompress(downloaded, schema, schemaName) 
-            case None | 'tar':
-                if os.path.exists(os.path.join(tmp, f'{schemaName}.tar')):
-                    os.remove(os.path.join(tmp, f'{schemaName}.tar'))
+                case 'zip':
+                    return zip_archiver.decompress(downloaded, schema, schemaName) 
+                case None | 'tar':
+                    if os.path.exists(os.path.join(tmp, f'{schemaName}.tar')):
+                        os.remove(os.path.join(tmp, f'{schemaName}.tar'))
 
-                os.rename(downloaded, os.path.join(tmp, f'{schemaName}.tar'))
-                
-                return f'{schemaName}.tar'
-            case _:
-                logger.fatal(f'unsupported compression format {schema.get('compressionFormat', None)}')
-                exit(1)
+                    os.rename(downloaded, os.path.join(tmp, f'{schemaName}.tar'))
+                    
+                    return f'{schemaName}.tar'
+                case _:
+                    logger.fatal(f'unsupported compression format {schema.get('compressionFormat', None)}')
+                    exit(1)
+        except ModuleNotFoundError as e:
+            logger.fatal(f'module not found; you should to install it; error: {e}')
+            exit(1)
+        except ValueError as e:
+            logger.fatal(f'dearchive failed; possibly wrong password! error: {e}')
     elif mode == 'external':
         match program:
             case '7z':

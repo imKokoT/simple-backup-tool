@@ -7,6 +7,8 @@ fixed:
 - abort at build service process if token exists and authorization succeed
 - abort if 7z can not open archive
 - downloading or reading not own files or folders
+- abort if no external archiver
+- internal archivers unstable
 
 
 ## 0.8a ([commit](https://github.com/imKokoT/simple-backup-tool/commit/22b9e205291c1926baa9f663eced4cd23477d808)) 
