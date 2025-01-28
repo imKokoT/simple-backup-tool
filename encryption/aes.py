@@ -33,8 +33,8 @@ def encrypt(schema:dict, archiveName:str) -> str:
             if len(chunk) < CHUNK_SIZE:
                 chunk = padder.update(chunk) + padder.finalize()
 
-            encrypted_chunk = encryptor.update(chunk)
-            ofile.write(encrypted_chunk)
+            encryptedChunk = encryptor.update(chunk)
+            ofile.write(encryptedChunk)
             chunkI += 1
             updateProgressBar(chunkI/(fSize/CHUNK_SIZE))
         
@@ -69,11 +69,11 @@ def decrypt(schema:dict):
         chunkI = 0
         fSize = os.path.getsize(downloaded)
         while chunk := ifile.read(CHUNK_SIZE):
-            decrypted_chunk = decryptor.update(chunk)
-            if len(decrypted_chunk) < CHUNK_SIZE:
-                decrypted_chunk = unpadder.update(decrypted_chunk) + unpadder.finalize()
+            decryptedChunk = decryptor.update(chunk)
+            if len(decryptedChunk) < CHUNK_SIZE:
+                decryptedChunk = unpadder.update(decryptedChunk) + unpadder.finalize()
 
-            ofile.write(decrypted_chunk)
+            ofile.write(decryptedChunk)
             chunkI += 1
             updateProgressBar(chunkI/(fSize/CHUNK_SIZE))
             

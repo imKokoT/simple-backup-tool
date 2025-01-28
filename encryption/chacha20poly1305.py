@@ -35,13 +35,13 @@ def encrypt(schema:dict, archiveName:str) -> str:
         chunkI = 0
         fSize = os.path.getsize(archivePath)
         while chunk := ifile.read(CHUNK_SIZE):
-            encrypted_chunk = encryptor.update(chunk)
+            encryptedChunk = encryptor.update(chunk)
             poly = Poly1305(_generatePoly1305Key(key, nonce))
-            poly.update(encrypted_chunk)
+            poly.update(encryptedChunk)
             tag = poly.finalize()
 
             ofile.write(tag)
-            ofile.write(encrypted_chunk)
+            ofile.write(encryptedChunk)
             chunkI += 1
             updateProgressBar(chunkI/(fSize/CHUNK_SIZE))
         
@@ -83,9 +83,9 @@ def decrypt(schema:dict):
                 poly.verify(tag)
             except Exception as e:
                 raise ValueError("tag verification failed!") from e
-            decrypted_chunk = decryptor.update(data)
+            decryptedChunk = decryptor.update(data)
             
-            ofile.write(decrypted_chunk)
+            ofile.write(decryptedChunk)
             chunkI += 1
             updateProgressBar(chunkI/(fSize/CHUNK_SIZE))
         

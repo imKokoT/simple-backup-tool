@@ -44,7 +44,7 @@ secret: your-secret # or your-secret-service secret from secrets folder; can be 
 # include others schema values
 # you can override params that you have included
 include: include
-root: your_folder_id_in_drive # the root folder id; can be ignored for personal cred secret; required for service secret;
+root: your_folder_id_in_drive            # the root folder id; can be ignored for personal cred secret; required for service secret;
 destination: 'test/folder/in/your/drive' # google disk backup folder path
 # list of all ignored files or folders; similar to .gitignore functionality
 # works for target folders, files always required
@@ -58,16 +58,17 @@ targets: |
 ```
 And *include.yaml*:
 ```yaml
-compressFormat: 7z # 7z, gz, bz2, zip, xz, zpaq; null or ignored is tar
-compressLevel: 5 # don't work with tar; default is 5; can be ignored
-password: null # if format or archiver supports password, your archive will be encrypted 
+compressFormat: 7z  # 7z, gz, bz2, zip, xz, zpaq; null or ignored is tar
+compressLevel: 5    # don't work with tar; default is 5; can be ignored
+password: null      # if format or archiver supports password, your archive will be encrypted 
+
 # internal only for gz, bz2, zip
 # external will try to use external program; supports 7z, zpaq
 # custom will to run your custom program; 'program' param is path to your program; requires c_args and d_args  
 mode: external
-program: 7z # name of program
-c_args: [] # additional command line arguments at compress process; can be ignored
-d_args: [] # additional command line arguments at decompress process; can be ignored
+program: 7z   # name of program
+c_args: []    # additional command line arguments at compress process; can be ignored
+d_args: []    # additional command line arguments at decompress process; can be ignored
 ```
 You can backup several folders and files at once. Backup will be placed in *destination* path. Don't worry, program will create all necessary folders in Drive!
 
@@ -104,6 +105,18 @@ d_args: ['x', '@iname', '@oname', '-t1', '-f', '-key', '@pwd']
 
 ### Advanced target's selecting filter settings
 Besides that you can use *ignore* parameter to filter what you don't want to place in the backup, you can filter what you select. BUT this function NOT RECOMMENDED, because it can increase scan time and make your backup more uncomfortable to restore, as that moment tool saves patterns as set of different target files. **Also anything you place in targets as search pattern will be included to your backup.** 
+
+### Encryption
+If you install `cryptography`, you can encrypt any your backup. Tool supports two encryption algorisms *AES-256* and *ChaCha20*. To use encryption simply add `encryption` parameter to schema:
+```yaml
+...
+encryption: aes    # 'chacha20poly1305' or raw 'chacha20'
+password: password # required
+...
+```
+**Also its recommended to use unique secure password for every schema.**
+##### ChaCha20 or ChaCha20-Poly1305?
+Raw Chacha20 faster, but HAS NOT authentication, so if password is wrong, restore process will fall. To fix this ChaCha20 is used with Poly1305, BUT slower.
 
 ## Create first backup
 SBT has two main scripts: *backup.py* and *restore.py*. To backup run
