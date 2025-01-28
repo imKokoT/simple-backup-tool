@@ -103,7 +103,7 @@ def load(fpath:str, skipUnwrap:bool = False) -> dict:
         if not schema.get('_enc_keyword'):
             logger.debug('encryption detected')
             schema['_enc_keyword'] = schema.pop('password')
-        else:
+        elif schema.get('password'):
             schema.pop('password')
     
     return schema
