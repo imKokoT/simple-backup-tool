@@ -1,9 +1,8 @@
 import os
-import subprocess
 from app_config import Config
 from logger import logger
 from properties import *
-import sys
+from . import tools
 
 
 def _maskPsw(command:list) -> list:
@@ -48,13 +47,7 @@ def compress(targetPath:str, sch:dict) -> str:
 
     logger.info(f'command line: {' '.join(_maskPsw(command))}')
 
-    result = subprocess.run(command, text=True, stdout=sys.stdout)
-
-    if result.returncode == 0:
-        logger.info("compress finished with success!")
-    else:
-        logger.fatal(f"external process error: {result.stderr}")
-        exit(1)
+    tools.run(command[0], command)
 
     return os.path.basename(zipPath)
 
@@ -75,13 +68,7 @@ def decompress(archPath:str, sch:dict) -> str:
 
     logger.info(f'command line: {' '.join(_maskPsw(command))}')
 
-    result = subprocess.run(command, text=True, stdout=sys.stdout)
-
-    if result.returncode == 0:
-        logger.info("decompress finished with success!")
-    else:
-        logger.fatal(f"external process error: {result.stderr}")
-        exit(1)
+    tools.run(command[0], command)
 
     return os.path.basename(exportPath)
 

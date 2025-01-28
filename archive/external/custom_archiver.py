@@ -1,10 +1,9 @@
 from copy import copy
 import os
-import subprocess
 from app_config import Config
 from logger import logger
 from properties import *
-import sys
+from . import tools
 
 
 def _maskPsw(args:list) -> list:
@@ -65,17 +64,7 @@ def compress(targetPath:str, sch:dict) -> str:
         i += 1
 
     logger.info(f'command line: {' '.join(_maskPsw(displayCommand))}')
-    try:
-        result = subprocess.run(command, text=True, stdout=sys.stdout)
-    except FileNotFoundError:
-        logger.fatal(f'program "{program}" not found')
-        exit(1)
-
-    if result.returncode == 0:
-        logger.info("compress finished with success!")
-    else:
-        logger.fatal(f"external process error: {result.stderr}")
-        exit(1)
+    tools.run(program, command)
 
     return os.path.basename(zipPath)
 
@@ -110,16 +99,6 @@ def decompress(archPath:str, sch:dict) -> str:
         i += 1
 
     logger.info(f'command line: {' '.join(_maskPsw(displayCommand))}')
-    try:
-        result = subprocess.run(command, text=True, stdout=sys.stdout)
-    except FileNotFoundError:
-        logger.fatal(f'program "{program}" not found')
-        exit(1)
-
-    if result.returncode == 0:
-        logger.info("compress finished with success!")
-    else:
-        logger.fatal(f"external process error: {result.stderr}")
-        exit(1)
+    tools.run(program, command)
 
     return os.path.basename(exportPath)
