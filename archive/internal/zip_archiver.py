@@ -1,7 +1,7 @@
 import zipfile
 import os
 from properties import *
-from miscellaneous import updateProgressBar
+from miscellaneous import humanSize, updateProgressBar
 from logger import logger
 
 
@@ -26,7 +26,8 @@ def compress(targetPath:str, sch:dict) -> str:
 
     tfile.close()
     zfile.close()
-    logger.info('compress finished with success!')
+    zsize = os.path.getsize(zipPath)
+    logger.info(f'compress finished with success! compressed size: {humanSize(zsize)}')
     return os.path.basename(zipPath)
 
 

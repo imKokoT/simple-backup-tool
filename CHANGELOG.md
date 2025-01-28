@@ -2,6 +2,7 @@
 ## 0.9a
 added:
 - AES-256, ChaCha20, ChaCha20-Poly1305 encryption algorithms
+- log compressed size in internal archivers
 
 fixed:
 - abort at build service process if token exists and authorization succeed
