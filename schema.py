@@ -21,6 +21,8 @@ def getBackupSchema(schemaName:str, skipUnwrap:bool = False) ->dict|None:
 
     schema = load(f'configs/schemas/{schemas[schemasNames.index(schemaName)]}', skipUnwrap)
 
+    assert schema.get('__name__') if schema else True, f'Loaded schema "{schemaName}" has not the "__name__" key!'
+
     return schema
 
 
