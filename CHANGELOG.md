@@ -3,6 +3,9 @@
 added:
 - packed targets dump to logs (#25)
 
+fixed:
+- ignore pattern loader wrongly handled "/" at start of pattern
+
 other:
 - changed where restored files dump places from tmp to logs folder
 

@@ -16,9 +16,7 @@ def loadIgnorePatterns(directory:str) -> pathspec.PathSpec|None:
             os.path.join(dpath, '.gitignore')
         )
         for ignoreF in ignoreFilers:
-            ## TODO: smells like bugs... ############################################################################################
             if not os.path.exists(ignoreF) or not Config().include_gitignore and os.path.basename(ignoreF) == '.gitignore': continue
-            #########################################################################################################################
 
             logger.debug(f'found {ignoreF}, loading ignore patterns...')
 
@@ -28,6 +26,7 @@ def loadIgnorePatterns(directory:str) -> pathspec.PathSpec|None:
                     l = f'!{l.replace('!', '')}' if '!' in l else l
                     l = f'{dpath[len(directory):]}/{'**/'+l if not l.startswith('/') else l}'
                     l = l.replace('\\', '/')
+                    l = l.replace('//', '/')
                     patterns.append(l)
         if len(patterns) == 0:
             return
