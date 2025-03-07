@@ -20,6 +20,8 @@ def loadIgnorePatterns(directory:str) -> pathspec.PathSpec|None:
             if not os.path.exists(ignoreF) or not Config().include_gitignore and os.path.basename(ignoreF) == '.gitignore': continue
             #########################################################################################################################
 
+            logger.debug(f'found {ignoreF}, loading ignore patterns...')
+
             with open(ignoreF, 'r', encoding='utf-8') as f:
                 for l in f.readlines():
                     l = l.strip()
@@ -29,8 +31,12 @@ def loadIgnorePatterns(directory:str) -> pathspec.PathSpec|None:
                     patterns.append(l)
         if len(patterns) == 0:
             return
-
-    return pathspec.PathSpec.from_lines('gitignore', patterns)
+        
+    try:
+        logger.debug('building pathspec')
+        return pathspec.PathSpec.from_lines('gitignore', patterns)
+    except ValueError as e:
+        logger.warning(f'ignore patters of directory "{directory}" has wrong format, so skipped; error: {e}')
 
 
 def shouldIgnore(path:str, specs:dict[str,pathspec.PathSpec], sorted_specs:list) -> bool:
