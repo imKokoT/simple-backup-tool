@@ -1,5 +1,10 @@
 
-## 0.9a
+## 0.10a
+added:
+- packed targets dump to logs (#25)
+
+
+## 0.9a ([commit](https://github.com/imKokoT/simple-backup-tool/commit/89f56bc6c3a87451197154a02ee11b6c0b7a3cf1))
 added:
 - AES-256, ChaCha20, ChaCha20-Poly1305 encryption algorithms
 - log compressed size in internal archivers

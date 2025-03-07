@@ -5,7 +5,7 @@ from properties import *
 from logger import logger
 from miscellaneous import getTMP, humanSize, iprint
 from packer.packconfig import configurePack
-from packer.tools import loadIgnorePatterns, shouldIgnore
+from packer.tools import loadIgnorePatterns, shouldIgnore, dumpPackedTargetsLog
 import schema
 
 
@@ -59,6 +59,7 @@ def packAll(schema:dict):
 
     configurePack(archive, schema, packedTargets)
 
+    dumpPackedTargetsLog(schema, result['filePaths'])
     logger.info(f'packing process finished successfully;\n'
                        f' - packs created: {packedCount}/{len(schema["targets"])}\n'
                        f' - archived and ignored total files: {result['files']}/{result['ignored']}\n'

@@ -16,8 +16,10 @@ def loadIgnorePatterns(directory:str) -> pathspec.PathSpec|None:
             os.path.join(dpath, '.gitignore')
         )
         for ignoreF in ignoreFilers:
+            ## TODO: smells like bugs... ############################################################################################
             if not os.path.exists(ignoreF) or not Config().include_gitignore and os.path.basename(ignoreF) == '.gitignore': continue
-            
+            #########################################################################################################################
+
             with open(ignoreF, 'r', encoding='utf-8') as f:
                 for l in f.readlines():
                     l = l.strip()
@@ -60,6 +62,23 @@ def dumpRestoredLog(packConfig:dict, schema):
         for file in files:
             f.write(f' {hex(i)[2:]}\t {file}\n')
             i += 1
+
+
+def dumpPackedTargetsLog(schema:dict, filePaths:dict[str,tuple]):
+    logger.debug(f'dump packed files to "logs/packed-files_{schema['__name__']}.log"')
+    df = open(f'logs/packed-files_{schema['__name__']}.log', 'w', encoding='utf-8')
+
+    df.write(f'PACKED FILES DUMP\n\n'
+             f'SCHEMA: {schema['__name__']}\n'
+             f'TIME: {time.ctime()}\n\n')
+    
+    for k, v in filePaths.items():
+        df.write(f'TAR {k}:\n')
+        for p in v:
+            df.write(f'\t{p}\n')
+        df.write('\n')
+
+    df.close()
 
 
 def modifyRestorePaths(packConfig:dict, schema):
