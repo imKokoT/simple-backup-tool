@@ -39,14 +39,12 @@ def shouldIgnore(path:str, specs:dict[str,pathspec.PathSpec], sorted_specs:list)
     return spec and spec.match_file(path[len(specPath):])
 
 
+## TODO: for now shows only what pack contains, not what has really restored 
 def dumpRestoredLog(packConfig:dict, schema):
-    tmp = getTMP()
-    root = f'{tmp}/restored/{schema['__name__']}'
-
     folders = packConfig['folders']
     files = packConfig['files']
 
-    with open(f'{root}/dump.log', 'w', encoding='utf-8') as f:
+    with open(f'logs/restored-targets_{schema['__name__']}.log', 'w', encoding='utf-8') as f:
         f.write(f'DUMP CREATED OF RESTORED BACKUP "{schema['__name__']}"\n'
                 f'\n'
                 f'dump time at {time.ctime()}\n'

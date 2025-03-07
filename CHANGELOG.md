@@ -3,6 +3,9 @@
 added:
 - packed targets dump to logs (#25)
 
+other:
+- changed where restored files dump places from tmp to logs folder
+
 
 ## 0.9a ([commit](https://github.com/imKokoT/simple-backup-tool/commit/89f56bc6c3a87451197154a02ee11b6c0b7a3cf1))
 added:
