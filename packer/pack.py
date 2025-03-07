@@ -33,7 +33,10 @@ def packAll(schema:dict):
         'files':0,
         'ignored': 0,
         'size': 0,
-        'scannedSize': 0
+        'scannedSize': 0,
+
+        # {target: [packed file paths] or (packed file paths,)}
+        'filePaths': {}
     }
     res:dict
     packFile.counter = 0
@@ -46,8 +49,12 @@ def packAll(schema:dict):
 
         if res:
             packedTargets.append(target)
-            for k in res.keys():
-                result[k] += res[k]
+        
+            result['files'] += res['files']
+            result['ignored'] += res['ignored']
+            result['scannedSize'] += res['scannedSize']
+            result['size'] += res['size']
+            result['filePaths'].update(res['filePaths'])
             packedCount += 1
 
     configurePack(archive, schema, packedTargets)
@@ -115,8 +122,9 @@ def packFolder(targetFolder:str, archive:tarfile.TarFile, ignore:str):
         'files':len(files),
         'ignored': ignored,
         'size': packSize,
-        'scannedSize': scannedSize
-        }
+        'scannedSize': scannedSize,
+        'filePaths': {targetFolder: tuple(files)}
+    }
 
 
 def packFile(targetFile:str, archive:tarfile.TarFile):
@@ -133,6 +141,7 @@ def packFile(targetFile:str, archive:tarfile.TarFile):
         'files': 1,
         'ignored': 0,
         'size': size,
-        'scannedSize': size
+        'scannedSize': size,
+        'filePaths': {targetFile: (targetFile,)}
     }
 
