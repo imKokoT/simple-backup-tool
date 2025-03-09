@@ -6,6 +6,7 @@ import platform
 from yaml.scanner import ScannerError
 from properties import *
 from logger import logger
+from runtime_data import rt
 
 
 def getBackupSchema(schemaName:str, skipUnwrap:bool = False) ->dict|None:
@@ -23,6 +24,7 @@ def getBackupSchema(schemaName:str, skipUnwrap:bool = False) ->dict|None:
 
     assert schema.get('__name__') if schema else True, f'Loaded schema "{schemaName}" has not the "__name__" key!'
 
+    rt.push('schema', schema, overwrite=True)
     return schema
 
 
