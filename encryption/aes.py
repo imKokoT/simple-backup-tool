@@ -3,7 +3,7 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives import padding
 from .keygen import bytesgen, keygen
 from logger import logger
-from miscellaneous import getTMP, updateProgressBar
+from miscellaneous.miscellaneous import getTMP, updateProgressBar
 import os
 from runtime_data import rtd
 

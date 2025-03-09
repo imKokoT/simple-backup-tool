@@ -1,6 +1,6 @@
 import gzip
 import os
-from miscellaneous import humanSize
+from miscellaneous.miscellaneous import humanSize
 from properties import *
 from logger import logger
 from runtime_data import rtd

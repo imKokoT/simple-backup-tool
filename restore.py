@@ -12,15 +12,16 @@ from cloud.authenticate import authenticate
 from cloud.drive import download, getDestination, tryGetMeta
 import archiver
 import packer
-from miscellaneous import getTMP
-import miscellaneous
+from miscellaneous.miscellaneous import getTMP
+import miscellaneous.miscellaneous as miscellaneous
 from runtime_data import rtd
 
 
-def restore(schema:dict, creds:Credentials):
+def restore(creds:Credentials):
     logger.info('preparing for restore from cloud...')
 
     tmp = getTMP()
+    schema:dict = rtd['schema']
     schemaName = schema['__name__']
 
     if not schema.get('destination'):

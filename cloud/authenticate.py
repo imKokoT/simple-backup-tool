@@ -9,7 +9,7 @@ from google.auth.transport.requests import Request
 from google.oauth2 import service_account
 from app_config import Config
 from properties import *
-from miscellaneous import getTMP
+from miscellaneous.miscellaneous import getTMP
 from runtime_data import rtd
 
 

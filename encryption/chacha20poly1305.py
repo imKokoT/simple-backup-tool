@@ -3,7 +3,7 @@ from encryption.keygen import bytesgen, keygen
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms
 from cryptography.hazmat.primitives.poly1305 import Poly1305
 from logger import logger
-from miscellaneous import getTMP, updateProgressBar
+from miscellaneous.miscellaneous import getTMP, updateProgressBar
 import os
 from runtime_data import rtd
 

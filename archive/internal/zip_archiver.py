@@ -1,7 +1,7 @@
 import zipfile
 import os
 from properties import *
-from miscellaneous import humanSize, updateProgressBar
+from miscellaneous.miscellaneous import humanSize, updateProgressBar
 from logger import logger
 from runtime_data import rtd
 

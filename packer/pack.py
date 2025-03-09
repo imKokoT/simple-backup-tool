@@ -3,7 +3,7 @@ import tarfile
 import pathspec
 from properties import *
 from logger import logger
-from miscellaneous import getTMP, humanSize, iprint
+from miscellaneous.miscellaneous import getTMP, humanSize, iprint
 from packer.packconfig import configurePack
 from packer.tools import loadIgnorePatterns, shouldIgnore, dumpPackedTargetsLog
 import schema

@@ -2,7 +2,7 @@ import os
 import yaml
 import logger
 from properties import *
-from miscellaneous import Singleton
+from miscellaneous.singleton import Singleton 
 
 
 class Config(metaclass=Singleton):

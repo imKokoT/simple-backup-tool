@@ -12,8 +12,8 @@ import archiver
 from cloud.clean import deleteAllNotSharedServiceArchives, cleanup
 from cloud.authenticate import authenticate
 from cloud.drive import send, getDestination, sendMeta
-from miscellaneous import getTMP, humanSize
-import miscellaneous
+from miscellaneous.miscellaneous import getTMP, humanSize
+import miscellaneous.miscellaneous as miscellaneous
 import encryptor
 from runtime_data import rtd
 

@@ -3,7 +3,7 @@ from schema import getBackupSchema
 from properties import *
 from archive.internal import *
 from archive.external import *
-from miscellaneous import getTMP
+from miscellaneous.miscellaneous import getTMP
 from runtime_data import rtd
 
 

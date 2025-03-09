@@ -1,5 +1,5 @@
 from logger import logger
-from miscellaneous import Singleton
+from miscellaneous.singleton import Singleton
 
 
 class RuntimeData(metaclass=Singleton):

@@ -3,7 +3,7 @@ import time
 import pathspec
 from app_config import Config
 from properties import *
-from miscellaneous import getTMP
+from miscellaneous.miscellaneous import getTMP
 from logger import logger
 from runtime_data import rtd
 

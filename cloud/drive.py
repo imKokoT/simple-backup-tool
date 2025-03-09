@@ -4,7 +4,7 @@ from logger import logger
 from googleapiclient.http import MediaIoBaseUpload, MediaIoBaseDownload
 from app_config import Config
 from properties import *
-from miscellaneous import updateProgressBar
+from miscellaneous.miscellaneous import updateProgressBar
 
 
 def sendMeta(service, folder:str, schema:dict):

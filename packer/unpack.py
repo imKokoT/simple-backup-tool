@@ -2,7 +2,7 @@ import os
 import tarfile
 from app_config import Config
 from properties import *
-from miscellaneous import getTMP, getFolderPath
+from miscellaneous.miscellaneous import getTMP, getFolderPath
 from packer.packconfig import loadPackConfig
 from packer.tools import dumpRestoredLog, modifyRestorePaths, modifySingleRestorePath
 from logger import logger
@@ -23,7 +23,7 @@ def unpackAll():
     dumpRestoredLog(packConfig)
     
     if Config().allow_local_replace and Config().ask_before_replace:
-        askForLocalReplace(schema, packConfig)
+        askForLocalReplace(packConfig)
 
     result = {
         'rewritten': 0,
