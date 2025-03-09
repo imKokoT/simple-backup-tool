@@ -13,7 +13,7 @@ from cloud.drive import download, getDestination, tryGetMeta
 import archiver
 import packer
 from miscellaneous import getTMP
-import clean
+import miscellaneous
 
 
 def restore(schema:dict, creds:Credentials):
@@ -92,7 +92,7 @@ def restoreFromCloud(schemaNameOrPath:str, **kwargs):
 
     archiver.dearchive(sch)
 
-    clean.clean(f'{sch['__name__']}.downloaded')
+    miscellaneous.clean(f'{sch['__name__']}.downloaded')
 
     packer.unpackAll(sch)
 

@@ -13,7 +13,7 @@ from cloud.clean import deleteAllNotSharedServiceArchives, cleanup
 from cloud.authenticate import authenticate
 from cloud.drive import send, getDestination, sendMeta
 from miscellaneous import getTMP, humanSize
-import clean
+import miscellaneous
 import encryptor
 
 
@@ -83,7 +83,7 @@ def createBackupOf(schemaNameOrPath:str, **kwargs):
 
     backup(archName, sch, creds)
 
-    clean.clean(archName)
+    miscellaneous.clean(archName)
 
 
 if __name__ == '__main__':
