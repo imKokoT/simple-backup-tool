@@ -3,14 +3,16 @@ import os
 from properties import *
 from miscellaneous import humanSize, updateProgressBar
 from logger import logger
+from runtime_data import rtd
 
 
-def compress(targetPath:str, sch:dict) -> str:
+def compress(targetPath:str) -> str:
     logger.info('zip compressing...')
     
+    schema:dict = rtd['schema']
     zipPath = f'{targetPath}.zip'
-    compressLevel = sch.get('compressLevel', 5)
-    password = sch.get('password')
+    compressLevel = schema.get('compressLevel', 5)
+    password = schema.get('password')
 
     zfile = zipfile.ZipFile(
         zipPath, 'w',
@@ -31,16 +33,17 @@ def compress(targetPath:str, sch:dict) -> str:
     return os.path.basename(zipPath)
 
 
-def decompress(archPath:str, sch:dict, schemaName:str):
+def decompress(archPath:str, schemaName:str):
     logger.info('zip decompressing...')
 
+    schema:dict = rtd['schema']
     exportPath = os.path.join(os.path.dirname(archPath), f'{schemaName}.tar')
     
     zfile = zipfile.ZipFile(archPath, 'r')
     esize = zfile.getinfo(f'{schemaName}.tar').file_size
 
     zfile.extract(f'{schemaName}.tar', os.path.dirname(exportPath), 
-                  bytes(sch.get('password'), 'utf-8') if sch.get('password') else None)
+                  bytes(schema.get('password'), 'utf-8') if schema.get('password') else None)
 
     zfile.close()
     logger.info('decompress finished with success!')

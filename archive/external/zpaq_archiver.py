@@ -3,6 +3,7 @@ from app_config import Config
 from logger import logger
 from properties import *
 from . import tools
+from runtime_data import rtd
 
 
 def _maskPsw(command:list) -> list:
@@ -18,19 +19,20 @@ def _maskPsw(command:list) -> list:
     return masked
 
 
-def compress(targetPath:str, sch:dict) -> str:
-    compressLevel = sch.get('compressLevel', 5)
-    password = sch.get('password')
-    args = sch.get('c_args')
+def compress(targetPath:str) -> str:
+    schema:dict = rtd['schema']
+    compressLevel = schema.get('compressLevel', 5)
+    password = schema.get('password')
+    args = schema.get('c_args')
     # TODO: remove in 0.11a -----------------------------------------
     if not args:
-        args = sch.get('args')
+        args = schema.get('args')
         if args:
-            logger.warning(f'"args" parameter in schema {sch['__name__']} deprecated and will be removed in 0.11a! use c_args instead')
+            logger.warning(f'"args" parameter in schema {schema['__name__']} deprecated and will be removed in 0.11a! use c_args instead')
     # ---------------------------------------------------------------
-    compressFormat = sch.get('compressFormat', 'zpaq')
+    compressFormat = schema.get('compressFormat', 'zpaq')
     if compressFormat != 'zpaq':
-        logger.fatal(f'compression format "{sch['compressFormat']}" not supports in zpaq or in this tool')
+        logger.fatal(f'compression format "{schema['compressFormat']}" not supports in zpaq or in this tool')
         exit(1)
     
     zipPath = f'{targetPath}.{compressFormat}'
@@ -52,14 +54,15 @@ def compress(targetPath:str, sch:dict) -> str:
     return os.path.basename(zipPath)
 
 
-def decompress(archPath:str, sch:dict) -> str:
-    args = sch.get('d_args')
+def decompress(archPath:str) -> str:
+    schema:dict = rtd['schema']
+    args = schema.get('d_args')
 
     logger.info('zpaq subprocess decompressing...')
-    schemaName = sch['__name__']
+    schemaName = schema['__name__']
 
     exportPath = os.path.join(os.path.dirname(archPath), f'{schemaName}.tar')
-    password = sch.get('password')
+    password = schema.get('password')
     command = ['zpaq', 'x', archPath, os.path.dirname(exportPath), '-f']
     if args:
         command.extend(args)

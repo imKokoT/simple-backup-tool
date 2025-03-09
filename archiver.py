@@ -20,11 +20,11 @@ def archive() -> str:
         try:
             match schema.get('compressFormat'):
                 case 'gz':
-                    return gz_archiver.compress(f'{tmp}/{schemaName}.tar', schema)
+                    return gz_archiver.compress(f'{tmp}/{schemaName}.tar')
                 case 'bz2':
-                        return bz2_archiver.compress(f'{tmp}/{schemaName}.tar', schema)
+                        return bz2_archiver.compress(f'{tmp}/{schemaName}.tar')
                 case 'zip':
-                    return zip_archiver.compress(f'{tmp}/{schemaName}.tar', schema)
+                    return zip_archiver.compress(f'{tmp}/{schemaName}.tar')
                 case None | 'tar':
                     return f'{schemaName}.tar'
                 case _:
@@ -36,14 +36,14 @@ def archive() -> str:
     elif mode == 'external':
         match program:
             case '7z':
-                return sevenZ_archiver.compress(f'{tmp}/{schemaName}.tar', schema)
+                return sevenZ_archiver.compress(f'{tmp}/{schemaName}.tar')
             case 'zpaq':
-                return zpaq_archiver.compress(f'{tmp}/{schemaName}.tar', schema)
+                return zpaq_archiver.compress(f'{tmp}/{schemaName}.tar')
             case _:
                 logger.fatal(f'unknown program {program} for external mode')
                 exit(1)
     elif mode == 'custom':
-        return custom_archiver.compress(f'{tmp}/{schemaName}.tar', schema)
+        return custom_archiver.compress(f'{tmp}/{schemaName}.tar')
     else:
         logger.fatal(f'unknown mode {mode}')
         exit(1)
@@ -63,11 +63,11 @@ def dearchive(schema:dict) -> str:
         try:
             match schema.get('compressFormat'):
                 case 'gz':
-                    return gz_archiver.decompress(downloaded, schema, schemaName)
+                    return gz_archiver.decompress(downloaded, schemaName)
                 case 'bz2':
-                    return bz2_archiver.decompress(downloaded, schema, schemaName)
+                    return bz2_archiver.decompress(downloaded, schemaName)
                 case 'zip':
-                    return zip_archiver.decompress(downloaded, schema, schemaName) 
+                    return zip_archiver.decompress(downloaded, schemaName) 
                 case None | 'tar':
                     if os.path.exists(os.path.join(tmp, f'{schemaName}.tar')):
                         os.remove(os.path.join(tmp, f'{schemaName}.tar'))
@@ -86,14 +86,14 @@ def dearchive(schema:dict) -> str:
     elif mode == 'external':
         match program:
             case '7z':
-                return sevenZ_archiver.decompress(downloaded, schema, schemaName) 
+                return sevenZ_archiver.decompress(downloaded, schemaName) 
             case 'zpaq':
-                return zpaq_archiver.decompress(downloaded, schema)
+                return zpaq_archiver.decompress(downloaded)
             case _:
                 logger.fatal(f'unknown program "{program}" for external mode')
                 exit(1)
     elif mode == 'custom':
-        return custom_archiver.decompress(downloaded, schema)
+        return custom_archiver.decompress(downloaded)
     else:
         logger.fatal(f'unknown mode {mode}')
         exit(1)

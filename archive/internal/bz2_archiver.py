@@ -3,14 +3,16 @@ import os
 from miscellaneous import humanSize
 from properties import *
 from logger import logger
+from runtime_data import rtd
 
 
-def compress(targetPath:str, sch:dict) -> str:
+def compress(targetPath:str) -> str:
     logger.info('bz2 compressing...')
-    
+
+    schema:dict = rtd['schema']    
     zipPath = f'{targetPath}.bz2'
-    compressLevel = sch.get('compressLevel', 5)
-    password = sch.get('password')
+    compressLevel = schema.get('compressLevel', 5)
+    password = schema.get('password')
     if password:
         logger.warning(f'Internal BZ2 archiver does not support password; archive will not encrypted')
 
@@ -26,7 +28,7 @@ def compress(targetPath:str, sch:dict) -> str:
     return os.path.basename(zipPath)
 
 
-def decompress(archPath:str, sch:dict, schemaName:str) -> str:
+def decompress(archPath:str, schemaName:str) -> str:
     logger.info('bz2 decompressing...')
 
     exportPath = os.path.join(os.path.dirname(archPath), f'{schemaName}.tar')

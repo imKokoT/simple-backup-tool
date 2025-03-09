@@ -3,6 +3,7 @@ from app_config import Config
 from logger import logger
 from properties import *
 from . import tools
+from runtime_data import rtd
 
 
 def _maskPsw(command:list) -> list:
@@ -18,41 +19,43 @@ def _maskPsw(command:list) -> list:
     return masked
 
 
-def compress(targetPath:str, sch:dict) -> str:
-    compressLevel = sch.get('compressLevel', 5)
-    password = sch.get('password')
-    args = sch.get('c_args')
+def compress(targetPath:str) -> str:
+    schema:dict = rtd['schema']
+
+    compressLevel = schema.get('compressLevel', 5)
+    password = schema.get('password')
+    args = schema.get('c_args')
     # TODO: remove in 0.11a -----------------------------------------
     if not args:
-        args = sch.get('args')
+        args = schema.get('args')
         if args:
-            logger.warning(f'"args" parameter in schema {sch['__name__']} deprecated and will be removed in 0.11a! use c_args instead')
+            logger.warning(f'"args" parameter in schema {schema['__name__']} deprecated and will be removed in 0.11a! use c_args instead')
     # ---------------------------------------------------------------
-    match sch.get('compressFormat', '7z'):
+    match schema.get('compressFormat', '7z'):
         case '7z': compressFormat = '7z'
         case 'zip': compressFormat = 'zip'
         case 'bz2': compressFormat = 'bzip2'
         case 'gz': compressFormat = 'gzip'
         case 'xz': compressFormat = 'xz'
         case _:
-            logger.fatal(f'compression format {sch.get('compressFormat', '7z')} not supports in 7z or in this tool')
+            logger.fatal(f'compression format {schema.get('compressFormat', '7z')} not supports in 7z or in this tool')
             exit(1)
 
-    zipPath = f'{targetPath}.{sch.get('compressFormat', '7z')}'
+    zipPath = f'{targetPath}.{schema.get('compressFormat', '7z')}'
     if os.path.exists(zipPath):
         os.remove(zipPath)
-    logger.info(f'{sch.get('compressFormat', '7z')} with 7z subprocess compressing...')
+    logger.info(f'{schema.get('compressFormat', '7z')} with 7z subprocess compressing...')
     
     command = ['7z', 'a', '-y', f'-t{compressFormat}', f'-mx={compressLevel}', zipPath, targetPath]
     if password:
-        if sch.get('compressFormat', '7z') == '7z':
+        if schema.get('compressFormat', '7z') == '7z':
             command.append(f'-p{password}')
             command.append('-mhe=on')
-        elif sch.get('compressFormat', '7z') == 'zip':
+        elif schema.get('compressFormat', '7z') == 'zip':
             command.append(f'-p{password}')
             command.append('-mem=AES256')
         else:
-            logger.warning(f'7z not supports password for "{sch.get('compressFormat', '7z')}". archive will not encrypted')
+            logger.warning(f'7z not supports password for "{schema.get('compressFormat', '7z')}". archive will not encrypted')
     if args:
         command.extend(args)
 
@@ -62,13 +65,14 @@ def compress(targetPath:str, sch:dict) -> str:
     return os.path.basename(zipPath)
 
 
-def decompress(archPath:str, sch:dict, schemaName:str) -> str:
-    args = sch.get('d_args')
+def decompress(archPath:str, schemaName:str) -> str:
+    schema:dict = rtd['schema']
+    args = schema.get('d_args')
 
     logger.info('7z subprocess decompressing...')
 
     exportPath = os.path.join(os.path.dirname(archPath), f'{schemaName}.tar')
-    password = sch.get('password')
+    password = schema.get('password')
     command = ['7z', 'x', '-y', archPath, f'-o{os.path.dirname(exportPath)}']
     if args:
         command.extend(args)
