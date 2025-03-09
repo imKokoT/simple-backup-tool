@@ -14,6 +14,7 @@ import archiver
 import packer
 from miscellaneous import getTMP
 import miscellaneous
+from runtime_data import rtd
 
 
 def restore(schema:dict, creds:Credentials):
@@ -84,17 +85,20 @@ def restoreFromCloud(schemaNameOrPath:str, **kwargs):
             destination = input(f'{YC}enter backup destination: {DC}')
         sch = dict(destination=destination, password=kwargs.get('password'))
     
-    creds = authenticate(sch)
+    # important to save changes
+    rtd.push('schema', sch, overwrite=True)
 
-    restore(sch, creds)
+    creds = authenticate()
 
-    encryptor.decrypt(sch)
+    restore(creds)
 
-    archiver.dearchive(sch)
+    encryptor.decrypt()
+
+    archiver.dearchive()
 
     miscellaneous.clean(f'{sch['__name__']}.downloaded')
 
-    packer.unpackAll(sch)
+    packer.unpackAll()
 
     logger.info('restore process finished with success!')
 

@@ -49,10 +49,11 @@ def archive() -> str:
         exit(1)
 
 
-def dearchive(schema:dict) -> str:
+def dearchive() -> str:
     '''returns pack name'''
     tmp = getTMP()
 
+    schema:dict = rtd['schema']
     schemaName = schema['__name__']
     mode = schema.get('mode', 'internal')
     program = schema.get('program', '7z')

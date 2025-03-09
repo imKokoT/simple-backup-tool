@@ -6,11 +6,13 @@ from miscellaneous import getTMP, getFolderPath
 from packer.packconfig import loadPackConfig
 from packer.tools import dumpRestoredLog, modifyRestorePaths, modifySingleRestorePath
 from logger import logger
+from runtime_data import rtd
 
 
-def unpackAll(schema:dict):
+def unpackAll():
     logger.info('unpacking process started')
-   
+    
+    schema:dict = rtd['schema']
     tmp = getTMP()
     schemaName = schema['__name__']
     os.makedirs(f'{tmp}/restored/{schemaName}', exist_ok=True)
@@ -51,8 +53,9 @@ def unpackAll(schema:dict):
     archive.close()
 
 
-def unpackFile(path:str, index:int, archive:tarfile.TarFile, schema:dict, packConfig:dict):
+def unpackFile(path:str, index:int, archive:tarfile.TarFile, packConfig:dict):
     logger.info(f'unpacking file "{path}"...')
+    schema:dict = rtd['schema']
 
     if not os.path.exists(os.path.dirname(path)):
         path = invalidTargetPathHandle(path, schema, packConfig)
@@ -75,9 +78,10 @@ def unpackFile(path:str, index:int, archive:tarfile.TarFile, schema:dict, packCo
     }
 
 
-def unpackFolder(path:str, index:int, archive:tarfile.TarFile, schema:dict, packConfig:dict):
+def unpackFolder(path:str, index:int, archive:tarfile.TarFile, packConfig:dict):
     logger.info(f'unpacking folder "{path}"...')
-    
+    schema:dict = rtd['schema']
+
     if not os.path.exists(os.path.dirname(path)):
         path = invalidTargetPathHandle(path, schema, packConfig)
 
@@ -120,8 +124,9 @@ def unpackFolder(path:str, index:int, archive:tarfile.TarFile, schema:dict, pack
     }
 
 
-def askForLocalReplace(schema, packConfig):
+def askForLocalReplace(packConfig):
     tmp = getTMP()
+    schema:dict = rtd['schema']
     schemaName = schema['__name__']
 
     print(f'{LYC}Are you sure to rewrite next folders and files:')
@@ -141,7 +146,9 @@ def askForLocalReplace(schema, packConfig):
             exit(0)
 
 
-def invalidTargetPathHandle(path, schema, packConfig) -> str:
+def invalidTargetPathHandle(path, packConfig) -> str:
+    schema:dict = rtd['schema']
+
     if not Config().ask_for_other_extract_path and not Config().restore_to_tmp_if_path_invalid: 
         logger.error(f'failed to unpack because "{os.path.dirname(path)}" not exists')
         return

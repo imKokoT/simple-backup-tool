@@ -23,7 +23,8 @@ def encrypt(archName:str) -> str:
             logger.fatal(f'unsupported algorism "{schema["encryption"]}"')
             exit(1)
 
-def decrypt(schema:dict):
+def decrypt():
+    schema:dict = rtd['schema']
     try:
         import cryptography as _
     except ModuleNotFoundError:
