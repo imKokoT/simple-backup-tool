@@ -5,14 +5,16 @@ from .keygen import bytesgen, keygen
 from logger import logger
 from miscellaneous import getTMP, updateProgressBar
 import os
+from runtime_data import rtd
 
 IV_SIZE = 16
 CHUNK_SIZE = 1024 * 1024
 
 
-def encrypt(schema:dict, archiveName:str) -> str:
+def encrypt(archiveName:str) -> str:
     logger.info('initialize encryption process with AES-256')
     iv = bytesgen(IV_SIZE)
+    schema:dict = rtd['schema']
 
     # TODO: implement salt
     key = keygen(schema['_enc_keyword'], b'')
@@ -49,8 +51,9 @@ def encrypt(schema:dict, archiveName:str) -> str:
     return archiveName
 
 
-def decrypt(schema:dict):
+def decrypt():
     logger.info('initialize decryption process with AES-256')
+    schema:dict = rtd['schema']
     tmp = getTMP()
     schemaName = schema['__name__']
     downloaded = f'{tmp}/{schemaName}.downloaded'

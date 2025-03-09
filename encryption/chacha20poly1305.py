@@ -5,6 +5,7 @@ from cryptography.hazmat.primitives.poly1305 import Poly1305
 from logger import logger
 from miscellaneous import getTMP, updateProgressBar
 import os
+from runtime_data import rtd
 
 CHUNK_SIZE = 1024 * 1024
 NONCE_SIZE = 16
@@ -16,11 +17,12 @@ def _generatePoly1305Key(key, nonce):
     return encryptor.update(b'\x00' * 32)
 
 
-def encrypt(schema:dict, archiveName:str) -> str:
+def encrypt(archiveName:str) -> str:
     logger.info('initialize encryption process with ChaCha20-Poly1305')
     nonce = bytesgen(NONCE_SIZE)
 
     # TODO: implement salt
+    schema:dict = rtd['schema']
     key = keygen(schema['_enc_keyword'], b'')
     cipher = Cipher(algorithms.ChaCha20(key, nonce), mode=None)
     encryptor = cipher.encryptor()
@@ -56,8 +58,9 @@ def encrypt(schema:dict, archiveName:str) -> str:
     return archiveName
 
 
-def decrypt(schema:dict):
+def decrypt():
     logger.info('initialize decryption process with ChaCha20-Poly1305')
+    schema:dict = rtd['schema']
     tmp = getTMP()
     schemaName = schema['__name__']
     downloaded = f'{tmp}/{schemaName}.downloaded'
