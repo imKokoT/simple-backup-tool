@@ -61,7 +61,7 @@ def packAll():
 
     configurePack(archive, schema, packedTargets)
 
-    dumpPackedTargetsLog(schema, result['filePaths'])
+    dumpPackedTargetsLog(result['filePaths'])
     logger.info(f'packing process finished successfully;\n'
                        f' - packs created: {packedCount}/{len(schema["targets"])}\n'
                        f' - archived and ignored total files: {result['files']}/{result['ignored']}\n'

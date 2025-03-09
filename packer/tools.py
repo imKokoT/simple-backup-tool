@@ -5,6 +5,7 @@ from app_config import Config
 from properties import *
 from miscellaneous import getTMP
 from logger import logger
+from runtime_data import rtd
 
 
 def loadIgnorePatterns(directory:str) -> pathspec.PathSpec|None:
@@ -45,7 +46,8 @@ def shouldIgnore(path:str, specs:dict[str,pathspec.PathSpec], sorted_specs:list)
 
 
 ## TODO: for now shows only what pack contains, not what has really restored 
-def dumpRestoredLog(packConfig:dict, schema):
+def dumpRestoredLog(packConfig:dict):
+    schema:dict = rtd['schema']
     folders = packConfig['folders']
     files = packConfig['files']
 
@@ -67,7 +69,8 @@ def dumpRestoredLog(packConfig:dict, schema):
             i += 1
 
 
-def dumpPackedTargetsLog(schema:dict, filePaths:dict[str,tuple]):
+def dumpPackedTargetsLog(filePaths:dict[str,tuple]):
+    schema:dict = rtd['schema']
     logger.debug(f'dump packed files to "logs/packed-files_{schema['__name__']}.log"')
     df = open(f'logs/packed-files_{schema['__name__']}.log', 'w', encoding='utf-8')
 
@@ -84,22 +87,24 @@ def dumpPackedTargetsLog(schema:dict, filePaths:dict[str,tuple]):
     df.close()
 
 
-def modifyRestorePaths(packConfig:dict, schema):
+def modifyRestorePaths(packConfig:dict):
     tmp = getTMP()
+    schema:dict = rtd['schema']
     root = f'{tmp}/restored/{schema['__name__']}'
 
     folders = packConfig['folders']
     files = packConfig['files']
 
-    folders = [modifySingleRestorePath(p, schema, packConfig, True) for p in folders]
-    files = [modifySingleRestorePath(p, schema, packConfig, False) for p in files]
+    folders = [modifySingleRestorePath(p, packConfig, True) for p in folders]
+    files = [modifySingleRestorePath(p, packConfig, False) for p in files]
 
     packConfig['folders'] = folders
     packConfig['files'] = files
 
 
-def modifySingleRestorePath(path:str, schema:dict, packConfig:dict, isFolder:bool) -> str:
+def modifySingleRestorePath(path:str, packConfig:dict, isFolder:bool) -> str:
     tmp = getTMP()
+    schema:dict = rtd['schema']
     root = f'{tmp}/restored/{schema['__name__']}'
 
     i = packConfig['folders'].index(path) if isFolder else packConfig['files'].index(path)

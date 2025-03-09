@@ -18,7 +18,7 @@ def unpackAll(schema:dict):
 
     packConfig = loadPackConfig(archive)
 
-    dumpRestoredLog(packConfig, schema)
+    dumpRestoredLog(packConfig)
     
     if Config().allow_local_replace and Config().ask_before_replace:
         askForLocalReplace(schema, packConfig)
@@ -135,7 +135,7 @@ def askForLocalReplace(schema, packConfig):
         yn = input('[y/N] ')
         if yn.strip().lower() == 'y':
             logger.info('restored data placed in tmp/restored folder')
-            modifyRestorePaths(packConfig, schema)
+            modifyRestorePaths(packConfig)
         else:
             print('unpack process interrupted...')
             exit(0)
