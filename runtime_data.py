@@ -23,4 +23,4 @@ class RuntimeData(metaclass=Singleton):
     def __setitem__(self, name:str, value):
         self.push(name, value)
 
-rt = RuntimeData()
+rtd = RuntimeData()

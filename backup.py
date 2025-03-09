@@ -15,11 +15,13 @@ from cloud.drive import send, getDestination, sendMeta
 from miscellaneous import getTMP, humanSize
 import miscellaneous
 import encryptor
+from runtime_data import rtd
 
 
-def backup(archiveName:str, schema:dict, creds:Credentials):
+def backup(archiveName:str, creds:Credentials):
     logger.info('preparing backup to send to cloud...')
 
+    schema:dict = rtd['schema']
     tmp = getTMP()
     schemaName = schema['__name__']
 
@@ -73,15 +75,15 @@ def createBackupOf(schemaNameOrPath:str, **kwargs):
         logger.error(f'No backup schema with name "{schemaNameOrPath}"')
         return
     
-    creds = authenticate(sch)
+    creds = authenticate()
 
-    packer.packAll(sch)
+    packer.packAll()
     
-    archName = archiver.archive(sch)
+    archName = archiver.archive()
 
-    archName = encryptor.encrypt(sch, archName)
+    archName = encryptor.encrypt(archName)
 
-    backup(archName, sch, creds)
+    backup(archName, creds)
 
     miscellaneous.clean(archName)
 

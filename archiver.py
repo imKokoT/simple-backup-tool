@@ -4,12 +4,14 @@ from properties import *
 from archive.internal import *
 from archive.external import *
 from miscellaneous import getTMP
+from runtime_data import rtd
 
 
-def archive(schema:dict) -> str:
+def archive() -> str:
     '''returns archive name'''
     tmp = getTMP()
 
+    schema:dict = rtd['schema']
     schemaName = schema['__name__']
     mode = schema.get('mode', 'internal')
     program = schema.get('program', '7z')

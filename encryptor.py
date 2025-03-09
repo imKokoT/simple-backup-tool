@@ -1,8 +1,11 @@
 from logger import logger
 import encryption
+from runtime_data import rtd
 
 
-def encrypt(schema:dict, archName:str) -> str:
+def encrypt(archName:str) -> str:
+    
+    schema:dict = rtd['schema']
     if not schema.get('encryption'):
         logger.debug('encryption skipped')
         return archName

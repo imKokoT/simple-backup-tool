@@ -10,12 +10,14 @@ from google.oauth2 import service_account
 from app_config import Config
 from properties import *
 from miscellaneous import getTMP
+from runtime_data import rtd
 
 
-def loadSecret(secretName:str, schema:dict) -> Credentials:
+def loadSecret(secretName:str) -> Credentials:
     if not os.path.exists(f'./configs/secrets'):
         os.mkdir(f'./configs/secrets')
     
+    schema:dict = rtd['schema']
     secretType = None
     if os.path.exists(f'./configs/secrets/{secretName}.cred'):
         secretType = 'cred'
@@ -43,8 +45,8 @@ def loadSecret(secretName:str, schema:dict) -> Credentials:
         return service_account.Credentials.from_service_account_file(secretPath, scopes=SCOPES)
 
 
-def getSecretName(schema) -> str:
-    secretName = schema.get('secret')
+def getSecretName() -> str:
+    secretName = rtd['schema'].get('secret')
     if not secretName and Config().default_secret:
         return Config().default_secret
     else:
@@ -54,13 +56,14 @@ def getSecretName(schema) -> str:
         exit(1)
 
 
-def authenticate(schema:dict) -> Credentials:
+def authenticate() -> Credentials:
     logger.info('authorizing...')
     
+    schema:dict = rtd['schema']
     tmp = getTMP()
     creds:Credentials = None
     
-    secretName = getSecretName(schema)
+    secretName = getSecretName()
     tokenPath = f'{tmp}/tokens/{secretName}.json'
     
     if not os.path.exists(f'{tmp}/tokens/'):
@@ -85,15 +88,15 @@ def failedCreateCreds(creds:Credentials, secretName:str, schema:dict) -> Credent
             schema['__secret_type__'] = 'cred'
             saveToken(secretName, creds)
         except google.auth.exceptions.RefreshError:
-            creds = _reauthenticate(secretName, schema)
+            creds = _reauthenticate(secretName)
     else:
         logger.info('getting token...')
-        creds = loadSecret(secretName, schema)
+        creds = loadSecret(secretName)
     return creds
 
 
-def _reauthenticate(secretName:str, schema:dict) -> Credentials:
-    creds = loadSecret(secretName, schema)
+def _reauthenticate(secretName:str) -> Credentials:
+    creds = loadSecret(secretName)
     saveToken(secretName, creds)
     
     return creds

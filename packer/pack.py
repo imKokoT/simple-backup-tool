@@ -7,11 +7,13 @@ from miscellaneous import getTMP, humanSize, iprint
 from packer.packconfig import configurePack
 from packer.tools import loadIgnorePatterns, shouldIgnore, dumpPackedTargetsLog
 import schema
+from runtime_data import rtd
 
 
-def packAll(schema:dict):
+def packAll():
     logger.info('packing process started')
     
+    schema:dict = rtd['schema']
     ignore = schema.get('ignore', '')
     schemaName = schema.get('__name__')
 
