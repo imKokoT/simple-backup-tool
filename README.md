@@ -154,4 +154,3 @@ Application settings contains at *config.yaml* from configs folder. You can chan
  - *auto_remove_archive* - if true, archives, that was created or downloaded, will be deleted; .tar excluded
  - *hide_password_len* - if true, will hide length of password at encryption process; if false password will hide with \*
  - *human_sizes* - if true, byte sizes will print in "B", "KB", "MB", "GB", "TB"
- - *max_logs* - max session logs in logs folder

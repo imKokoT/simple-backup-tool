@@ -6,6 +6,8 @@ VERSION = '0.9a'
 DEBUG = True
 SCOPES = ['''https://www.googleapis.com/auth/drive''']
 
+MAX_SESSION_LOGS = 10
+
 # --- colorama shortcuts -----------------------------------------------------
 colorama.init(autoreset=True) # init colorama escape codes
 DC = colorama.Style.RESET_ALL

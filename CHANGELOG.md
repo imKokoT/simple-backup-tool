@@ -8,6 +8,7 @@ fixed:
 
 other:
 - changed where restored files dump places from tmp to logs folder
+- removed max_logs config parameter
 
 
 ## 0.9a ([commit](https://github.com/imKokoT/simple-backup-tool/commit/89f56bc6c3a87451197154a02ee11b6c0b7a3cf1))

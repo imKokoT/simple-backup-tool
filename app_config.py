@@ -22,7 +22,6 @@ class Config(metaclass=Singleton):
         self.hide_password_len = True
         self.auto_remove_archive = True # if true archives, that was created or downloaded, will be deleted; .tar excluded
         self.human_sizes = False # if true, byte sizes will print in "B", "KB", "MB", "GB", "TB"
-        self.max_logs = 10 # max program log files that can be saved in logs folder
 
 
     def save():
