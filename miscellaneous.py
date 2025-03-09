@@ -1,7 +1,7 @@
 import os
 import sys
 import shutil
-from app_config import Config
+import app_config
 from properties import *
 
 
@@ -38,7 +38,7 @@ def getTMP():
 
 
 def humanSize(sizeBytes):
-    if not Config().human_sizes:
+    if not app_config.Config().human_sizes:
         return f'{sizeBytes}B'
     if sizeBytes == 0:
         return '0B'
