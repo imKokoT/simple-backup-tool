@@ -94,6 +94,7 @@ if __name__ == '__main__':
         print(f'this script create backup from your backup schema\n'
               f' - backup.py <schema name> -> make backup from schema')
     else:
+        logger.debug(f'{VERSION=} {DEBUG=}')
         parser = argparse.ArgumentParser()
         parser.add_argument('schema_name',  type=str, help='name of schema')
         parser.add_argument('-sp', '--schema-path', action='store_true', help='use schema name as path of external schema; external schema can include app schemas', required=False)

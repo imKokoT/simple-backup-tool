@@ -106,6 +106,7 @@ if __name__ == '__main__':
         print(f'Welcome to SBT!  V{VERSION}')
         print(f'this script restore backup from cloud using your backup schema')
     else:
+        logger.debug(f'{VERSION=} {DEBUG=}')
         parser = argparse.ArgumentParser()
         parser.add_argument('schema_name',  type=str, help='name of schema')
         parser.add_argument('-m', '--restore-from-meta', action='store_true', help='restore backup from meta', required=False)
