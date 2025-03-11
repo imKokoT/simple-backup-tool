@@ -42,7 +42,7 @@ def restore(creds:Credentials):
 
         meta = tryGetMeta(service, destinationFolder, schemaName)
         if meta:
-            _updateSchema(schema, meta)
+            _updateSchema(meta)
 
         logger.info('getting backup from cloud...')
 
@@ -57,7 +57,9 @@ def restore(creds:Credentials):
     logger.info(f'successfully downloaded "{schemaName}.archive" from cloud; it placed in {os.path.join(tmp, f'{schemaName}.downloaded')}')
 
 
-def _updateSchema(schema:dict, meta):
+def _updateSchema(meta):
+    schema:dict = rtd['schema']
+
     for k, v in meta.items():
         if k == 'password' and v and not schema.get('password'):
             schema['password'] = getpass(f'{YC}Archive encrypted with password; enter password: {RC}')

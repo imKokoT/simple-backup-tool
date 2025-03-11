@@ -74,13 +74,15 @@ def authenticate() -> Credentials:
         creds = Credentials.from_authorized_user_file(tokenPath, SCOPES)
 
     if not creds or not creds.valid:
-        creds = failedCreateCreds(creds, secretName, schema)
+        creds = failedCreateCreds(creds, secretName)
     
     logger.info('success!')
     return creds
 
 
-def failedCreateCreds(creds:Credentials, secretName:str, schema:dict) -> Credentials:
+def failedCreateCreds(creds:Credentials, secretName:str) -> Credentials:
+    schema:dict = rtd['schema']
+
     if creds and creds.expired and creds.refresh_token:
         logger.info('token expired, refreshing...')
         try:

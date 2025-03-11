@@ -5,12 +5,14 @@ from googleapiclient.http import MediaIoBaseUpload, MediaIoBaseDownload
 from app_config import Config
 from properties import *
 from miscellaneous.miscellaneous import updateProgressBar
+from runtime_data import rtd
 
 
-def sendMeta(service, folder:str, schema:dict):
+def sendMeta(service, folder:str):
     logger.info('sending backup meta...')
     stream = io.BytesIO()
 
+    schema:dict = rtd['schema']
     schemaName = schema['__name__']
 
     if schema.get('encryption'):

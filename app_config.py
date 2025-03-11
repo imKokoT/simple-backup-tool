@@ -24,6 +24,7 @@ class Config(metaclass=Singleton):
         self.human_sizes = False # if true, byte sizes will print in "B", "KB", "MB", "GB", "TB"
 
 
+    @staticmethod
     def save():
         if not os.path.exists('configs/'):
             os.mkdir('configs')
@@ -32,6 +33,7 @@ class Config(metaclass=Singleton):
             yaml.dump(Config().__dict__, f)
 
 
+    @staticmethod
     def load():
         if not os.path.exists('configs/'):
             os.mkdir('configs')

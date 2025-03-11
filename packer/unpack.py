@@ -32,7 +32,7 @@ def unpackAll():
     res:dict
     i = 0
     for folder in packConfig['folders']:
-        res = unpackFolder(folder, i, archive, schema, packConfig)
+        res = unpackFolder(folder, i, archive, packConfig)
         
         if res:
             result['rewritten'] += res['rewritten']
@@ -40,7 +40,7 @@ def unpackAll():
         i += 1
     i = 0
     for file in packConfig['files']:
-        res = unpackFile(file, i, archive, schema, packConfig)
+        res = unpackFile(file, i, archive, packConfig)
 
         if res:
             result['rewritten'] += res['rewritten']
@@ -58,7 +58,7 @@ def unpackFile(path:str, index:int, archive:tarfile.TarFile, packConfig:dict):
     schema:dict = rtd['schema']
 
     if not os.path.exists(os.path.dirname(path)):
-        path = invalidTargetPathHandle(path, schema, packConfig)
+        path = invalidTargetPathHandle(path, packConfig)
     
     if os.path.exists(path) and not Config().allow_local_replace:
         path = os.path.join(os.path.dirname(path), os.path.basename(path) + '-restored')
@@ -67,7 +67,7 @@ def unpackFile(path:str, index:int, archive:tarfile.TarFile, packConfig:dict):
 
     rewritten = os.path.exists(path)
     
-    with archive.extractfile(member) as file_obj:
+    with archive.extractfile(member) as file_obj: # type: ignore
         with open(path, 'wb') as out_file:
             out_file.write(file_obj.read())
 
@@ -83,7 +83,7 @@ def unpackFolder(path:str, index:int, archive:tarfile.TarFile, packConfig:dict):
     schema:dict = rtd['schema']
 
     if not os.path.exists(os.path.dirname(path)):
-        path = invalidTargetPathHandle(path, schema, packConfig)
+        path = invalidTargetPathHandle(path, packConfig)
 
     if os.path.exists(path) and not Config().allow_local_replace:
         path = os.path.join(os.path.dirname(path), os.path.basename(path) + '-restored')
@@ -111,7 +111,7 @@ def unpackFolder(path:str, index:int, archive:tarfile.TarFile, packConfig:dict):
 
         os.makedirs(os.path.dirname(targetFilePath), exist_ok=True)
 
-        with archive.extractfile(member) as file_obj:
+        with archive.extractfile(member) as file_obj: # type: ignore
             with open(targetFilePath, 'wb') as out_file:
                 out_file.write(file_obj.read())
 
@@ -154,7 +154,7 @@ def invalidTargetPathHandle(path, packConfig) -> str:
         return
     elif Config().restore_to_tmp_if_path_invalid and not Config().ask_for_other_extract_path:
         logger.warning(f'{os.path.dirname(path)} is invalid! files will be restored to tmp/restored')
-        path = modifySingleRestorePath(path, schema, packConfig, False)
+        path = modifySingleRestorePath(path, packConfig, False)
     else:
         print(f'{YC}Path "{path}" is invalid, do you want to unpack to other path?')
         newDir = getFolderPath()
@@ -163,7 +163,7 @@ def invalidTargetPathHandle(path, packConfig) -> str:
                 logger.info(f'skipped')
                 return
             
-            path = modifySingleRestorePath(path, schema, packConfig, False)
+            path = modifySingleRestorePath(path, packConfig, False)
         else:
             path = os.path.join(newDir.strip(), os.path.basename(path))
 

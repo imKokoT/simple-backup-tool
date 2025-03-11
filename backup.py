@@ -38,7 +38,7 @@ def backup(archiveName:str, creds:Credentials):
             exit(1)
 
         if schema['__secret_type__'] == 'service':
-            deleteAllNotSharedServiceArchives(service, schema)
+            deleteAllNotSharedServiceArchives(service)
 
         quota = getStorageQuota(service)
         logger.info(f'storage quota: limit={humanSize(quota['limit'])}, usage={humanSize(quota['usage'])}')
@@ -50,7 +50,7 @@ def backup(archiveName:str, creds:Credentials):
 
         logger.info('sending backup to cloud...')
         send(service, os.path.join(tmp, archiveName), f'{schemaName}.archive', destinationFolder)
-        sendMeta(service, destinationFolder, schema)
+        sendMeta(service, destinationFolder)
         
         quota = getStorageQuota(service)
         logger.info(f'storage quota after sending: limit={humanSize(quota['limit'])}, usage={humanSize(quota['usage'])}')

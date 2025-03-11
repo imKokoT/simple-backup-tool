@@ -7,5 +7,5 @@ class Singleton(type):
             instance = super().__call__(*args, **kwargs)
             cls.__instances[cls] = instance
             if hasattr(cls, 'onInstanceCreated') and callable(getattr(cls, 'onInstanceCreated')):
-                cls.onInstanceCreated()
+                cls.onInstanceCreated() # type: ignore
         return cls.__instances[cls]

@@ -90,7 +90,7 @@ def load(fpath:str, skipUnwrap:bool = False) -> dict:
             schema['targets'] = [p.replace('~', home) for p in schema['targets']]
         # handle target is multiline string format
         if type(schema.get('targets')) is str:
-            schema['targets'] = [p.strip() for p in schema['targets'].split('\n') if p.strip() != '']
+            schema['targets'] = [p.strip() for p in schema['targets'].split('\n') if p.strip() != ''] # type: ignore
 
         if not skipUnwrap:
             unwrapTargets(schema)
