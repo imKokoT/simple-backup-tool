@@ -32,21 +32,21 @@ def restore(creds:Credentials):
 
     try:
         logger.info('building service')
-        service = build('drive', 'v3', credentials=creds)
+        rtd['service'] = build('drive', 'v3', credentials=creds)
         
         if schema['__secret_type__'] == 'service' and not schema.get('root'):
             logger.fatal(f'service cannot differentiate between accounts; you must define "root" parameter in schema with targeting shared folder id')
             exit(1)
 
-        destinationFolder = getDestination(service, schema['destination'], schema.get('root'))
+        destinationFolder = getDestination(schema['destination'], schema.get('root'))
 
-        meta = tryGetMeta(service, destinationFolder, schemaName)
+        meta = tryGetMeta(destinationFolder, schemaName)
         if meta:
             _updateSchema(meta)
 
         logger.info('getting backup from cloud...')
 
-        download(service, os.path.join(tmp, downloadedName), f'{schemaName}.archive', destinationFolder)
+        download(os.path.join(tmp, downloadedName), f'{schemaName}.archive', destinationFolder)
     except HttpError as e:
         logger.fatal(f'failed to restore; error: {e}')
         exit(1)

@@ -3,6 +3,13 @@ from miscellaneous.singleton import Singleton
 
 
 class RuntimeData(metaclass=Singleton):
+    """
+    Saves temporal data in RAM while app runs.
+
+    #### MAIN RUNTIME VARS
+     - schema -> loaded backup schema
+     - service -> when service was build; service access
+    """
     _data:dict = {}
 
     def push(self, name:str, value, overwrite:bool = False):
@@ -23,4 +30,5 @@ class RuntimeData(metaclass=Singleton):
     def __setitem__(self, name:str, value):
         self.push(name, value)
 
+# RuntimeData() alias
 rtd = RuntimeData()

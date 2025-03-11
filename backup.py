@@ -31,28 +31,28 @@ def backup(archiveName:str, creds:Credentials):
 
     try:
         logger.info('building service')
-        service = build('drive', 'v3', credentials=creds)
+        rtd['service'] = build('drive', 'v3', credentials=creds)
 
         if schema['__secret_type__'] == 'service' and not schema.get('root'):
             logger.fatal(f'service cannot differentiate between accounts; you must define "root" parameter in schema with targeting shared folder id')
             exit(1)
 
         if schema['__secret_type__'] == 'service':
-            deleteAllNotSharedServiceArchives(service)
+            deleteAllNotSharedServiceArchives()
 
-        quota = getStorageQuota(service)
+        quota = getStorageQuota(rtd['service'])
         logger.info(f'storage quota: limit={humanSize(quota['limit'])}, usage={humanSize(quota['usage'])}')
 
-        destinationFolder = getDestination(service, schema['destination'], schema.get('root'))
+        destinationFolder = getDestination(schema['destination'], schema.get('root'))
         
-        cleanup(service, destinationFolder, schemaName)
+        cleanup(destinationFolder, schemaName)
         logger.info(f'storage quota after cleanup: limit={humanSize(quota['limit'])}, usage={humanSize(quota['usage'])}')
 
         logger.info('sending backup to cloud...')
-        send(service, os.path.join(tmp, archiveName), f'{schemaName}.archive', destinationFolder)
-        sendMeta(service, destinationFolder)
+        send(os.path.join(tmp, archiveName), f'{schemaName}.archive', destinationFolder)
+        sendMeta(destinationFolder)
         
-        quota = getStorageQuota(service)
+        quota = getStorageQuota(rtd['service'])
         logger.info(f'storage quota after sending: limit={humanSize(quota['limit'])}, usage={humanSize(quota['usage'])}')
     except HttpError as e:
         logger.fatal(f'failed to backup; error: {e}')

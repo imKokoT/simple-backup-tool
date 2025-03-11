@@ -4,9 +4,10 @@ from properties import *
 from runtime_data import rtd
 
 
-def cleanup(service, folder:str, schemaName:str):
+def cleanup(folder:str, schemaName:str):
     logger.info('cleaning old cloud backup if exists...')
-
+    
+    service = rtd['service']
     query = f"'{folder}' in parents and (name='{schemaName}.archive' or name='{schemaName}.meta') and trashed=false"
     response = service.files().list(q=query, spaces='drive').execute()
     files = response.get('files', [])
@@ -17,8 +18,9 @@ def cleanup(service, folder:str, schemaName:str):
             service.files().delete(fileId=file_id).execute()
 
 
-def deleteAllNotSharedServiceArchives(service, folderId:str = 'root'):
+def deleteAllNotSharedServiceArchives(folderId:str = 'root'):
     '''delete all not shared archives and its meta'''
+    service = rtd['service']
     schema:dict = rtd['schema']
     p = re.compile(r'\.(meta|archive)$')
 
@@ -40,7 +42,7 @@ def deleteAllNotSharedServiceArchives(service, folderId:str = 'root'):
 
     for item in items:    
         if item['mimeType'] == 'application/vnd.google-apps.folder':
-            deleteAllNotSharedServiceArchives(service, folderId=item['id'])
+            deleteAllNotSharedServiceArchives(folderId=item['id'])
         
         if re.search(p, item['name']):
             logger.debug(f"Deleting: {item['name']}[id:{item['id']}] ({item['mimeType']})")

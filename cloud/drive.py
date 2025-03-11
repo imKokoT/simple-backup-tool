@@ -8,10 +8,11 @@ from miscellaneous.miscellaneous import updateProgressBar
 from runtime_data import rtd
 
 
-def sendMeta(service, folder:str):
+def sendMeta(folder:str):
     logger.info('sending backup meta...')
     stream = io.BytesIO()
 
+    service = rtd['service']
     schema:dict = rtd['schema']
     schemaName = schema['__name__']
 
@@ -45,9 +46,10 @@ def sendMeta(service, folder:str):
     ).execute()
 
 
-def tryGetMeta(service, folder:str, schemaName:str) -> dict|None:
+def tryGetMeta(folder:str, schemaName:str) -> dict|None:
     logger.info(f'getting meta...')
 
+    service = rtd['service']
     query = f"'{folder}' in parents and name='{schemaName}.meta' and trashed=false and 'me' in owners"
     response = service.files().list(q=query, spaces='drive').execute()
     files = response.get('files', [])
@@ -61,7 +63,7 @@ def tryGetMeta(service, folder:str, schemaName:str) -> dict|None:
     return json.loads(str(request,'utf-8'))
 
 
-def send(service, fpath:str, endName:str, folder=None):
+def send(fpath:str, endName:str, folder=None):
     '''
     @param fpath: path to target file
     @param endName: name of file, which will be in cloud
@@ -69,6 +71,7 @@ def send(service, fpath:str, endName:str, folder=None):
 
     Send file to cloud
     '''
+    service = rtd['service']
     meta = {
             'name': endName,
             'parents': [folder],
@@ -90,13 +93,14 @@ def send(service, fpath:str, endName:str, folder=None):
             updateProgressBar(status.progress() if status else None)
 
 
-def download(service, fpath:str, name:str, folder:str):
+def download(fpath:str, name:str, folder:str):
     '''
     @param fpath: path, where to save the file
     @param name: file name in cloud
     @param folder: folder where will place the file 
     '''
     logger.info(f'downloading {name} from cloud...')
+    service = rtd['service']
     query = f"'{folder}' in parents and name='{name}' and trashed=false and 'me' in owners"
     response = service.files().list(q=query, spaces='drive').execute()
     files = response.get('files', [])
@@ -116,9 +120,10 @@ def download(service, fpath:str, name:str, folder:str):
         updateProgressBar(status.progress() if status else None)
 
 
-def getDestination(service, path:str, root:str|None):
+def getDestination(path:str, root:str|None):
     logger.info('getting destination folder')
     
+    service = rtd['service']
     folders = path.split('/')
     folders = [e for e in folders if e != '']
 
