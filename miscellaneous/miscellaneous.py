@@ -64,7 +64,7 @@ def getFolderPath(skip:bool=True) -> str|None:
 
 def clean(fname:str):
     tmp = getTMP()
-    path = os.path.join(tmp, fname)
+    path = f'{tmp}/{fname}'
 
     if os.path.basename(fname).split('.')[-1] == 'tar':
         return

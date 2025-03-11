@@ -86,7 +86,7 @@ def decompress(archPath:str) -> str:
     logger.info(f'Custom archiver "{schema['program']}" subprocess decompressing...')
     schemaName = schema['__name__']
 
-    exportPath = os.path.join(os.path.dirname(archPath), f'{schemaName}.tar')
+    exportPath = f'{os.path.dirname(archPath)}/{schemaName}.tar'
     command = [program] + args
 
     i = 0

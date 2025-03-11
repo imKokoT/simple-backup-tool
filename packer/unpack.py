@@ -16,7 +16,7 @@ def unpackAll():
     tmp = getTMP()
     schemaName = schema['__name__']
     os.makedirs(f'{tmp}/restored/{schemaName}', exist_ok=True)
-    archive = tarfile.open(os.path.join(tmp, f'{schemaName}.tar'), 'r')
+    archive = tarfile.open(f'{tmp}/{schemaName}.tar', 'r')
 
     packConfig = loadPackConfig(archive)
 
@@ -61,7 +61,7 @@ def unpackFile(path:str, index:int, archive:tarfile.TarFile, packConfig:dict):
         path = invalidTargetPathHandle(path, packConfig)
     
     if os.path.exists(path) and not Config().allow_local_replace:
-        path = os.path.join(os.path.dirname(path), os.path.basename(path) + '-restored')
+        path = f'{os.path.dirname(path)}/{os.path.basename(path) + '-restored'}'
 
     member = archive.getmember(f'files/{hex(index)[2:]}')
 
@@ -86,7 +86,7 @@ def unpackFolder(path:str, index:int, archive:tarfile.TarFile, packConfig:dict):
         path = invalidTargetPathHandle(path, packConfig)
 
     if os.path.exists(path) and not Config().allow_local_replace:
-        path = os.path.join(os.path.dirname(path), os.path.basename(path) + '-restored')
+        path = f'{os.path.dirname(path)}/{os.path.basename(path) + '-restored'}'
         if os.path.exists(path):
             os.rmdir(path)
         os.mkdir(path)
@@ -102,7 +102,7 @@ def unpackFolder(path:str, index:int, archive:tarfile.TarFile, packConfig:dict):
             continue
 
         relpath = os.path.relpath(member.name, memberRoot)
-        targetFilePath = os.path.join(path, relpath)
+        targetFilePath = f'{path}/{relpath}'
 
         if os.path.exists(targetFilePath):
             rewrittenCount += 1
@@ -165,6 +165,6 @@ def invalidTargetPathHandle(path, packConfig) -> str:
             
             path = modifySingleRestorePath(path, packConfig, False)
         else:
-            path = os.path.join(newDir.strip(), os.path.basename(path))
+            path = f'{newDir.strip()}/{os.path.basename(path)}'
 
     return path

@@ -49,7 +49,7 @@ def backup(archiveName:str, creds:Credentials):
         logger.info(f'storage quota after cleanup: limit={humanSize(quota['limit'])}, usage={humanSize(quota['usage'])}')
 
         logger.info('sending backup to cloud...')
-        send(os.path.join(tmp, archiveName), f'{schemaName}.archive', destinationFolder)
+        send(f'{tmp}/{archiveName}', f'{schemaName}.archive', destinationFolder)
         sendMeta(destinationFolder)
         
         quota = getStorageQuota(rtd['service'])

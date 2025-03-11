@@ -23,7 +23,7 @@ def packAll():
     
     tmp = getTMP()
 
-    archive = tarfile.open(os.path.join(tmp, f'{schemaName}.tar'), 'w')
+    archive = tarfile.open(f'{tmp}/{schemaName}.tar', 'w')
     
     if not schema.get('targets'):
         logger.fatal(f'failed to get "targets" key from schema "{schemaName}"')
@@ -93,13 +93,13 @@ def packFolder(targetFolder:str, archive:tarfile.TarFile, ignore:str):
             specsPaths = sorted(specs.keys(), key=len, reverse=False)
 
         for fname in fnames:
-            relative_path = os.path.relpath(os.path.join(dpath, fname), targetFolder)
-            if not shouldIgnore(os.path.join(dpath, fname), specs, specsPaths):
+            relative_path = os.path.relpath(f'{dpath}/{fname}', targetFolder)
+            if not shouldIgnore(f'{dpath}/{fname}', specs, specsPaths):
                 files.append(relative_path)
             else:
                 ignored += 1
 
-            scannedSize += os.path.getsize(os.path.join(targetFolder, relative_path))
+            scannedSize += os.path.getsize(f'{targetFolder}/{relative_path}')
             scanned += 1
 
             if DEBUG:
@@ -110,15 +110,15 @@ def packFolder(targetFolder:str, archive:tarfile.TarFile, ignore:str):
     files  = [p for p in files if not specs[GLOBAL].match_file(p)]
     ignored -= len(files)
     for p in files:
-        packSize += os.path.getsize(os.path.join(targetFolder, p))
+        packSize += os.path.getsize(f'{targetFolder}/{p}')
 
     logger.info(f'reading success; total files: {len(files)} [{humanSize(packSize)}/{humanSize(scannedSize)}]; ignored total: {ignored}')    
 
     logger.info(f'adding to archive...')
     
     for f in files:
-        dpath = os.path.join(f'folders/{hex(packFolder.counter)[2:]}',f)
-        archive.add(os.path.join(targetFolder, f), arcname=dpath)
+        dpath = f'folders/{hex(packFolder.counter)[2:]}/{f}'
+        archive.add(f'{targetFolder}/{f}', arcname=dpath)
     
     logger.info(f'success')
     return {

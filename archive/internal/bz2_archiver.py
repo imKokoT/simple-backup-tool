@@ -31,7 +31,7 @@ def compress(targetPath:str) -> str:
 def decompress(archPath:str, schemaName:str) -> str:
     logger.info('bz2 decompressing...')
 
-    exportPath = os.path.join(os.path.dirname(archPath), f'{schemaName}.tar')
+    exportPath = f'{os.path.dirname(archPath)}/{schemaName}.tar'
     efile = open(exportPath, 'wb')
     zfile = open(archPath, 'rb')
     

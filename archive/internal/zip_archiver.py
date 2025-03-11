@@ -37,7 +37,7 @@ def decompress(archPath:str, schemaName:str):
     logger.info('zip decompressing...')
 
     schema:dict = rtd['schema']
-    exportPath = os.path.join(os.path.dirname(archPath), f'{schemaName}.tar')
+    exportPath = f'{os.path.dirname(archPath)}/{schemaName}.tar'
     
     zfile = zipfile.ZipFile(archPath, 'r')
     esize = zfile.getinfo(f'{schemaName}.tar').file_size

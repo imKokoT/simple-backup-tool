@@ -46,7 +46,7 @@ def restore(creds:Credentials):
 
         logger.info('getting backup from cloud...')
 
-        download(os.path.join(tmp, downloadedName), f'{schemaName}.archive', destinationFolder)
+        download(f'{tmp}/{downloadedName}', f'{schemaName}.archive', destinationFolder)
     except HttpError as e:
         logger.fatal(f'failed to restore; error: {e}')
         exit(1)
@@ -54,7 +54,7 @@ def restore(creds:Credentials):
         logger.fatal(f'failed to restore; error: {e}')
         exit(1)
 
-    logger.info(f'successfully downloaded "{schemaName}.archive" from cloud; it placed in {os.path.join(tmp, f'{schemaName}.downloaded')}')
+    logger.info(f'successfully downloaded "{schemaName}.archive" from cloud; it placed in {f'{tmp}/{schemaName}.downloaded'}')
 
 
 def _updateSchema(meta):

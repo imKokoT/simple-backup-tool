@@ -13,8 +13,8 @@ def loadIgnorePatterns(directory:str) -> pathspec.PathSpec|None:
 
     for dpath, _, _ in os.walk(directory):
         ignoreFilers =(
-            os.path.join(dpath, '.sbtignore'),
-            os.path.join(dpath, '.gitignore')
+            f'{dpath}/.sbtignore',
+            f'{dpath}/.gitignore'
         )
         for ignoreF in ignoreFilers:
             if not os.path.exists(ignoreF) or not Config().include_gitignore and os.path.basename(ignoreF) == '.gitignore': continue
@@ -121,6 +121,6 @@ def modifySingleRestorePath(path:str, packConfig:dict, isFolder:bool) -> str:
             ext = ''
         newName = f'{name} ({hex(i)[2:]}){ext}'
 
-    newPath = os.path.join(root, newName)
+    newPath = f'{root}/{newName}'
 
     return newPath

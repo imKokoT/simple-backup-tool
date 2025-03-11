@@ -58,7 +58,7 @@ def dearchive() -> str:
     mode = schema.get('mode', 'internal')
     program = schema.get('program', '7z')
 
-    downloaded = os.path.join(tmp, f'{schemaName}.downloaded')
+    downloaded = f'{tmp}/{schemaName}.downloaded'
 
     if mode == 'internal':
         try:
@@ -70,10 +70,10 @@ def dearchive() -> str:
                 case 'zip':
                     return zip_archiver.decompress(downloaded, schemaName) 
                 case None | 'tar':
-                    if os.path.exists(os.path.join(tmp, f'{schemaName}.tar')):
-                        os.remove(os.path.join(tmp, f'{schemaName}.tar'))
+                    if os.path.exists(f'{tmp}/{schemaName}.tar'):
+                        os.remove(f'{tmp}/{schemaName}.tar')
 
-                    os.rename(downloaded, os.path.join(tmp, f'{schemaName}.tar'))
+                    os.rename(downloaded, f'{tmp}/{schemaName}.tar')
                     
                     return f'{schemaName}.tar'
                 case _:

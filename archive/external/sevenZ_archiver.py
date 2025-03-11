@@ -71,7 +71,7 @@ def decompress(archPath:str, schemaName:str) -> str:
 
     logger.info('7z subprocess decompressing...')
 
-    exportPath = os.path.join(os.path.dirname(archPath), f'{schemaName}.tar')
+    exportPath = f'{os.path.dirname(archPath)}/{schemaName}.tar'
     password = schema.get('password')
     command = ['7z', 'x', '-y', archPath, f'-o{os.path.dirname(exportPath)}']
     if args:
