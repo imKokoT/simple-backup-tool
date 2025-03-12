@@ -37,5 +37,5 @@ if __name__ != '__main__':
     logs = [f'./logs/{l}' for l in os.listdir('./logs') if l.startswith('session')]
     logs.sort(key=lambda x: os.path.getctime(x))
 
-    if len(logs) > MAX_SESSION_LOGS:
-        os.remove(logs[0])
+    while len(logs) > MAX_SESSION_LOGS:
+        os.remove(logs.pop(0))

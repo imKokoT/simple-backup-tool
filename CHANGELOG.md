@@ -5,6 +5,7 @@ added:
 
 fixed:
 - ignore pattern loader wrongly handled "/" at start of pattern
+- deleting all old logs instead of one
 
 other:
 - changed where restored files dump places from tmp to logs folder
