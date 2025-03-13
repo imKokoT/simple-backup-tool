@@ -12,3 +12,4 @@ debug.py
 /logs/
 
 /token.json
+/plugins/

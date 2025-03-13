@@ -2,6 +2,7 @@
 this script for gui plugins support to handle input and output between gui and tool threads more safe and simple 
 """
 from threading import Event
+from properties import EVENT_UPDATE_DELAY
 from runtime_data import rtd
 from logger import logger
 
@@ -27,7 +28,7 @@ def blockUntilGet(name:str):
     logger.debug(f'{event} awaits for "{name}" event')
     while not msg:
         msg = get_event(name)
-        event.wait(0.05) # update every 50 ms
+        event.wait(EVENT_UPDATE_DELAY)
 
     return msg
 

@@ -7,6 +7,7 @@ DEBUG = True
 SCOPES = ['''https://www.googleapis.com/auth/drive''']
 
 MAX_SESSION_LOGS = 10
+EVENT_UPDATE_DELAY = 0.05 
 
 # --- colorama shortcuts -----------------------------------------------------
 colorama.init(autoreset=True) # init colorama escape codes
