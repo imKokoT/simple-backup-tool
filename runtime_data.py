@@ -1,5 +1,6 @@
 from logger import logger
 from miscellaneous.singleton import Singleton
+from properties import *
 
 
 class RuntimeData(metaclass=Singleton):
@@ -10,7 +11,10 @@ class RuntimeData(metaclass=Singleton):
      - schema -> loaded backup schema
      - service -> when service was build; service access
     """
-    _data:dict = {}
+    _data:dict = {
+        'version': VERSION,
+        'debug': DEBUG,
+    }
 
     def push(self, name:str, value, overwrite:bool = False):
         if name in self._data.keys() and not overwrite:
