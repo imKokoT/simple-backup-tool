@@ -27,6 +27,11 @@ class RuntimeData(metaclass=Singleton):
         logger.debug(f'from runtime data popped "{name}"')
         return self._data.pop(name)
     
+    def tryPop(self, name:str):
+        if name in self._data.keys():
+            return self.pop(name)
+        logger.debug(f'try to pop "{name}" failed')
+    
     def __getitem__(self, name:str):
         if name in self._data.keys():
             return self._data[name]

@@ -42,6 +42,9 @@ def _start():
         logger.fatal(f'starting gui plugin interrupted with error: {e}')
         exit(1)
         
+    guiThread.join()
+    logger.info('gui thread finished, exiting...')
+
 
 if __name__ == '__main__':
     logger.debug(f'{VERSION=} {DEBUG=}')
