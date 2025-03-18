@@ -1,9 +1,11 @@
+import logging
 import threading
 import importlib
 from threading import Event, Thread
-from logger import logger
+from logger import logger, BASE_LOGGING_FORMAT
 from properties import *
 from runtime_data import rtd
+from miscellaneous.events import EventLogHandler
 
 
 def _eventHandler():
@@ -35,6 +37,11 @@ def _start():
     
     eventHandlerThread.start()
     
+    # add new logger handler to push logs as events
+    handler = EventLogHandler()
+    handler.setFormatter(logging.Formatter(BASE_LOGGING_FORMAT))
+    logger.addHandler(handler)
+
     logger.info('starting gui thread')
     try:
         guiThread.start()
