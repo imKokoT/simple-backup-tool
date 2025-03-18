@@ -10,7 +10,13 @@ from logger import logger
 class EventAlreadyPushedError(Exception): ...
 
 
-def get_event(name:str):
+def clearEvents():
+    '''clear all events from RTD'''
+    rtd['events'].clear()
+    logger.debug('all events cleared!')
+
+
+def getEvent(name:str):
     '''if exists automatically pop it and return name or its msg if exists'''
     if name not in rtd['events'].keys():
         return None
@@ -27,14 +33,14 @@ def blockUntilGet(name:str):
     msg = None
     logger.debug(f'{event} awaits for "{name}" event')
     while not msg:
-        msg = get_event(name)
+        msg = getEvent(name)
         event.wait(EVENT_UPDATE_DELAY)
 
     return msg
 
 
-def push_event(name:str, msg:str=None):
-    '''push new event to runtime'''
+def pushEvent(name:str, msg:str=None):
+    '''push new event to runtime. NOTE: you can push only unique events, else EventAlreadyPushedError'''
     if name not in rtd['events'].keys():
         rtd['events'][name] = msg
         logger.debug(f'pushed event "{name}"')
