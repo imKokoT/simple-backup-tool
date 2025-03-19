@@ -23,7 +23,7 @@ def clearEvents():
     logger.debug('all events cleared!', extra={'excluded': True})
 
 
-def popEvent(name:str) -> list[str]:
+def popEvent(name:str) -> list:
     '''will clear event by name end return its values list. 
     if not exists raises KeyError'''
     if name not in rtd['events'].keys():
@@ -33,7 +33,7 @@ def popEvent(name:str) -> list[str]:
     return rtd['events'].pop(name)
 
 
-def tryPopEvent(name:str) -> list[str]|None:
+def tryPopEvent(name:str) -> list|None:
     '''same as popEvent but if not exist returns None'''
     if name not in rtd['events'].keys():
         return None
@@ -41,7 +41,7 @@ def tryPopEvent(name:str) -> list[str]|None:
     return popEvent(name)
 
 
-def getEvent(name:str) -> str|None:
+def getEvent(name:str):
     '''if exists automatically pop last msg or return name if msg is None'''
     if name not in rtd['events'].keys():
         return None
@@ -53,7 +53,7 @@ def getEvent(name:str) -> str|None:
     return msg
 
 
-def blockUntilGet(name:str) -> str|None:
+def blockUntilGet(name:str):
     '''same as getEvent, but will block thread until event exist'''
     event = Event()
     msg = None
@@ -65,7 +65,7 @@ def blockUntilGet(name:str) -> str|None:
     return msg
 
 
-def pushEvent(name:str, msg:str=None):
+def pushEvent(name:str, msg=None):
     '''push new event to runtime. If to push same event it will handle as LIFO at get'''
     if name not in rtd['events'].keys():
         rtd['events'][name] = [msg]
