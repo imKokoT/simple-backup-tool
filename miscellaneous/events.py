@@ -8,37 +8,56 @@ from runtime_data import rtd
 from logger import logger
 
 
-class EventAlreadyPushedError(Exception): ...
-
 class EventLogHandler(logging.Handler):
     def emit(self, record):
         pushEvent('log-pushed', self.format(record))
+    
+    def filter(self, record:logging.LogRecord):
+        excluded = getattr(record, 'excluded', None)
+        return not excluded
 
 
 def clearEvents():
     '''clear all events from RTD'''
     rtd['events'].clear()
-    logger.debug('all events cleared!')
+    logger.debug('all events cleared!', extra={'excluded': True})
 
 
-def getEvent(name:str):
-    '''if exists automatically pop last and return name or its msg if exists'''
+def popEvent(name:str) -> list[str]:
+    '''will clear event by name end return its values list. 
+    if not exists raises KeyError'''
+    if name not in rtd['events'].keys():
+        raise KeyError(f'event with "{name}" not exists!')
+    
+    logger.debug(f'popped event "{name}"', extra={'excluded': True})
+    return rtd['events'].pop(name)
+
+
+def tryPopEvent(name:str) -> list[str]|None:
+    '''same as popEvent but if not exist returns None'''
+    if name not in rtd['events'].keys():
+        return None
+    
+    return popEvent(name)
+
+
+def getEvent(name:str) -> str|None:
+    '''if exists automatically pop last msg or return name if msg is None'''
     if name not in rtd['events'].keys():
         return None
 
     if len(rtd['events'][name]) > 0:
         msg = rtd['events'][name].pop(0) if rtd['events'][name][0] else name
     else:
-        rtd['events'].pop(name)
-    logger.debug(f'popped event "{name}"')
+        msg = popEvent(name)
     return msg
 
 
-def blockUntilGet(name:str):
-    '''will block thread until event exist'''
+def blockUntilGet(name:str) -> str|None:
+    '''same as getEvent, but will block thread until event exist'''
     event = Event()
     msg = None
-    logger.debug(f'{event} awaits for "{name}" event')
+    logger.debug(f'{event} awaits for "{name}" event', extra={'excluded': True})
     while not msg:
         msg = getEvent(name)
         event.wait(EVENT_UPDATE_DELAY)
@@ -50,6 +69,6 @@ def pushEvent(name:str, msg:str=None):
     '''push new event to runtime. If to push same event it will handle as LIFO at get'''
     if name not in rtd['events'].keys():
         rtd['events'][name] = [msg]
-        logger.debug(f'pushed new event "{name}"')
+        logger.debug(f'pushed new event "{name}"', extra={'excluded': True})
     else:
         rtd['events'][name].append(msg)
