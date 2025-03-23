@@ -155,7 +155,7 @@ def invalidTargetPathHandle(path, packConfig) -> str:
         logger.warning(f'{os.path.dirname(path)} is invalid! files will be restored to tmp/restored')
         path = modifySingleRestorePath(path, packConfig, False)
     else:
-        print(f'{YC}Path "{path}" is invalid, do you want to unpack to other path?')
+        logger.warning(f'Path "{path}" is invalid, do you want to unpack to other path?')
         newDir = getFolderPath()
         if not newDir:
             if not Config().restore_to_tmp_if_path_invalid:

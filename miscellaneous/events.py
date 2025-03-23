@@ -3,6 +3,7 @@ this script for gui plugins support to handle input and output between gui and t
 """
 import logging
 from threading import Event
+from typing import Any
 from properties import EVENT_UPDATE_DELAY
 from runtime_data import rtd
 from logger import logger
@@ -41,24 +42,24 @@ def tryPopEvent(name:str) -> list|None:
     return popEvent(name)
 
 
-def getEvent(name:str):
+def getEvent(name:str) -> Any|None:
     '''if exists automatically pop last msg or return name if msg is None'''
     if name not in rtd['events'].keys():
         return None
 
-    if len(rtd['events'][name]) > 0:
+    if len(rtd['events'][name]) > 1:
         msg = rtd['events'][name].pop(0) if rtd['events'][name][0] else name
     else:
-        msg = popEvent(name)
-    return msg
+        msg = popEvent(name)[0]
+    return msg if msg else name
 
 
-def blockUntilGet(name:str):
+def blockUntilGet(name:str) -> Any|None:
     '''same as getEvent, but will block thread until event exist'''
     event = Event()
     msg = None
     logger.debug(f'{event} awaits for "{name}" event', extra={'excluded': True})
-    while not msg:
+    while msg is None:
         msg = getEvent(name)
         event.wait(EVENT_UPDATE_DELAY)
 

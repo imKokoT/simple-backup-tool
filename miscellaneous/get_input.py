@@ -1,12 +1,22 @@
 import os
 from getpass import getpass
 from typing import Literal
+from miscellaneous.events import *
 from properties import *
+from runtime_data import rtd
 
 
 def confirm(msg:str, default:Literal['yes','no']='no') -> bool:
-    '''ask yes or no to confirm'''
+    '''ask yes or no to confirm
+    ### events
+    if gui enabled:
+    - push *get-confirm*(str msg)
+    - get *send-confirm*(str 'y' or 'n')'''
     ## gui input
+    if rtd['gui']:
+        pushEvent('get-confirm', msg)
+        yn = blockUntilGet('send-confirm')
+        return yn == 'y'
 
     ## terminal input
     yn = input(f'{YC}{msg} [{'y/N' if default == 'no' else 'Y/n'}]{DC}').lower().strip()   
@@ -23,8 +33,19 @@ def confirm(msg:str, default:Literal['yes','no']='no') -> bool:
 
 
 def getFolderPath(skip:bool=True) -> str|None:
-    '''get folder path from user'''
+    '''get folder path from user
+    ### events
+    if gui enabled:
+    - push *get-folder_path*
+    - push *get-folder_path-skippable*
+    - get *send-folder_path*(str|None)'''
     ## gui input
+    if rtd['gui']:
+        if skip:
+            pushEvent('get-folder_path-skippable')
+        else:
+            pushEvent('get-folder_path')
+        return blockUntilGet('send-folder_path')
 
     ## terminal input
     newPath = ''
@@ -39,16 +60,30 @@ def getFolderPath(skip:bool=True) -> str|None:
 
 
 def getPassword(msg:str) -> str:
-    '''safely get password'''
+    '''safely get password
+    ### events
+    if gui enabled:
+    - push *get-password*(str msg)
+    - get *send-password*(str)'''
     ## gui input
+    if rtd['gui']:
+        pushEvent('get-password', msg)
+        return blockUntilGet('send-password')
 
     ## terminal input
     return getpass(f'{YC}{msg}{DC}')
 
 
 def getString(msg:str) -> str:
-    '''get string input'''
+    '''get string input
+    ### events
+    if gui enabled:
+    - push *get-string*(str msg)
+    - get *send-string*(str)'''
     ## gui input
+    if rtd['gui']:
+        pushEvent('get-string', msg)
+        return blockUntilGet('send-string')
 
     ## terminal input
     return input(msg)
