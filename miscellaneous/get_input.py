@@ -45,7 +45,8 @@ def getFolderPath(skip:bool=True) -> str|None:
             pushEvent('get-folder_path-skippable')
         else:
             pushEvent('get-folder_path')
-        return blockUntilGet('send-folder_path')
+        path = blockUntilGet('send-folder_path')
+        return path if path else None
 
     ## terminal input
     newPath = ''

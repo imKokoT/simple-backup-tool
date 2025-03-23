@@ -18,6 +18,15 @@ class EventLogHandler(logging.Handler):
         return not excluded
 
 
+class Null(type):
+    __slots__ = ()
+    '''class-stub for default message of pushed event. 
+    If not to select any msg, got message will be name of this event'''
+
+    def __str__(self):
+        return 'Null message'
+
+
 def clearEvents():
     '''clear all events from RTD'''
     rtd['events'].clear()
@@ -48,10 +57,10 @@ def getEvent(name:str) -> Any|None:
         return None
 
     if len(rtd['events'][name]) > 1:
-        msg = rtd['events'][name].pop(0) if rtd['events'][name][0] else name
+        msg = rtd['events'][name].pop(0)
     else:
         msg = popEvent(name)[0]
-    return msg if msg else name
+    return msg if msg != Null else name
 
 
 def blockUntilGet(name:str) -> Any|None:
@@ -66,7 +75,7 @@ def blockUntilGet(name:str) -> Any|None:
     return msg
 
 
-def pushEvent(name:str, msg=None):
+def pushEvent(name:str, msg:Any=Null):
     '''push new event to runtime. If to push same event it will handle as LIFO at get'''
     if name not in rtd['events'].keys():
         rtd['events'][name] = [msg]
