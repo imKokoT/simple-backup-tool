@@ -1,6 +1,7 @@
 import os
 import yaml
 import logger
+from miscellaneous.get_input import confirm
 from properties import *
 from miscellaneous.singleton import Singleton 
 
@@ -52,9 +53,8 @@ class Config(metaclass=Singleton):
             Config.save()
         except yaml.YAMLError as e:
             logger.logger.error(f'failed to load config; {e}')
-            yn = input(f'{YC}do you want to recreate config? [y/N]{DC}: ')
-            if yn.strip().lower() != 'y':
-                print('process interrupted...')
+            if not confirm('do you want to recreate config?'):
+                logger.logger.info('process interrupted...')
                 exit(0)
             Config.save()
 

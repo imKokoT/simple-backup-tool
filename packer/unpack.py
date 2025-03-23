@@ -1,7 +1,7 @@
 import os
 import tarfile
 from app_config import Config
-from miscellaneous.get_input import getFolderPath
+from miscellaneous.get_input import confirm, getFolderPath
 from properties import *
 from miscellaneous.miscellaneous import getTMP
 from packer.packconfig import loadPackConfig
@@ -129,27 +129,25 @@ def askForLocalReplace(packConfig):
     tmp = getTMP()
     schema:dict = rtd['schema']
     schemaName = schema['__name__']
+    gui = rtd['gui']
 
-    print(f'{LYC}Are you sure to rewrite next folders and files:')
-    for f in packConfig['folders']:
-        print(f'{LYC} - {f}')
-    for f in packConfig['files']:
-        print(f'{LYC} - {f}')
-    yn = input('[y/N] ')
-    if yn.strip().lower() != 'y':
-        print(f'{LYC}do you want to unpack all to "{tmp}/restored/{schemaName}":')
-        yn = input('[y/N] ')
-        if yn.strip().lower() == 'y':
+    if not gui:
+        msg = f'Are you sure to rewrite next folders and files:\n' \
+              f'{'\n'.join([f' - {f}' for f in packConfig['folders']])}\n' \
+              f'{'\n'.join([f' - {f}' for f in packConfig['files']])}\n'
+    else:
+        msg = 'Are you sure to rewrite folders and files?'
+
+    if not confirm(msg):
+        if confirm(f'Do you want to unpack all to "{tmp}/restored/{schemaName}"'):
             logger.info('restored data placed in tmp/restored folder')
             modifyRestorePaths(packConfig)
         else:
-            print('unpack process interrupted...')
+            logger.info('unpack process interrupted...')
             exit(0)
 
 
 def invalidTargetPathHandle(path, packConfig) -> str:
-    schema:dict = rtd['schema']
-
     if not Config().ask_for_other_extract_path and not Config().restore_to_tmp_if_path_invalid: 
         logger.error(f'failed to unpack because "{os.path.dirname(path)}" not exists')
         return
