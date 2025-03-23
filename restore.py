@@ -1,10 +1,9 @@
-import os
-from getpass import getpass
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from google.auth.exceptions import RefreshError
 import encryptor
+from miscellaneous.get_input import getPassword, getString
 from properties import *
 from logger import logger
 import schema
@@ -62,13 +61,13 @@ def _updateSchema(meta):
 
     for k, v in meta.items():
         if k == 'password' and v and not schema.get('password'):
-            schema['password'] = getpass(f'{YC}Archive encrypted with password; enter password: {RC}')
+            schema['password'] = getPassword('Archive encrypted with password; enter password:')
         elif k == 'encryption':
             if v != schema.get('encryption'):
                 logger.warning(f'meta.encryption={v}, but schema.encryption={schema.get('encryption')}; meta\'s value taken')
                 schema['encryption'] = v
             if not schema.get('_enc_keyword'):
-                schema['_enc_keyword'] = getpass(f'{YC}Archive encrypted with "{meta['encryption']}"; enter password: {RC}')
+                schema['_enc_keyword'] = getPassword(f'Archive encrypted with "{meta['encryption']}"; enter password:')
         else:
             schema[k] = v
 
@@ -85,7 +84,7 @@ def restoreFromCloud(schemaNameOrPath:str, **kwargs):
     else:
         destination = kwargs.get('destination')
         if not destination:
-            destination = input(f'{YC}enter backup destination: {DC}')
+            destination = getString('enter backup destination: ')
         sch = dict(destination=destination, password=kwargs.get('password'))
     
     # important to save changes
