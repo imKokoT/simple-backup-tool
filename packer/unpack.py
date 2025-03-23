@@ -1,8 +1,9 @@
 import os
 import tarfile
 from app_config import Config
+from miscellaneous.get_input import getFolderPath
 from properties import *
-from miscellaneous.miscellaneous import getTMP, getFolderPath
+from miscellaneous.miscellaneous import getTMP
 from packer.packconfig import loadPackConfig
 from packer.tools import dumpRestoredLog, modifyRestorePaths, modifySingleRestorePath
 from logger import logger

@@ -49,19 +49,6 @@ def humanSize(sizeBytes):
     return f"{readable_size:.2f}{size_units[unit_index]}"
 
 
-def getFolderPath(skip:bool=True) -> str|None:
-    '''get folder path from user'''
-    newPath = ''
-    while not os.path.exists(newPath) or not os.path.isdir(newPath):
-        newPath = input(f'Enter directory path{' or nothing to skip' if skip else ''}: ')
-        if newPath.strip() == '' and skip:
-            return
-        if not os.path.exists(newPath) or not os.path.isdir(newPath):
-            print(f'{RC}invalid path "{newPath}"!')
-    
-    return newPath
-
-
 def clean(fname:str):
     tmp = getTMP()
     path = f'{tmp}/{fname}'
