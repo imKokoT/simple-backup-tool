@@ -6,7 +6,6 @@ from logger import logger
 from miscellaneous.miscellaneous import getTMP, humanSize, iprint
 from packer.packconfig import configurePack
 from packer.tools import loadIgnorePatterns, shouldIgnore, dumpPackedTargetsLog
-import schema
 from runtime_data import rtd
 
 

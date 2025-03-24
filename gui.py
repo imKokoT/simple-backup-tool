@@ -1,5 +1,4 @@
 import logging
-import threading
 import importlib
 from threading import Event, Thread
 from logger import logger, BASE_LOGGING_FORMAT
