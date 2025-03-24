@@ -3,6 +3,7 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from google.auth.exceptions import RefreshError
 import encryptor
+from miscellaneous.events import pushEvent
 from miscellaneous.get_input import getPassword, getString
 from properties import *
 from logger import logger
@@ -73,6 +74,7 @@ def _updateSchema(meta):
 
 
 def restoreFromCloud(schemaNameOrPath:str, **kwargs):
+    pushEvent('update-progress', 0)
     if not kwargs.get('fromMeta', False):
         if not kwargs.get('schemaPath'):
             sch = schema.getBackupSchema(schemaNameOrPath, skipUnwrap=True)
@@ -86,21 +88,28 @@ def restoreFromCloud(schemaNameOrPath:str, **kwargs):
         if not destination:
             destination = getString('enter backup destination: ')
         sch = dict(destination=destination, password=kwargs.get('password'))
-    
+    pushEvent('update-progress', 0.1)
+
     # important to save changes
     rtd.push('schema', sch, overwrite=True)
 
     creds = authenticate()
+    pushEvent('update-progress', 0.2)
 
     restore(creds)
+    pushEvent('update-progress', 0.4)
 
     encryptor.decrypt()
+    pushEvent('update-progress', 0.5)
 
     archiver.dearchive()
+    pushEvent('update-progress', 0.6)
 
     miscellaneous.clean(f'{sch['__name__']}.downloaded')
+    pushEvent('update-progress', 0.7)
 
     packer.unpackAll()
+    pushEvent('update-progress', 1)
 
     logger.info('restore process finished with success!')
 

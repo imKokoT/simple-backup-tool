@@ -4,6 +4,7 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from google.auth.exceptions import RefreshError
 from cloud import getStorageQuota
+from miscellaneous.events import pushEvent
 from properties import *
 from logger import logger
 import schema
@@ -66,6 +67,7 @@ def backup(archiveName:str, creds:Credentials):
 
 
 def createBackupOf(schemaNameOrPath:str, **kwargs):
+    pushEvent('update-progress', 0)
     if not kwargs.get('schemaPath'):
         sch = schema.getBackupSchema(schemaNameOrPath)
     else:
@@ -74,18 +76,25 @@ def createBackupOf(schemaNameOrPath:str, **kwargs):
     if not sch:
         logger.error(f'No backup schema with name "{schemaNameOrPath}"')
         return
+    pushEvent('update-progress', 0.1)
     
     creds = authenticate()
+    pushEvent('update-progress', 0.2)
 
     packer.packAll()
+    pushEvent('update-progress', 0.5)
     
     archName = archiver.archive()
+    pushEvent('update-progress', 0.6)
 
     archName = encryptor.encrypt(archName)
+    pushEvent('update-progress', 0.7)
 
     backup(archName, creds)
+    pushEvent('update-progress', 0.9)
 
     miscellaneous.clean(archName)
+    pushEvent('update-progress', 1)
 
 
 if __name__ == '__main__':
