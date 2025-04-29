@@ -76,15 +76,15 @@ def packFolder(targetFolder:str, archive:tarfile.TarFile, ignore:str):
         return
 
     logger.info(f'packing target folder "{targetFolder}"; reading content...')
-    files = []
+    files:list[Path] = []
     scanned = 0
     ignored = 0
     scannedSize = 0
     packSize = 0
 
-    GLOBAL = ' __global__ '
+    GLOBAL = '.'
     specStack = [(GLOBAL, pathspec.PathSpec.from_lines('gitignore', ignore.splitlines()))]  # (path, spec) or None
-    pathStack = [(Path(targetFolder), 0)]                                                   # (path, depth)
+    pathStack = [(Path(targetFolder), 1)]                                                   # (path, depth)
 
     while pathStack:
         current, depth = pathStack.pop()
@@ -100,17 +100,17 @@ def packFolder(targetFolder:str, archive:tarfile.TarFile, ignore:str):
             else:
                 files.append(current)
                 scannedSize += os.path.getsize(current)
-                scanned += 1
+            scanned += 1
 
             if DEBUG: 
-                iprint(f'{scanned}/{len(files)} files scanned/passed')
+                iprint(f'{scanned}/{ignored} files scanned/ignored')
             continue
         else:
             if isIgnored:
                 continue
             spec = loadIgnorePatterns(current)
             if spec:
-                specStack.append((current, spec))
+                specStack.append((current.relative_to(targetFolder), spec))
             else:
                 specStack.append(None)
 
@@ -142,15 +142,15 @@ def packFolder(targetFolder:str, archive:tarfile.TarFile, ignore:str):
     # files  = [p for p in files if not specs[GLOBAL].match_file(p)]
     # ignored -= len(files)
     for p in files:
-        packSize += os.path.getsize(f'{targetFolder}/{p}')
+        packSize += os.path.getsize(p)
 
     logger.info(f'reading success; total files: {len(files)} [{humanSize(packSize)}/{humanSize(scannedSize)}]; ignored total: {ignored}')    
 
     logger.info(f'adding to archive...')
     
-    for f in files:
-        dpath = f'folders/{hex(packFolder.counter)[2:]}/{f}'
-        archive.add(f'{targetFolder}/{f}', arcname=dpath)
+    for fp in files:
+        dpath = f'folders/{hex(packFolder.counter)[2:]}/{fp.relative_to(targetFolder)}'
+        archive.add(fp, arcname=dpath)
     
     logger.info(f'success')
     return {

@@ -39,11 +39,17 @@ def loadIgnorePatterns(directory:str) -> pathspec.PathSpec|None:
         logger.warning(f'ignore patters of directory "{directory}" has wrong format, so skipped; error: {e}')
 
 
-def shouldIgnore(path:str, specStack:list[tuple[Path, pathspec.PathSpec]]) -> bool:
-    return
-    specPath = next(filter(lambda d: path.startswith(d), sorted_specs), None)
-    spec = specs.get(specPath)
-    return spec and spec.match_file(path[len(specPath):])
+def shouldIgnore(path:Path, specStack:list[tuple[Path, pathspec.PathSpec]]) -> bool:
+    for p in specStack:
+        if not p: continue
+        specPath, spec = p
+
+        if spec.match_file(path.relative_to(specPath)):
+            return True
+    return False
+    # specPath = next(filter(lambda d: path.startswith(d), sorted_specs), None)
+    # spec = specs.get(specPath)
+    # return spec and spec.match_file(path[len(specPath):])
 
 
 ## TODO: for now shows only what pack contains, not what has really restored 
