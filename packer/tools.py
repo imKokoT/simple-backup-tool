@@ -40,16 +40,13 @@ def loadIgnorePatterns(directory:str) -> pathspec.PathSpec|None:
 
 
 def shouldIgnore(path:Path, specStack:list[tuple[Path, pathspec.PathSpec]]) -> bool:
-    for p in specStack:
-        if not p: continue
-        specPath, spec = p
+    for i in range(len(specStack) - 1, -1, -1):
+        if not specStack[i]: continue
+        specPath, spec = specStack[i]
 
         if spec.match_file(path.relative_to(specPath)):
             return True
     return False
-    # specPath = next(filter(lambda d: path.startswith(d), sorted_specs), None)
-    # spec = specs.get(specPath)
-    # return spec and spec.match_file(path[len(specPath):])
 
 
 ## TODO: for now shows only what pack contains, not what has really restored 
@@ -88,7 +85,7 @@ def dumpPackedTargetsLog(filePaths:dict[str,tuple]):
     for k, v in filePaths.items():
         df.write(f'TAR {k}:\n')
         for p in v:
-            df.write(f'\t{p}\n')
+            df.write(f'\t{p.relative_to(k)}\n')
         df.write('\n')
 
     df.close()

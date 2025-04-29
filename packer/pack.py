@@ -117,30 +117,7 @@ def packFolder(targetFolder:str, archive:tarfile.TarFile, ignore:str):
             with os.scandir(current) as it:
                 for entry in it:
                     pathStack.append((Path(entry), depth + 1))
-    ## OLD
-    # for dpath, _, fnames in os.walk(targetFolder):
-    #     spec = loadIgnorePatterns(dpath)
-    #     if spec:
-    #         specs[dpath] = spec
-    #         specsPaths = sorted(specs.keys(), key=len, reverse=False)
-
-    #     for fname in fnames:
-    #         relative_path = os.path.relpath(f'{dpath}/{fname}', targetFolder)
-    #         if not shouldIgnore(f'{dpath}/{fname}', specs, specsPaths):
-    #             files.append(relative_path)
-    #         else:
-    #             ignored += 1
-
-    #         scannedSize += os.path.getsize(f'{targetFolder}/{relative_path}')
-    #         scanned += 1
-
-    #         if DEBUG:
-    #             iprint(f'{scanned} files scanned')
-    # if DEBUG: print()
-
-    # ignored += len(files)
-    # files  = [p for p in files if not specs[GLOBAL].match_file(p)]
-    # ignored -= len(files)
+    
     for p in files:
         packSize += os.path.getsize(p)
 
