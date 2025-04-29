@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 import tarfile
 import pathspec
 from properties import *
@@ -82,32 +83,64 @@ def packFolder(targetFolder:str, archive:tarfile.TarFile, ignore:str):
     packSize = 0
 
     GLOBAL = ' __global__ '
-    specs = {GLOBAL: pathspec.PathSpec.from_lines('gitignore', ignore.splitlines())}
-    specsPaths = [GLOBAL]
+    specStack = [(GLOBAL, pathspec.PathSpec.from_lines('gitignore', ignore.splitlines()))]  # (path, spec) or None
+    pathStack = [(Path(targetFolder), 0)]                                                   # (path, depth)
 
-    for dpath, _, fnames in os.walk(targetFolder):
-        spec = loadIgnorePatterns(dpath)
-        if spec:
-            specs[dpath] = spec
-            specsPaths = sorted(specs.keys(), key=len, reverse=False)
+    while pathStack:
+        current, depth = pathStack.pop()
 
-        for fname in fnames:
-            relative_path = os.path.relpath(f'{dpath}/{fname}', targetFolder)
-            if not shouldIgnore(f'{dpath}/{fname}', specs, specsPaths):
-                files.append(relative_path)
-            else:
+        while len(specStack) > depth:
+            specStack.pop()
+
+        isIgnored = shouldIgnore(current.relative_to(targetFolder), specStack)
+
+        if not current.is_dir():
+            if isIgnored:
                 ignored += 1
+            else:
+                files.append(current)
+                scannedSize += os.path.getsize(current)
+                scanned += 1
 
-            scannedSize += os.path.getsize(f'{targetFolder}/{relative_path}')
-            scanned += 1
+            if DEBUG: 
+                iprint(f'{scanned}/{len(files)} files scanned/passed')
+            continue
+        else:
+            if isIgnored:
+                continue
+            spec = loadIgnorePatterns(current)
+            if spec:
+                specStack.append((current, spec))
+            else:
+                specStack.append(None)
 
-            if DEBUG:
-                iprint(f'{scanned} files scanned')
-    if DEBUG: print()
+            with os.scandir(current) as it:
+                for entry in it:
+                    pathStack.append((Path(entry), depth + 1))
+    ## OLD
+    # for dpath, _, fnames in os.walk(targetFolder):
+    #     spec = loadIgnorePatterns(dpath)
+    #     if spec:
+    #         specs[dpath] = spec
+    #         specsPaths = sorted(specs.keys(), key=len, reverse=False)
 
-    ignored += len(files)
-    files  = [p for p in files if not specs[GLOBAL].match_file(p)]
-    ignored -= len(files)
+    #     for fname in fnames:
+    #         relative_path = os.path.relpath(f'{dpath}/{fname}', targetFolder)
+    #         if not shouldIgnore(f'{dpath}/{fname}', specs, specsPaths):
+    #             files.append(relative_path)
+    #         else:
+    #             ignored += 1
+
+    #         scannedSize += os.path.getsize(f'{targetFolder}/{relative_path}')
+    #         scanned += 1
+
+    #         if DEBUG:
+    #             iprint(f'{scanned} files scanned')
+    # if DEBUG: print()
+
+    # ignored += len(files)
+    # files  = [p for p in files if not specs[GLOBAL].match_file(p)]
+    # ignored -= len(files)
     for p in files:
         packSize += os.path.getsize(f'{targetFolder}/{p}')
 
@@ -146,4 +179,3 @@ def packFile(targetFile:str, archive:tarfile.TarFile):
         'scannedSize': size,
         'filePaths': {targetFile: (targetFile,)}
     }
-

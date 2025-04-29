@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 import time
 import pathspec
 from app_config import Config
@@ -11,26 +12,25 @@ from runtime_data import rtd
 def loadIgnorePatterns(directory:str) -> pathspec.PathSpec|None:
     patterns = []
 
-    for dpath, _, _ in os.walk(directory):
-        ignoreFilers =(
-            f'{dpath}/.sbtignore',
-            f'{dpath}/.gitignore'
-        )
-        for ignoreF in ignoreFilers:
-            if not os.path.exists(ignoreF) or not Config().include_gitignore and os.path.basename(ignoreF) == '.gitignore': continue
+    ignoreFilers =(
+        f'{directory}/.sbtignore',
+        f'{directory}/.gitignore'
+    )
+    for ignoreF in ignoreFilers:
+        if not os.path.exists(ignoreF) or not Config().include_gitignore and os.path.basename(ignoreF) == '.gitignore': continue
 
-            logger.debug(f'found {ignoreF}, loading ignore patterns...')
+        logger.debug(f'found {ignoreF}, loading ignore patterns...')
 
-            with open(ignoreF, 'r', encoding='utf-8') as f:
-                for l in f.readlines():
-                    l = l.strip()
-                    l = f'!{l.replace('!', '')}' if '!' in l else l
-                    l = f'{dpath[len(directory):]}/{'**/'+l if not l.startswith('/') else l}'
-                    l = l.replace('\\', '/')
-                    l = l.replace('//', '/')
-                    patterns.append(l)
-        if len(patterns) == 0:
-            return
+        with open(ignoreF, 'r', encoding='utf-8') as f:
+            for l in f.readlines():
+                l = l.strip()
+                # l = f'!{l.replace('!', '')}' if '!' in l else l
+                # l = f'{directory[len(directory):]}/{'**/'+l if not l.startswith('/') else l}'
+                # l = l.replace('//', '/')
+                l = l.replace('\\', '/')
+                patterns.append(l)
+    if len(patterns) == 0:
+        return
         
     try:
         logger.debug('building pathspec')
@@ -39,7 +39,8 @@ def loadIgnorePatterns(directory:str) -> pathspec.PathSpec|None:
         logger.warning(f'ignore patters of directory "{directory}" has wrong format, so skipped; error: {e}')
 
 
-def shouldIgnore(path:str, specs:dict[str,pathspec.PathSpec], sorted_specs:list) -> bool:
+def shouldIgnore(path:str, specStack:list[tuple[Path, pathspec.PathSpec]]) -> bool:
+    return
     specPath = next(filter(lambda d: path.startswith(d), sorted_specs), None)
     spec = specs.get(specPath)
     return spec and spec.match_file(path[len(specPath):])
