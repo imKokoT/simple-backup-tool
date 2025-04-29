@@ -7,10 +7,12 @@ added:
 fixed:
 - ignore pattern loader wrongly handled "/" at start of pattern
 - deleting all old logs instead of one
+- **FIXED BIG PROBLEM WITH FILTER THAT IGNORE FILES NOT IN PATTERNS**
 
 other:
 - changed where restored files dump places from tmp to logs folder
 - removed max_logs config parameter
+- **speedup file scanning. now ignored folders will not scanned! (#27)**
 
 
 ## 0.9a ([commit](https://github.com/imKokoT/simple-backup-tool/commit/89f56bc6c3a87451197154a02ee11b6c0b7a3cf1))
