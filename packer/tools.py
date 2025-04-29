@@ -24,9 +24,6 @@ def loadIgnorePatterns(directory:str) -> pathspec.PathSpec|None:
         with open(ignoreF, 'r', encoding='utf-8') as f:
             for l in f.readlines():
                 l = l.strip()
-                # l = f'!{l.replace('!', '')}' if '!' in l else l
-                # l = f'{directory[len(directory):]}/{'**/'+l if not l.startswith('/') else l}'
-                # l = l.replace('//', '/')
                 l = l.replace('\\', '/')
                 patterns.append(l)
     if len(patterns) == 0:
@@ -83,9 +80,13 @@ def dumpPackedTargetsLog(filePaths:dict[str,tuple]):
              f'TIME: {time.ctime()}\n\n')
     
     for k, v in filePaths.items():
-        df.write(f'TAR {k}:\n')
-        for p in v:
-            df.write(f'\t{p.relative_to(k)}\n')
+        df.write(f'TAR {k}')
+        if len(v) > 1:
+            df.write(':\n')
+            for p in v:
+                df.write(f'\t{p.relative_to(k)}\n')
+        else:
+            df.write(f':\t{v[0].relative_to(k)}')
         df.write('\n')
 
     df.close()

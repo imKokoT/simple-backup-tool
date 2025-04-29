@@ -154,5 +154,5 @@ def packFile(targetFile:str, archive:tarfile.TarFile):
         'ignored': 0,
         'size': size,
         'scannedSize': size,
-        'filePaths': {targetFile: (targetFile,)}
+        'filePaths': {targetFile: (Path(targetFile),)}
     }
