@@ -154,3 +154,17 @@ Application settings contains at *config.yaml* from configs folder. You can chan
  - *auto_remove_archive* - if true, archives, that was created or downloaded, will be deleted; .tar excluded
  - *hide_password_len* - if true, will hide length of password at encryption process; if false password will hide with \*
  - *human_sizes* - if true, byte sizes will print in "B", "KB", "MB", "GB", "TB"
+
+# GUI plugin
+New **raw experimental** feature for this tool. Now you can try to use it with third-party GUI!
+
+> **WARNING**
+> Installing and running any third-party plugins is about risk! You should to trust what you will run!
+
+> **IMPORTANT**
+> Now not exists any documentation how to create plugins, BUT exits official **experimental** GUI plugin https://github.com/imKokoT/sbt-gui.
+
+Place source code of plugin to */plugins/gui* and run 
+```sh
+python gui.py
+```
