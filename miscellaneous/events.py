@@ -77,7 +77,7 @@ def blockUntilGet(name:str) -> Any|None:
 
 def pushEvent(name:str, msg:Any=Null):
     '''push new event to runtime. If to push same event it will handle as LIFO at get'''
-    if not rtd['events']: return
+    if rtd['events'] is None: return
     if name not in rtd['events'].keys():
         rtd['events'][name] = [msg]
         logger.debug(f'pushed new event "{name}"', extra={'excluded': True})

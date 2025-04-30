@@ -5,7 +5,6 @@ added:
 - **experimental api to create gui plugin (#26)** 
 
 fixed:
-- ignore pattern loader wrongly handled "/" at start of pattern
 - deleting all old logs instead of one
 - **FIXED BIG PROBLEM WITH FILTER THAT IGNORE FILES NOT IN PATTERNS**
 

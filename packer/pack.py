@@ -102,8 +102,7 @@ def packFolder(targetFolder:str, archive:tarfile.TarFile, ignore:str):
                 scannedSize += os.path.getsize(current)
             scanned += 1
 
-            if DEBUG: 
-                iprint(f'{scanned}/{ignored} files scanned/ignored')
+            iprint(f'{scanned}/{ignored} files scanned/ignored')
             continue
         else:
             if isIgnored:
