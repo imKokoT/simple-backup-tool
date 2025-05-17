@@ -1,4 +1,9 @@
 
+## 0.11a
+fixed:
+- unpack wrong handles relative paths
+
+
 ## 0.10a
 added:
 - packed targets dump to logs (#25)

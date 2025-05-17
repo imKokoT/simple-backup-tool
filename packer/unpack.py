@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 import tarfile
 from app_config import Config
 from miscellaneous.get_input import confirm, getFolderPath
@@ -33,7 +34,7 @@ def unpackAll():
     res:dict
     i = 0
     for folder in packConfig['folders']:
-        res = unpackFolder(folder, i, archive, packConfig)
+        res = unpackFolder(Path(folder), i, archive, packConfig)
         
         if res:
             result['rewritten'] += res['rewritten']
@@ -41,7 +42,7 @@ def unpackAll():
         i += 1
     i = 0
     for file in packConfig['files']:
-        res = unpackFile(file, i, archive, packConfig)
+        res = unpackFile(Path(file), i, archive, packConfig)
 
         if res:
             result['rewritten'] += res['rewritten']
@@ -54,11 +55,11 @@ def unpackAll():
     archive.close()
 
 
-def unpackFile(path:str, index:int, archive:tarfile.TarFile, packConfig:dict):
+def unpackFile(path:Path, index:int, archive:tarfile.TarFile, packConfig:dict):
     logger.info(f'unpacking file "{path}"...')
     schema:dict = rtd['schema']
 
-    if not os.path.exists(os.path.dirname(path)):
+    if not os.path.exists(path.parent):
         path = invalidTargetPathHandle(path, packConfig)
     
     if os.path.exists(path) and not Config().allow_local_replace:
@@ -79,11 +80,11 @@ def unpackFile(path:str, index:int, archive:tarfile.TarFile, packConfig:dict):
     }
 
 
-def unpackFolder(path:str, index:int, archive:tarfile.TarFile, packConfig:dict):
+def unpackFolder(path:Path, index:int, archive:tarfile.TarFile, packConfig:dict):
     logger.info(f'unpacking folder "{path}"...')
     schema:dict = rtd['schema']
 
-    if not os.path.exists(os.path.dirname(path)):
+    if not os.path.exists(path.parent):
         path = invalidTargetPathHandle(path, packConfig)
 
     if os.path.exists(path) and not Config().allow_local_replace:
