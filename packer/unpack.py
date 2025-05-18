@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+import shutil
 import tarfile
 from app_config import Config
 from miscellaneous.get_input import confirm, getFolderPath
@@ -63,7 +64,7 @@ def unpackFile(path:Path, index:int, archive:tarfile.TarFile, packConfig:dict):
         path = invalidTargetPathHandle(path, packConfig)
     
     if os.path.exists(path) and not Config().allow_local_replace:
-        path = f'{os.path.dirname(path)}/{os.path.basename(path) + '-restored'}'
+        path = f'{os.path.abspath(path) + '-restored'}'
 
     member = archive.getmember(f'files/{hex(index)[2:]}')
 
@@ -88,9 +89,9 @@ def unpackFolder(path:Path, index:int, archive:tarfile.TarFile, packConfig:dict)
         path = invalidTargetPathHandle(path, packConfig)
 
     if os.path.exists(path) and not Config().allow_local_replace:
-        path = f'{os.path.dirname(path)}/{os.path.basename(path) + '-restored'}'
+        path = f'{os.path.abspath(path) + '-restored'}'
         if os.path.exists(path):
-            os.rmdir(path)
+            shutil.rmtree(path)
         os.mkdir(path)
     elif not os.path.exists(path):
         os.mkdir(path)

@@ -2,6 +2,7 @@
 ## 0.11a
 fixed:
 - unpack wrong handles relative paths
+- unpack folder process can't delete not empty folder 
 
 
 ## 0.10a
