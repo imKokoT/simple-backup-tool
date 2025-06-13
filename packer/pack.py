@@ -99,7 +99,7 @@ def packFolder(targetFolder:str, archive:tarfile.TarFile, ignore:str):
                 ignored += 1
             else:
                 files.append(current)
-                scannedSize += os.path.getsize(current)
+            scannedSize += os.path.getsize(current)
             scanned += 1
 
             iprint(f'{scanned}/{ignored} files scanned/ignored')
