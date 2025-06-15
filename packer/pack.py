@@ -128,6 +128,7 @@ def packFolder(targetFolder:str, archive:tarfile.TarFile, ignore:str):
         dpath = f'folders/{hex(packFolder.counter)[2:]}/{fp.relative_to(targetFolder)}'
         archive.add(fp, arcname=dpath)
     
+    packFolder.counter += 1
     logger.info(f'success')
     return {
         'files':len(files),
