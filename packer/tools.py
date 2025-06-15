@@ -85,8 +85,10 @@ def dumpPackedTargetsLog(filePaths:dict[str,tuple]):
             df.write(':\n')
             for p in v:
                 df.write(f'\t{p.relative_to(k)}\n')
-        else:
+        elif len(v) == 1:
             df.write(f':\t{v[0].relative_to(k)}')
+        else:
+            df.write(f':\t<< NO DATA >>')
         df.write('\n')
 
     df.close()

@@ -3,7 +3,8 @@
 fixed:
 - unpack wrong handles relative paths
 - unpack folder process can't delete not empty folder 
-
+- all target folders saves to `0`
+- abort if try to dump empty folder at packing process
 
 ## 0.10a
 added:
