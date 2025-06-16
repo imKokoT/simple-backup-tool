@@ -5,6 +5,7 @@ fixed:
 - unpack folder process can't delete not empty folder 
 - all target folders saves to `0`
 - abort if try to dump empty folder at packing process
+- wrongly unwrap `~` if targets is string 
 
 ## 0.10a
 added:

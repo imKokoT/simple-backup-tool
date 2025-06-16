@@ -84,13 +84,13 @@ def load(fpath:str, skipUnwrap:bool = False) -> dict:
         schema['__name__'] = os.path.basename(fpath).split('.')[0]
         logger.debug(f'processing "{schema["__name__"]}" keys')
 
+        # handle target is multiline string format
+        if type(schema.get('targets')) is str:
+            schema['targets'] = [p.strip() for p in schema['targets'].split('\n') if p.strip() != ''] # type: ignore
         # handle ~ alias
         if platform.system() == 'Linux' and schema.get('targets'):
             home = os.getenv('HOME')
             schema['targets'] = [p.replace('~', home) for p in schema['targets']]
-        # handle target is multiline string format
-        if type(schema.get('targets')) is str:
-            schema['targets'] = [p.strip() for p in schema['targets'].split('\n') if p.strip() != ''] # type: ignore
 
         if not skipUnwrap:
             unwrapTargets(schema)
