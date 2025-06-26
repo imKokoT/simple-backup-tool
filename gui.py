@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import logging
 import importlib
 from threading import Event, Thread

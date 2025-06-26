@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
