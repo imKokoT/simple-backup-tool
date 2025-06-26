@@ -10,7 +10,7 @@ from properties import *
 if not path.exists('logs'):
     os.mkdir('logs')
 
-BASE_LOGGING_FORMAT = '[%(asctime)s] %(levelname)s %(name)s: %(message)s'
+BASE_LOGGING_FORMAT = '\r[%(asctime)s] %(levelname)s %(name)s: %(message)s'
 BASE_LOG_COLORS ={
         'DEBUG': 'light_black',
         'INFO': 'light_black',

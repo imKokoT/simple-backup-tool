@@ -116,7 +116,8 @@ def packFolder(targetFolder:str, archive:tarfile.TarFile, ignore:str):
             with os.scandir(current) as it:
                 for entry in it:
                     pathStack.append((Path(entry), depth + 1))
-    
+    print()
+
     for p in files:
         packSize += os.path.getsize(p)
 
@@ -124,10 +125,14 @@ def packFolder(targetFolder:str, archive:tarfile.TarFile, ignore:str):
 
     logger.info(f'adding to archive...')
     
+    i = 0
     for fp in files:
         dpath = f'folders/{hex(packFolder.counter)[2:]}/{fp.relative_to(targetFolder)}'
         archive.add(fp, arcname=dpath)
-    
+        i += 1
+        iprint(f'{i}/{len(files)} files added...')
+    print()
+
     packFolder.counter += 1
     logger.info(f'success')
     return {
