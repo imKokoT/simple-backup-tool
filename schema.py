@@ -19,6 +19,17 @@ def getBackupSchema(schemaName:str, skipUnwrap:bool = False) ->dict|None:
     schemasNames = [os.path.basename(p.split('.')[0]) for p in schemas]
     if schemaName not in schemasNames:
         return None
+    
+    # recursion check
+    if not skipUnwrap:
+        rtd.push('_include-chain', [schemaName])
+    else:
+        if schemaName in rtd['_include-chain']:
+            rtd['_include-chain'].append(schemaName)
+            logger.critical(f'found recursive including of schema template "{schemaName}"; chain: {'/'.join(rtd['_include-chain'])}') # type: ignore
+            exit(1)
+        else:
+            rtd['_include-chain'].append(schemaName)
 
     schema = load(f'configs/schemas/{schemas[schemasNames.index(schemaName)]}', skipUnwrap)
 

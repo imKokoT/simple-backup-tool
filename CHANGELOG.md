@@ -6,6 +6,7 @@ fixed:
 - all target folders saves to `0`
 - abort if try to dump empty folder at packing process
 - wrongly unwrap `~` if targets is string
+- recursive include of schemas 
 
 other:
 - added logging of critical exceptions
