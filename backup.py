@@ -2,6 +2,7 @@ from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from google.auth.exceptions import RefreshError
+from httplib2 import ServerNotFoundError
 from cloud import getStorageQuota
 from miscellaneous.events import pushEvent
 from properties import *
@@ -59,6 +60,9 @@ def backup(archiveName:str, creds:Credentials):
         exit(1)
     except RefreshError as e:
         logger.fatal(f'failed to backup; error: {e}')
+        exit(1)
+    except ServerNotFoundError as e:
+        logger.fatal(f'failed to backup; possibly network error: {e}')
         exit(1)
 
     logger.info(f'successfully backup "{archiveName}" to cloud; it placed in '

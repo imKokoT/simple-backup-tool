@@ -2,6 +2,7 @@ from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from google.auth.exceptions import RefreshError
+from httplib2 import ServerNotFoundError
 import encryptor
 from miscellaneous.events import pushEvent
 from miscellaneous.get_input import getPassword, getString
@@ -52,6 +53,9 @@ def restore(creds:Credentials):
         exit(1)
     except RefreshError as e:
         logger.fatal(f'failed to restore; error: {e}')
+        exit(1)
+    except ServerNotFoundError as e:
+        logger.fatal(f'failed to backup; possibly network error: {e}')
         exit(1)
 
     logger.info(f'successfully downloaded "{schemaName}.archive" from cloud; it placed in {f'{tmp}/{schemaName}.downloaded'}')
