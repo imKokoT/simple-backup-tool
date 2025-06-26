@@ -72,7 +72,7 @@ def _updateSchema(meta):
         else:
             schema[k] = v
 
-
+@miscellaneous.catchCritical
 def restoreFromCloud(schemaNameOrPath:str, **kwargs):
     pushEvent('update-progress', 0)
     if not kwargs.get('fromMeta', False):

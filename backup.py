@@ -64,7 +64,7 @@ def backup(archiveName:str, creds:Credentials):
     logger.info(f'successfully backup "{archiveName}" to cloud; it placed in '
                 f'{schema['root'] if schema.get('root') else ''}/{f'{schema['destination']}/{schemaName}'}.archive')
 
-
+@miscellaneous.catchCritical
 def createBackupOf(schemaNameOrPath:str, **kwargs):
     pushEvent('update-progress', 0)
     if not kwargs.get('schemaPath'):

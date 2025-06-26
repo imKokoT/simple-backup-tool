@@ -5,6 +5,7 @@ from logger import logger, BASE_LOGGING_FORMAT
 from properties import *
 from runtime_data import rtd
 from miscellaneous.events import EventLogHandler
+from miscellaneous.miscellaneous import catchCritical
 
 
 def _eventHandler():
@@ -14,7 +15,7 @@ def _eventHandler():
         # events...
         event.wait(EVENT_UPDATE_DELAY)
 
-
+@catchCritical
 def _start():
     logger.info('stating gui...')
     rtd['gui'] = True

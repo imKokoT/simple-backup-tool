@@ -63,3 +63,14 @@ def clean(fname:str):
         return
 
     os.remove(path)
+
+
+def catchCritical(func):
+    '''logging decorator for catching critical exceptions from root functions'''
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            logger.critical(f'process fall with critical error: {e};\nPlease write issue to github!', exc_info=DEBUG)
+            raise
+    return wrapper

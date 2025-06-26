@@ -5,9 +5,13 @@ fixed:
 - unpack folder process can't delete not empty folder 
 - all target folders saves to `0`
 - abort if try to dump empty folder at packing process
-- wrongly unwrap `~` if targets is string 
+- wrongly unwrap `~` if targets is string
 
-## 0.10a
+other:
+- added logging of critical exceptions
+
+
+## 0.10a ([commit](https://github.com/imKokoT/simple-backup-tool/commit/ce227be5a867fcb9096c953e3d63174c3907177d))
 added:
 - packed targets dump to logs (#25)
 - **experimental api to create gui plugin (#26)** 
