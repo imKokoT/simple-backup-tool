@@ -3,8 +3,10 @@ import json
 import os
 import tarfile
 import time
+import yaml
 from properties import *
 from logger import logger
+from runtime_data import rtd
 
 
 def configurePack(archive:tarfile.TarFile, backupSchema:dict, packedTargets:list):
@@ -22,16 +24,22 @@ def configurePack(archive:tarfile.TarFile, backupSchema:dict, packedTargets:list
         'folders': [p for p in packedTargets if os.path.isdir(p)]
     }
 
-    meta = tarfile.TarInfo('config')
+    jsonMeta = tarfile.TarInfo('config')
     if DEBUG:
         jsonData = json.dumps(data, indent=2)
     else:
         jsonData = json.dumps(data, separators=(',',':'))
     
     jsonData = io.BytesIO(jsonData.encode())
-    meta.size = len(jsonData.getvalue())
-
-    archive.addfile(meta, fileobj=jsonData)
+    jsonMeta.size = len(jsonData.getvalue())
+    archive.addfile(jsonMeta, fileobj=jsonData)
+    
+    # include schema to backup
+    s = yaml.dump(rtd['schema'])
+    schemaData = io.BytesIO(s.encode())
+    schemaMeta = tarfile.TarInfo('schema')
+    schemaMeta.size = len(schemaData.getvalue())
+    archive.addfile(schemaMeta, fileobj=schemaData)
 
 
 def loadPackConfig(archive:tarfile.TarFile) -> dict:
