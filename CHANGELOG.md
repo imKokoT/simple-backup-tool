@@ -1,5 +1,8 @@
 
 ## 0.11a
+added:
+- copping your schema to backup (#24)
+
 fixed:
 - unpack wrong handles relative paths
 - unpack folder process can't delete not empty folder 

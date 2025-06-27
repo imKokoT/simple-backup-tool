@@ -4,6 +4,7 @@ import shutil
 import app_config
 from logger import logger
 from properties import *
+from runtime_data import rtd
 
 
 def updateProgressBar(percentage:float, end:bool=False):
@@ -30,12 +31,21 @@ def iprint(*strings):
 
 
 def getTMP():
+    '''returns temporal folder of SBT with creating important folders if need'''
     if DEBUG:
         if not os.path.exists('./debug'): os.mkdir('./debug')
         if not os.path.exists('./debug/tmp'): os.mkdir('./debug/tmp')
         return './debug/tmp'
     else:
-        raise NotImplementedError()
+        raise NotImplementedError('for now works only with DEBUG=True!')
+
+
+def getRestoreFolder():
+    '''returns restore folder of SBT with creating important folders if need'''
+    tmp = getTMP()
+    p = f'{tmp}/{rtd['schema']['__name__']}'
+    if not os.path.exists(p): os.mkdir(p)
+    return p
 
 
 def humanSize(sizeBytes):

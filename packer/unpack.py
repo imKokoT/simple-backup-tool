@@ -7,7 +7,7 @@ from miscellaneous.get_input import confirm, getFolderPath
 from properties import *
 from miscellaneous.miscellaneous import getTMP
 from packer.packconfig import loadPackConfig
-from packer.tools import dumpRestoredLog, modifyRestorePaths, modifySingleRestorePath
+from packer.tools import dumpRestoredLog, modifyRestorePaths, modifySingleRestorePath, restoreSchema
 from logger import logger
 from runtime_data import rtd
 
@@ -24,6 +24,8 @@ def unpackAll():
     packConfig = loadPackConfig(archive)
 
     dumpRestoredLog(packConfig)
+
+    restoreSchema(archive)
     
     if Config().allow_local_replace and Config().ask_before_replace:
         askForLocalReplace(packConfig)

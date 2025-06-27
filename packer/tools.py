@@ -1,10 +1,11 @@
 import os
 from pathlib import Path
+import tarfile
 import time
 import pathspec
 from app_config import Config
 from properties import *
-from miscellaneous.miscellaneous import getTMP
+from miscellaneous.miscellaneous import getTMP, getRestoreFolder
 from logger import logger
 from runtime_data import rtd
 
@@ -131,3 +132,17 @@ def modifySingleRestorePath(path:str, packConfig:dict, isFolder:bool) -> str:
     newPath = f'{root}/{newName}'
 
     return newPath
+
+
+def restoreSchema(archive:tarfile.TarFile):
+    if 'schema' not in archive.getnames():
+        logger.warning('your backup from older versions of SBT, so it did not have your schema! recommended to recreate backup!')
+        return
+
+    rf = getRestoreFolder()
+
+    schemaFile = archive.extractfile('schema')
+    with open(f'{rf}/schema.yaml', 'w') as f:
+        f.write(schemaFile.read().decode())
+    schemaFile.close()
+    logger.info(f'restored your schema to "{f'{rf}/schema.yaml'}"')
