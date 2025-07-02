@@ -11,6 +11,7 @@ if not path.exists('logs'):
     os.mkdir('logs')
 
 BASE_LOGGING_FORMAT = '\r[%(asctime)s] %(levelname)s %(name)s: %(message)s'
+BASE_FILE_LOGGING_FORMATE = '[%(asctime)s] %(levelname)s %(name)s: %(message)s'
 BASE_LOG_COLORS ={
         'DEBUG': 'light_black',
         'INFO': 'light_black',
@@ -24,7 +25,7 @@ logger.setLevel(logging.DEBUG if DEBUG else logging.INFO)
 _programFileHandler = logging.FileHandler(
     f'logs/session_{str(datetime.datetime.now().replace(microsecond=0)).replace(':','.')}.log', 
     'w', 'utf-8')
-_programFileHandler.setFormatter(logging.Formatter(BASE_LOGGING_FORMAT))
+_programFileHandler.setFormatter(logging.Formatter(BASE_FILE_LOGGING_FORMATE))
 logger.addHandler(_programFileHandler)
 
 _temp = logging.StreamHandler()
