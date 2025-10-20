@@ -7,10 +7,12 @@ from threading import Event, Thread
 from logger import logger, BASE_LOGGING_FORMAT
 from properties import *
 from runtime_data import rtd
-from miscellaneous.events import EventLogHandler
+from miscellaneous.events import EventLogHandler, pushEvent
 from miscellaneous.miscellaneous import catchCritical
 
 PORT = 22320
+EVENT_BUFSIZE = 1024*4
+
 
 def _dump(data:dict) -> bytes:
     return json.dumps(data, separators=(',',':')).encode()
@@ -26,6 +28,7 @@ def _eventListener():
     server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     server.bind(('', PORT))
     server.listen()
+    rtd['server'] = server
     logger.info(f'server is running at port {PORT}')
 
     conn, addr = server.accept()
@@ -37,12 +40,24 @@ def _eventListener():
             'version': VERSION
         }))
         msg = conn.recv(1024).decode()
-        if msg != 'ACCEPTED':
+        if msg != 'ACCEPTED' or not msg:
             logger.error(f'handshake error: client refused connection with error "{msg}"')
             return
+        rtd['connection'] = conn        
 
+        # listen events
         while True:
-            # events...
+            r = conn.recv(EVENT_BUFSIZE)
+            if not r:
+                logger.error('client dropped connection')
+                return
+            
+            try:
+                eventData = _decode(r)
+                pushEvent(eventData['event'], eventData['msg'])
+            except Exception as e:
+                logger.exception(f'bad event!\nresponse body: {r}')
+
             event.wait(EVENT_UPDATE_DELAY)
 
 
@@ -50,6 +65,7 @@ def _eventListener():
 def _start():
     logger.info('stating SBT server...')
     rtd['gui'] = True
+    rtd['events'] = {}
     eventHandlerThread = Thread(target=_eventListener, daemon=True)
     
     eventHandlerThread.start()
