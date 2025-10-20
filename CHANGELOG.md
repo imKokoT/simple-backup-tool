@@ -1,5 +1,8 @@
 
-## 0.11a
+## 0.12a
+
+
+## 0.11a ([commit](https://github.com/imKokoT/simple-backup-tool/commit/c56a5f1b19a0944b685a96e4c4e250c5927d8a80))
 added:
 - copping your schema to backup (#24)
 
