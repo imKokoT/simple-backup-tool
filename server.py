@@ -15,6 +15,9 @@ PORT = 22320
 def _dump(data:dict) -> bytes:
     return json.dumps(data, separators=(',',':')).encode()
 
+def _decode(data:bytes) -> dict:
+    return json.loads(data.decode())
+
 
 def _eventListener():
     event = Event()
@@ -28,9 +31,16 @@ def _eventListener():
     conn, addr = server.accept()
     with conn:
         logger.info(f'connected {addr}')
+        
+        # handshake
         conn.sendall(_dump({
             'version': VERSION
         }))
+        msg = conn.recv(1024).decode()
+        if msg != 'ACCEPTED':
+            logger.error(f'handshake error: client refused connection with error "{msg}"')
+            return
+
         while True:
             # events...
             event.wait(EVENT_UPDATE_DELAY)
