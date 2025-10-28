@@ -8,7 +8,7 @@ from logger import logger, BASE_LOGGING_FORMAT
 from properties import *
 from runtime_data import rtd
 from backup import createBackupOf
-from miscellaneous.events import EventLogHandler, pushEvent, getEvent
+from miscellaneous.events import EventLogHandler, pushEvent, getEvent, tryPopEvent
 from miscellaneous.miscellaneous import catchCritical
 
 PORT = 22320
@@ -26,9 +26,21 @@ def _eventHandler():
     te = Event()
 
     try:
-        while True:  
+        while True:
+            if msg := tryPopEvent('log-pushed'):
+                conn:socket.socket = rtd['connection']
+                if not conn: continue
+                conn.sendall(
+                    json.dumps(
+                        {
+                            'event': 'send-logs',
+                            'msg': msg
+                        }
+                    ).encode()
+                )
+
             if msg := getEvent('backup'):
-                createBackupOf(msg['schemaName'])
+                Thread(target=createBackupOf, args=[msg['schemaName']]).start()
 
             if msg := getEvent('restore'):
                 logger.info(f'restore: {msg}')
@@ -89,6 +101,11 @@ def _start():
     eventListenerThread = Thread(target=_eventListener, daemon=True)
     eventHandlerThread = Thread(target=_eventHandler, daemon=True)
 
+    # # add new logger handler to push logs as events
+    handler = EventLogHandler()
+    handler.setFormatter(logging.Formatter(BASE_LOGGING_FORMAT))
+    logger.addHandler(handler)
+
     eventHandlerThread.start()
     eventListenerThread.start()
     eventListenerThread.join()
@@ -109,10 +126,6 @@ def _start():
     
     # eventHandlerThread.start()
     
-    # # add new logger handler to push logs as events
-    # handler = EventLogHandler()
-    # handler.setFormatter(logging.Formatter(BASE_LOGGING_FORMAT))
-    # logger.addHandler(handler)
 
     # logger.info('starting gui thread')
     # try:

@@ -13,7 +13,7 @@ from logger import logger
 
 class EventLogHandler(logging.Handler):
     def emit(self, record):
-        pushEvent('log-pushed', self.format(record))
+        pushEvent('log-pushed', self.format(record), internal=True)
     
     def filter(self, record:logging.LogRecord):
         excluded = getattr(record, 'excluded', None)
