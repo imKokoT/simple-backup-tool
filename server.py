@@ -7,7 +7,8 @@ from threading import Event, Thread
 from logger import logger, BASE_LOGGING_FORMAT
 from properties import *
 from runtime_data import rtd
-from miscellaneous.events import EventLogHandler, pushEvent
+from backup import createBackupOf
+from miscellaneous.events import EventLogHandler, pushEvent, getEvent
 from miscellaneous.miscellaneous import catchCritical
 
 PORT = 22320
@@ -21,9 +22,29 @@ def _decode(data:bytes) -> dict:
     return json.loads(data.decode())
 
 
-def _eventListener():
-    event = Event()
+def _eventHandler():
+    te = Event()
 
+    try:
+        while True:  
+            if msg := getEvent('backup'):
+                createBackupOf(msg['schemaName'])
+
+            if msg := getEvent('restore'):
+                logger.info(f'restore: {msg}')
+            
+            if getEvent('QUIT'):
+                logger.info('quit server...')
+                quit(0)
+
+            te.wait(EVENT_UPDATE_DELAY)
+    except Exception as e:
+        msg = f'while was handling events, the exception raised: {e}'
+        logger.exception(msg)
+        quit(1)
+
+
+def _eventListener():
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     server.bind(('', PORT))
@@ -50,6 +71,7 @@ def _eventListener():
             r = conn.recv(EVENT_BUFSIZE)
             if not r:
                 logger.error('client dropped connection')
+                pushEvent('QUIT')
                 return
             
             try:
@@ -58,18 +80,18 @@ def _eventListener():
             except Exception as e:
                 logger.exception(f'bad event!\nresponse body: {r}')
 
-            event.wait(EVENT_UPDATE_DELAY)
-
 
 @catchCritical
 def _start():
     logger.info('stating SBT server...')
     rtd['gui'] = True
     rtd['events'] = {}
-    eventHandlerThread = Thread(target=_eventListener, daemon=True)
-    
+    eventListenerThread = Thread(target=_eventListener, daemon=True)
+    eventHandlerThread = Thread(target=_eventHandler, daemon=True)
+
     eventHandlerThread.start()
-    eventHandlerThread.join()
+    eventListenerThread.start()
+    eventListenerThread.join()
     
     # guiThread:Thread = None
 
