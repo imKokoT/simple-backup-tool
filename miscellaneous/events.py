@@ -1,7 +1,9 @@
 """
 this script for gui plugins support to handle input and output between gui and tool threads more safe and simple 
 """
+import json
 import logging
+import socket
 from threading import Event
 from typing import Any
 from properties import EVENT_UPDATE_DELAY
@@ -75,11 +77,24 @@ def blockUntilGet(name:str) -> Any|None:
     return msg
 
 
-def pushEvent(name:str, msg:Any=Null):
-    '''push new event to runtime. If to push same event it will handle as LIFO at get'''
+def pushEvent(name:str, msg:Any=Null, **kwargs):
+    '''push new event to runtime. If to push same event it will handle as LIFO at get
+    
+    if `connection` exists, will try to send event
+    '''
     if rtd['events'] is None: return
     if name not in rtd['events'].keys():
         rtd['events'][name] = [msg]
         logger.debug(f'pushed new event "{name}"', extra={'excluded': True})
     else:
         rtd['events'][name].append(msg)
+
+    # send event to client
+    if rtd['connection'] and not kwargs.get('internal'):
+        conn:socket.socket = rtd['connection']
+        conn.sendall(json.dumps(
+            {
+                'event': name,
+                'msg': msg
+            }
+        ).encode())

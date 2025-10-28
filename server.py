@@ -71,12 +71,12 @@ def _eventListener():
             r = conn.recv(EVENT_BUFSIZE)
             if not r:
                 logger.error('client dropped connection')
-                pushEvent('QUIT')
+                pushEvent('QUIT', internal=True)
                 return
             
             try:
                 eventData = _decode(r)
-                pushEvent(eventData['event'], eventData['msg'])
+                pushEvent(eventData['event'], eventData['msg'], internal=True)
             except Exception as e:
                 logger.exception(f'bad event!\nresponse body: {r}')
 
