@@ -1,5 +1,7 @@
 
 ## 0.12a
+- broke gui plugin system '-'d (#31)
+- and lets brake everything else!
 
 
 ## 0.11a ([commit](https://github.com/imKokoT/simple-backup-tool/commit/c56a5f1b19a0944b685a96e4c4e250c5927d8a80))
