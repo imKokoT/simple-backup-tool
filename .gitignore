@@ -1,15 +1,15 @@
+
+# python / IDE
 /.vscode/
 /.vs/
 /.idea/
 __pycache__/
-
 /env/
-/_tests/
-debug.py
+
+# project's folders
 /debug/
-
-/configs
+/configs/
 /logs/
-
-/token.json
 /plugins/
+
+# miscellaneous

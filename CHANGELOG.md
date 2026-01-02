@@ -1,4 +1,11 @@
 
+## 0.13b
+**important changes**:
+- **MIT is good but Apache is better (*License change*)**
+- fully changed project's structure
+- now project become **beta**!
+
+
 ## 0.12a
 - broke gui plugin system '-'d (#31)
 - and lets brake everything else!
