@@ -1,5 +1,5 @@
 '''project's properties'''
 
-VERSION = '0.13b-dev1'
+VERSION = '1.0b-dev1'
 DEBUG = True                # dev-only
 EXPERIMENTAL = False        # enable experimental features

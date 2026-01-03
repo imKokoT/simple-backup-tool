@@ -4,6 +4,7 @@ import colorama
 
 COPYRIGHT = 'imKokoT'
 LINK = '''https://github.com/imKokoT/simple-backup-tool'''
+C_YEARS = '2024-2026'
 
 SCOPES = ['''https://www.googleapis.com/auth/drive''']
 
