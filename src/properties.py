@@ -2,6 +2,10 @@
 from properties import *
 import colorama
 
+VERSION = '1.0b1'
+DEBUG = True                # dev-only
+EXPERIMENTAL = False        # enable experimental features
+
 COPYRIGHT = 'imKokoT'
 LINK = '''https://github.com/imKokoT/simple-backup-tool'''
 C_YEARS = '2024-2026'

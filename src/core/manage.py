@@ -1,6 +1,5 @@
-from .properties import *
+from properties import *
 import sys
-
 
 def parseArgs(args):
     if len(sys.argv) == 1:

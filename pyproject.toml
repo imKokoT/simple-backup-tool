@@ -1,0 +1,27 @@
+
+[project]
+name = "simple-backup-tool"
+version = "1.0b1"
+description = "A simple backup tool to Google Drive cloud"
+readme = "README.md"
+requires-python = ">=3.12"
+license = "Apache-2.0"
+
+dependencies = [
+  "colorama",
+  "colorlog",
+  "pyyaml",
+  "pathspec",
+  "google-api-python-client", 
+  "google-auth-httplib2",
+  "google-auth-oauthlib"
+]
+[project.optional-dependencies]
+encryption = ["cryptography"]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project.scripts]
+sbt = "main:main"

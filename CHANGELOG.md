@@ -1,5 +1,5 @@
 
-## 1.0b
+## 1.0b1
 **important changes**:
 - **MIT is good but Apache is better (*License change*)**
 - fully changed project's structure

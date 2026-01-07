@@ -5,6 +5,7 @@
 /.idea/
 __pycache__/
 /env/
+*.egg-info/
 
 # project's folders
 /debug/
