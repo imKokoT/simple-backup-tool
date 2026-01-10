@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from argparse import ArgumentParser
 import logging
 
 logger = logging.getLogger(__name__)
@@ -6,9 +7,18 @@ logger = logging.getLogger(__name__)
 
 class Module(ABC):
     name:str
+    description:str
+
+    def __init__(self, argParser:ArgumentParser):
+        self.parser:ArgumentParser = argParser
+        self.argGroup = self.parser.add_argument_group(self.name)
 
     @abstractmethod
     def registerSchemaParams(self): ...
+
+    @abstractmethod
+    def registerCommandArguments(self):
+        """register additional options provided by module for CLI"""
 
     @abstractmethod
     def run(self): ...
@@ -23,7 +33,11 @@ class ModuleRegister:
             msg = f'Module "{module.name}" already exists!'
             logger.critical(msg)
             raise ValueError(msg)
-        module[module.name] = module
+        
+        module.registerCommandArguments()
+        module.registerSchemaParams()
+        self._modules[module.name] = module
+        
         logger.debug(f'registered "{module.name}" ({module})')
 
     def get(self, name:str) -> Module:
@@ -43,18 +57,22 @@ register = ModuleRegister()
 class Chain(ABC):
     """
     Module chain of some process. Chain defines sequence of process execution.
-
-    Initialization 
     """
-    def __init__(self, modules:list[str]=[]):
-        self.chian:list[str] = modules
+    name:str
+    description:str
+    chian:list[str]
+     
+    def __init__(self, argParser:ArgumentParser):
+        self.parser:ArgumentParser = argParser
+        self.subparsers = self.parser.add_subparsers(dest="command", required=True)
+        subparser = self.subparsers.add_parser(self.name, help=self.description)
+        self.registerCommandArguments()
+        subparser.set_defaults(func=self.run)
 
     @abstractmethod
-    def registerCommand(self):
-        """register command for CLI"""
+    def registerCommandArguments(self):
+        """register command arguments to run it within CLI"""
 
-    def run(self):
+    @abstractmethod
+    def run(self, args):
         """run chain of modules"""
-        for moduleName in self.chian:
-            module = register.get(moduleName)
-            module.run()
