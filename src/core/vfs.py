@@ -41,10 +41,10 @@ class VFile(IOBase):
         
         vfs._on_open(self)
 
-    def read(self, n: int = -1) -> bytes:                return self._file.read(n)
-    def write(self, b: bytes) -> int:                    return self._file.write(b)
-    def seek(self, offset: int, whence: int = 0) -> int: return self._file.seek(offset, whence)
-    def tell(self) -> int:                               return self._file.tell()
+    def read(self, n:int = -1) -> bytes:                return self._file.read(n)
+    def write(self, b:bytes) -> int:                    return self._file.write(b)
+    def seek(self, offset:int, whence:int = 0) -> int:  return self._file.seek(offset, whence)
+    def tell(self) -> int:                              return self._file.tell()
 
     def close(self):
         if not self._file.closed:

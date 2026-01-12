@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import logger
 from core.manage import parseArgs
+from core.app_config import registerBaseSettings, configRegistry
 import sys
 
 
@@ -12,6 +13,7 @@ def main():
     creating templates, automate processes etc.
     """
     logger.init()
+    registerBaseSettings()
     parseArgs(sys.argv)
 
 
