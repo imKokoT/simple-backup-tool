@@ -14,14 +14,13 @@ def get_app_dir() -> Path:
     Linux: 
         `$HOME/.local/share/[COPYRIGHT]/simple-backup-tool`
     
-    In DEBUG mode, returns the project root directory.
+    In DEBUG mode, returns the `<project root directory>/configs`.
     """
-    if DEBUG:
-        return Path(__file__).resolve().parent.parent
-
     system = platform.system()
 
-    if system == "Windows":
+    if DEBUG:
+        path = Path(__file__).resolve().parent.parent / 'configs'
+    elif system == "Windows":
         base = os.getenv("APPDATA")
         if not base:
             raise RuntimeError("APPDATA not set")
