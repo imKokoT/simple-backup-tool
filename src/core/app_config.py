@@ -55,11 +55,14 @@ class ConfigRegistry:
         )
         logger.debug(f'registered "{name}" ConfigKey')
 
-    def get(self, key: str) -> ConfigKey:
+    def get(self, key:str) -> ConfigKey:
         return self._keys[key]
 
     def all(self):
         return self._keys.values()
+    
+    def keys(self):
+        return self._keys.keys()
 
 configRegistry = ConfigRegistry()
 
@@ -68,12 +71,12 @@ class Config:
     """Load and dump app configs"""
     _values:dict[str, object] = {}
     
-    def get(self, name: str):
-        if name in self._values:
-            return self._values[name]
-        return configRegistry.get(name).default
+    def get(self, key:str):
+        if key not in self._values:    
+            self._values[key] = configRegistry.get(key).default
+        return self._values[key]
 
-    def set(self, name: str, value):
+    def set(self, name:str, value):
         key = configRegistry.get(name)
         key.validate(value)
         self._values[name] = value
@@ -98,11 +101,23 @@ class Config:
             raise RuntimeError("config.yaml root must be a mapping")
 
         for k,v in data.items():
+            if k not in configRegistry.keys():
+                logger.warning(f'unknown config key: {k}')
+                continue
             self.set(k, v)
+
         logger.debug('loaded config.yaml')
 
+        if len(data) != len(configRegistry.all()):
+            self.dump()
+            logger.info('updated config.yaml to actual version')
+        
     def dump(self):
         path = get_app_dir() / "config.yaml"
+        path_old = get_app_dir() / "config-old.yaml"
+        if path.exists():             
+            path.replace(path_old)
+
         data = CommentedMap()
 
         for key in configRegistry.all():
