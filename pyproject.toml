@@ -10,7 +10,7 @@ license = "Apache-2.0"
 dependencies = [
   "colorama",
   "colorlog",
-  "pyyaml",
+  "ruamel.yaml",
   "pathspec",
   "google-api-python-client", 
   "google-auth-httplib2",

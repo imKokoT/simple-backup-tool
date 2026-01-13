@@ -1,6 +1,7 @@
 from paths import *
-import yaml
-from yaml.scanner import ScannerError
+from properties import *
+from ruamel.yaml.comments import CommentedMap
+from ruamel.yaml.error import YAMLError
 import logging
 from dataclasses import dataclass
 from typing import Any, Callable, Type
@@ -78,26 +79,47 @@ class Config:
         self._values[name] = value
 
     def load(self):
-        try:
-            with open(get_app_dir()/'config.yaml', 'r', encoding='utf-8') as f:
-                data = yaml.safe_load(f)
-        except ScannerError as e:
-            logger.error(f'config.yaml has bad format: {e}')
-            raise NotImplementedError() 
-        except FileNotFoundError:
-            logger.warning('config.yaml not found; dumped new one')
-            self.dump()
+        path = get_app_dir() / "config.yaml"
 
-        raise NotImplementedError()
+        if not path.exists():
+            logger.warning("config.yaml not found; dumping default one")
+            self.dump()
+            return
+
+        try:
+            with path.open("r", encoding="utf-8") as f:
+                data = yaml.load(f)
+        except YAMLError as e:
+            logger.error(f"config.yaml has bad format: {e}")
+            raise RuntimeError("Invalid config.yaml") from e
+
+        if not isinstance(data, dict):
+            logger.error(f'config.yaml root must be a mapping')
+            raise RuntimeError("config.yaml root must be a mapping")
+
+        for k,v in data.items():
+            self.set(k, v)
+        logger.debug('loaded config.yaml')
 
     def dump(self):
-        result = {}
+        path = get_app_dir() / "config.yaml"
+        data = CommentedMap()
+
         for key in configRegistry.all():
-            result[key.name] = self.get(key.name)
-        
-        with open(get_app_dir()/'config.yaml', 'w', encoding='utf-8') as f:
-            yaml.dump(result, f)
-        logger.debug('dumped config.yaml')
+            value = self.get(key.name)
+            data[key.name] = value
+
+            if key.description:
+                # data.yaml_set_comment_before_after_key(
+                #     key.name,
+                #     before=key.description
+                # )
+                data.yaml_add_eol_comment(key.description, key.name)
+
+        with path.open("w", encoding="utf-8") as f:
+            yaml.dump(data, f)
+
+        logger.debug("dumped config.yaml")
 
 config = Config()
 

@@ -1,6 +1,8 @@
 '''global constants'''
 from properties import *
 import colorama
+from ruamel.yaml import YAML
+
 
 VERSION = '1.0b1'
 DEBUG = True                # dev-only
@@ -34,3 +36,7 @@ LCC = colorama.Fore.LIGHTCYAN_EX
 LBKC = colorama.Fore.LIGHTBLACK_EX
 LMC = colorama.Fore.LIGHTMAGENTA_EX
 LWC = colorama.Fore.LIGHTWHITE_EX
+
+yaml = YAML()
+yaml.indent(mapping=2, sequence=4, offset=2)
+yaml.default_flow_style = False
