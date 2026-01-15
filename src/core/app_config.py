@@ -1,83 +1,25 @@
+from core.config_registry import ConfigRegistry
 from paths import *
 from properties import *
 from ruamel.yaml.comments import CommentedMap
 from ruamel.yaml.error import YAMLError
 import logging
-from dataclasses import dataclass
-from typing import Any, Callable, Type
 
 logger = logging.getLogger(__name__)
+app_config_registry = ConfigRegistry('app_config')
 
 
-@dataclass(slots=True)
-class ConfigKey:
-    """Describes key of some setting"""
-    name:str
-    type:Type
-    default:Any
-    description:str = ""
-    validator:Callable[[Any], bool] | None = None
-
-    def validate(self, value: Any):
-        if not isinstance(value, self.type):
-            raise TypeError(f'{self.name}: expected {self.type.__name__}')
-        if self.validator and not self.validator(value):
-            raise ValueError(f'{self.name}: validation failed')
-
-
-class ConfigRegistry:
-    """Saves all ConfigKeys"""
-    def __init__(self):
-        self._keys: dict[str, ConfigKey] = {}
-
-    def __getitem__(self, key:str) -> ConfigKey:
-        return self._keys[key]
-
-    def register(
-        self,
-        name: str,
-        *,
-        type: type,
-        default,
-        description: str = "",
-        validator=None,
-    ):
-        """Register ConfigKey to registry"""
-        if name in self._keys:
-            raise KeyError(f'ConfigKey "{name}" already registered')
-
-        self._keys[name] = ConfigKey(
-            name=name,
-            type=type,
-            default=default,
-            description=description,
-            validator=validator,
-        )
-        logger.debug(f'registered "{name}" ConfigKey')
-
-    def get(self, key:str) -> ConfigKey:
-        return self._keys[key]
-
-    def all(self):
-        return self._keys.values()
-    
-    def keys(self):
-        return self._keys.keys()
-
-configRegistry = ConfigRegistry()
-
-
-class Config:
+class AppConfig:
     """Load and dump app configs"""
     _values:dict[str, object] = {}
     
     def get(self, key:str):
         if key not in self._values:    
-            self._values[key] = configRegistry.get(key).default
+            self._values[key] = app_config_registry.get(key).default
         return self._values[key]
 
     def set(self, name:str, value):
-        key = configRegistry.get(name)
+        key = app_config_registry.get(name)
         key.validate(value)
         self._values[name] = value
 
@@ -101,14 +43,14 @@ class Config:
             raise RuntimeError("config.yaml root must be a mapping")
 
         for k,v in data.items():
-            if k not in configRegistry.keys():
+            if k not in app_config_registry.keys():
                 logger.warning(f'unknown config key: {k}')
                 continue
             self.set(k, v)
 
         logger.debug('loaded config.yaml')
 
-        if len(data) != len(configRegistry.all()):
+        if len(data) != len(app_config_registry.all()):
             self.dump()
             logger.info('updated config.yaml to actual version')
         
@@ -120,7 +62,7 @@ class Config:
 
         data = CommentedMap()
 
-        for key in configRegistry.all():
+        for key in app_config_registry.all():
             value = self.get(key.name)
             data[key.name] = value
 
@@ -136,12 +78,12 @@ class Config:
 
         logger.debug("dumped config.yaml")
 
-config = Config()
+config = AppConfig()
 
 
 def registerBaseSettings():
     """Root application settings"""
-    configRegistry.register(
+    app_config_registry.register(
         name='accessability.human_sizes',
         type=bool,
         default=False,
