@@ -2,7 +2,8 @@
 from properties import VERSION
 import logger
 from core.manage import parseArgs
-from core.app_config import registerBaseSettings, config
+from core import app_config
+from core import schema
 import sys
 
 
@@ -16,8 +17,9 @@ def main():
     logger.init()
     logger.logging.debug(f'DEBUG MODE ON; v{VERSION}')
 
-    registerBaseSettings()
-    config.load()
+    app_config.registerBaseSettings()
+    app_config.config.load()
+    schema.registerBaseSettings()
     
     parseArgs(sys.argv)
 

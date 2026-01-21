@@ -1,3 +1,4 @@
+from typing import Set
 from core.config_registry import ConfigRegistry
 from paths import *
 from properties import *
@@ -6,26 +7,76 @@ from ruamel.yaml.error import YAMLError
 import logging
 
 logger = logging.getLogger(__name__)
-app_config_registry = ConfigRegistry('schema_config_registry')
+schema_config_registry = ConfigRegistry('schema_config_registry')
 
 
 class Schema:
     """Loaded schema file"""
     path:Path
     _values:dict[str, object] = {}
+
+    def __init__(self, path:Path):
+        self.path = path
     
     def get(self, key:str):
         if key not in self._values:    
-            self._values[key] = app_config_registry.get(key).default
+            self._values[key] = schema_config_registry.get(key).default
         return self._values[key]
 
     def set(self, name:str, value):
-        key = app_config_registry.get(name)
+        key = schema_config_registry.get(name)
         key.validate(value)
         self._values[name] = value
 
     def load(self):
-        ...
+        self._load_file(self.path, visited=set())
+
+    def _load_file(self, path:Path, visited:Set[Path]):
+        logger.debug(f'loading schema "{path}"')
+
+        path = path.resolve()
+        if path in visited:
+            raise RuntimeError(f'include cycle detected: {path}')
+        visited.add(path)
+
+        if not path.exists():
+            raise FileNotFoundError(path)
+
+        try:
+            with path.open("r", encoding="utf-8") as f:
+                data = yaml.load(f)
+        except YAMLError as e:
+            raise RuntimeError(f"invalid schema: {path}") from e
+
+        if not isinstance(data, dict):
+            raise RuntimeError(f"schema root must be a mapping: {path}")
+
+        # include
+        includes = data.get("include", [])
+        if isinstance(includes, str):
+            includes = [includes]
+
+        for name in includes:
+            include_path = (get_app_dir() / "schemas" / f"{name}.yaml")
+            self._load_file(include_path, visited)
+
+        # apply overrides
+        for k, v in data.items():
+            if k == "include": continue
+            if k not in schema_config_registry.keys():
+                logger.warning(f'unknown schema config key "{k}" in {path}')
+                continue
+            self.set(k, v)
 
     def dump(self):
         ...
+
+
+def registerBaseSettings():
+    """build-in schemas parameters"""
+    schema_config_registry.register(
+        name='include',
+        type=(list[str], str, type(None)),
+        default=None,
+        description='Include other schema params from config directory; requires schema\'s name'
+    )
