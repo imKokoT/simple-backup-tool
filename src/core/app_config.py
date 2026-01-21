@@ -6,7 +6,7 @@ from ruamel.yaml.error import YAMLError
 import logging
 
 logger = logging.getLogger(__name__)
-app_config_registry = ConfigRegistry('app_config')
+app_config_registry = ConfigRegistry('app_config_registry')
 
 
 class AppConfig:
