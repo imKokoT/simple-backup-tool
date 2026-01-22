@@ -1,7 +1,5 @@
-from chain.test import TestChain
 from properties import *
 from core.module import register
-from modules.test import TestModule
 import argparse
 import logging
 import sys
@@ -17,11 +15,11 @@ def parseArgs(args):
     parser = argparse.ArgumentParser()
     
     # register modules
-    register.register(TestModule(parser))
+
     # init chains
     chains = [
-        TestChain(parser)
-    ]
+        
+        ]
 
     args = parser.parse_args()
     args.func(args)
