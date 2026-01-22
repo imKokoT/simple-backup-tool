@@ -29,9 +29,9 @@ class Schema:
         self._values[name] = value
 
     def load(self):
-        self._load_file(self.path, visited=set())
+        self._loadFile(self.path, visited=set())
 
-    def _load_file(self, path:Path, visited:Set[Path]):
+    def _loadFile(self, path:Path, visited:Set[Path]):
         logger.debug(f'loading schema "{path}"')
 
         path = path.resolve()
@@ -57,8 +57,8 @@ class Schema:
             includes = [includes]
 
         for name in includes:
-            include_path = (get_app_dir() / "schemas" / f"{name}.yaml")
-            self._load_file(include_path, visited)
+            include_path = (getAppDir() / "schemas" / f"{name}.yaml")
+            self._loadFile(include_path, visited)
 
         # apply overrides
         for k, v in data.items():
@@ -69,7 +69,7 @@ class Schema:
             self.set(k, v)
 
     def dump(self):
-        ...
+        raise NotImplementedError()
 
 
 def registerBaseSettings():

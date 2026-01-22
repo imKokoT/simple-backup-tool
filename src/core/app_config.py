@@ -24,7 +24,7 @@ class AppConfig:
         self._values[name] = value
 
     def load(self):
-        path = get_app_dir() / "config.yaml"
+        path = getAppDir() / "config.yaml"
 
         if not path.exists():
             logger.warning("config.yaml not found; dumping default one")
@@ -55,8 +55,8 @@ class AppConfig:
             logger.info('updated config.yaml to actual version')
         
     def dump(self):
-        path = get_app_dir() / "config.yaml"
-        path_old = get_app_dir() / "config-old.yaml"
+        path = getAppDir() / "config.yaml"
+        path_old = getAppDir() / "config-old.yaml"
         if path.exists():             
             path.replace(path_old)
 

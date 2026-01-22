@@ -10,10 +10,10 @@ class VirtualFS:
     def get(self, path:Path) -> 'VFile | None':
         return self._vfs.get(path)
 
-    def _on_close(self, path:Path):
+    def _onClose(self, path:Path):
         self._vfs.pop(path)
 
-    def _on_open(self, vfile:'VFile'):
+    def _onOpen(self, vfile:'VFile'):
         if vfile._path in self._vfs:
             raise FileExistsError(f'virtual file "{vfile._path}" already exists')
         self._vfs[vfile._path] = vfile
@@ -39,7 +39,7 @@ class VFile(IOBase):
         self._mode = mode
         self._location = location
         
-        vfs._on_open(self)
+        vfs._onOpen(self)
 
     def read(self, n:int = -1) -> bytes:                return self._file.read(n)
     def write(self, b:bytes) -> int:                    return self._file.write(b)
@@ -49,7 +49,7 @@ class VFile(IOBase):
     def close(self):
         if not self._file.closed:
             self._file.close()
-            vfs._on_close(self._path)
+            vfs._onClose(self._path)
 
     def __getattr__(self, name):
         return getattr(self._file, name)

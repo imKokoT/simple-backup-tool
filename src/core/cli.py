@@ -3,7 +3,7 @@ import sys
 from typing import Literal
 
 
-def get_confirm(expected:Literal['y','n'], msg:str='', default:Literal['y','n']='n') -> bool:
+def getConfirm(expected:Literal['y','n'], msg:str='', default:Literal['y','n']='n') -> bool:
     '''Returns true if get expected confirm'''
     yn = input(f'{f'{msg}? ' if msg else 'Please confirm! '}'
                f'[{'Y/n' if default == 'y' else 'y/N'}] ')
@@ -22,7 +22,7 @@ def iprint(*strings):
     sys.stdout.flush()
 
 
-def progress_bar(unit:float, end:bool=False, ppu:float=1.0):
+def progressBar(unit:float, end:bool=False, ppu:float=1.0):
     '''
     Print progress bar
 
@@ -41,7 +41,7 @@ def progress_bar(unit:float, end:bool=False, ppu:float=1.0):
     sys.stdout.flush()
 
     if end:
-        progress_bar(unit=1)
+        progressBar(unit=1)
         return
     if progress >= 1:
         print()

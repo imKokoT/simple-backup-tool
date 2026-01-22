@@ -4,7 +4,7 @@ from properties import *
 from pathlib import Path
 
 
-def get_app_dir() -> Path:
+def getAppDir() -> Path:
     """
     Return the application data directory.
 
