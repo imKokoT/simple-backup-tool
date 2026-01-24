@@ -1,5 +1,7 @@
+import modules
 from properties import *
 from core.module import register
+from core.context import ctx
 import argparse
 import logging
 import sys
@@ -13,13 +15,13 @@ def parseArgs(args):
         return
     
     parser = argparse.ArgumentParser()
+    ctx.args = parser.parse_args()
     
     # register modules
-
+    register.register(modules.scan.ScanModule(parser))
     # init chains
-    chains = [
-        
+    ctx.chains = [
+
         ]
 
-    args = parser.parse_args()
-    args.func(args)
+    args.func(ctx.args)

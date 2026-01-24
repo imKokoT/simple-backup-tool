@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from argparse import ArgumentParser
+from argparse import ArgumentParser, Namespace
 import logging
 
 logger = logging.getLogger(__name__)
@@ -14,7 +14,8 @@ class Module(ABC):
         self.argGroup = self.parser.add_argument_group(self.name)
 
     @abstractmethod
-    def registerSchemaParams(self): ...
+    def registerSchemaParams(self): 
+        """register schemas params to define module behavior"""
 
     @abstractmethod
     def registerCommandArguments(self):
@@ -49,7 +50,6 @@ class ModuleRegister:
 
     def all(self):
         return self._modules.values()
-
 
 register = ModuleRegister()
 
