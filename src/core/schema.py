@@ -12,11 +12,14 @@ schema_config_registry = ConfigRegistry('schema_config_registry')
 
 class Schema:
     """Loaded schema file"""
+    name:str
     path:Path
     _values:dict[str, object] = {}
 
     def __init__(self, path:Path):
         self.path = path
+        self.name = path.stem
+        self.load()
     
     def get(self, key:str):
         if key not in self._values:    
@@ -79,4 +82,16 @@ def registerBaseSettings():
         type=(list[str], str, type(None)),
         default=None,
         description='Include other schema params from config directory; requires schema\'s name'
+    )
+    schema_config_registry.register(
+        name='targets',
+        type=(list[str],),
+        default=None,
+        description='Target folders and files in local disk to backup'
+    )
+    schema_config_registry.register(
+        name='ignore',
+        type=(str, list[str]),
+        default='',
+        description='Global ignore pattern; highest priority'
     )

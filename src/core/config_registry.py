@@ -52,6 +52,10 @@ class ConfigRegistry:
         )
         logger.debug(f'registered "{name}" ConfigKey in registry "{self.name}"')
 
+    def require(self, key:str):
+        if key not in self._keys:
+            raise RuntimeError(f'ConfigKey "{key}" not registered')
+
     def get(self, key:str) -> ConfigKey:
         return self._keys[key]
 

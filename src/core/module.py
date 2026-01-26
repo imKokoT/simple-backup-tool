@@ -14,8 +14,8 @@ class Module(ABC):
         self.argGroup = self.parser.add_argument_group(self.name)
 
     @abstractmethod
-    def registerSchemaParams(self): 
-        """register schemas params to define module behavior"""
+    def requireSchemaParams(self): 
+        """define what schema params are required by module"""
 
     @abstractmethod
     def registerCommandArguments(self):
@@ -36,7 +36,7 @@ class ModuleRegister:
             raise ValueError(msg)
         
         module.registerCommandArguments()
-        module.registerSchemaParams()
+        module.requireSchemaParams()
         self._modules[module.name] = module
         
         logger.debug(f'registered "{module.name}" ({module})')
