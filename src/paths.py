@@ -32,3 +32,21 @@ def getAppDir() -> Path:
 
     path.mkdir(parents=True, exist_ok=True)
     return path
+
+
+def getTmpDir() -> Path:
+    """
+    Returns directory for temporal files
+
+    In DEBUG mode, returns the `<project root directory>/configs/tmp
+    """
+    system = platform.system()
+
+    if DEBUG:
+        path = Path(__file__).resolve().parent.parent / 'configs' / 'tmp'
+    else:
+        raise NotImplementedError(f"Unsupported OS: {system}")
+
+    path.mkdir(parents=True, exist_ok=True)
+    return path
+

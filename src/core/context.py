@@ -1,6 +1,9 @@
 from argparse import Namespace
-from core.module import Chain
-from core.schema import Schema
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from core.module import Chain, Module
+    from core.schema import Schema
 
 
 class Context:
@@ -8,6 +11,7 @@ class Context:
     args:Namespace
     schema:Schema
 
+    currentModule:Module    # NOTE: if 'None' here, may you forgot to add super().run() at your module
     chains:list[Chain]
 
 ctx = Context()

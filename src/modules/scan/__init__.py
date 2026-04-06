@@ -10,6 +10,7 @@ class ScanModule(Module):
     description = 'Scan filesystem for changes'
 
     def run(self):
+        super().run()
         ctx.schema = Schema(getAppDir() / 'schemas' / f'{ctx.args.schema_name}.yaml')
         scan()
 

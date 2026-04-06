@@ -49,7 +49,7 @@ class ConfigKey:
 
     def validate(self, value: Any):
         if not isinstance_generic(value, self.type):
-            raise TypeError(f'{self.name}: expected {self.type.__name__}')
+            raise TypeError(f'{self.name}: expected {self.type}')
         if self.validator and not self.validator(value):
             raise ValueError(f'{self.name}: validation failed')
 

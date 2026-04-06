@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
-from argparse import ArgumentParser, Namespace
+from argparse import ArgumentParser
+from core.context import ctx
 import logging
 
 logger = logging.getLogger(__name__)
@@ -21,8 +22,9 @@ class Module(ABC):
     def registerCommandArguments(self):
         """register additional options provided by module for CLI"""
 
-    @abstractmethod
-    def run(self): ...
+    def run(self):
+        """run module code. must be overridden with <code>super().run()</code>"""
+        ctx.currentModule = self
 
 
 class ModuleRegister:
