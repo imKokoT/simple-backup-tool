@@ -1,8 +1,41 @@
 from dataclasses import dataclass
 import logging
-from typing import Any, Callable, Type
+from typing import Union, get_origin, get_args, Any, Callable, Type
 
 logger = logging.getLogger(__name__)
+
+
+def isinstance_generic(obj, typ):
+    if isinstance(typ, tuple):
+        return any(isinstance_generic(obj, t) for t in typ)
+
+    origin = get_origin(typ)
+    args = get_args(typ)
+
+    if origin is Union:
+        return any(isinstance_generic(obj, t) for t in args)
+
+    if origin is None:
+        return isinstance(obj, typ)
+
+    if origin in (list, set, tuple):
+        if not isinstance(obj, origin):
+            return False
+        if args:
+            return all(isinstance_generic(item, args[0]) for item in obj)
+        return True
+
+    if origin is dict:
+        if not isinstance(obj, dict):
+            return False
+        key_type, val_type = args
+        return all(
+            isinstance_generic(k, key_type) and
+            isinstance_generic(v, val_type)
+            for k, v in obj.items()
+        )
+
+    return isinstance(obj, origin)
 
 
 @dataclass(slots=True)
@@ -15,7 +48,7 @@ class ConfigKey:
     validator:Callable[[Any], bool] | None = None
 
     def validate(self, value: Any):
-        if not isinstance(value, self.type):
+        if not isinstance_generic(value, self.type):
             raise TypeError(f'{self.name}: expected {self.type.__name__}')
         if self.validator and not self.validator(value):
             raise ValueError(f'{self.name}: validation failed')
