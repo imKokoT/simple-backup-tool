@@ -65,9 +65,9 @@ class Chain(ABC):
     def __init__(self, argParser:ArgumentParser):
         self.parser:ArgumentParser = argParser
         self.subparsers = self.parser.add_subparsers(dest="command", required=True)
-        subparser = self.subparsers.add_parser(self.name, help=self.description)
+        self.subparser = self.subparsers.add_parser(self.name, help=self.description)
         self.registerCommandArguments()
-        subparser.set_defaults(func=self.run)
+        self.subparser.set_defaults(func=self.run)
 
     @abstractmethod
     def registerCommandArguments(self):

@@ -9,4 +9,4 @@ def scan():
     ignore = schema.get('ignore')
     targets = schema.get('targets')
 
-    
+       

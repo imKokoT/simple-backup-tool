@@ -1,3 +1,4 @@
+from chain.backup import BackupChain
 import modules
 from properties import *
 from core.module import register
@@ -15,13 +16,13 @@ def parseArgs(args):
         return
     
     parser = argparse.ArgumentParser()
-    ctx.args = parser.parse_args()
     
     # register modules
     register.register(modules.scan.ScanModule(parser))
     # init chains
     ctx.chains = [
-
+            BackupChain(parser)
         ]
 
+    args = ctx.args = parser.parse_args()
     args.func(ctx.args)
