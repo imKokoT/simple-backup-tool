@@ -23,7 +23,7 @@ class Module(ABC):
         """register additional options provided by module for CLI"""
 
     def run(self):
-        """run module code. must be overridden with <code>super().run()</code>"""
+        """run module code. must be overridden with <code>super().run()</code> in the body"""
         ctx.currentModule = self
 
 

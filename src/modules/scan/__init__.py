@@ -7,12 +7,35 @@ from .body import *
 
 class ScanModule(Module):
     name = 'scan'
-    description = 'Scan filesystem for changes'
+    description = 'Scan local targets for changes in filesystem' 
+
+    # statistics
+    folders:list[tuple[Path]]
+    files:list[Path]
+    counted:int
+    ignoredFiles:int
+    ignoredFolders:int
+    countedSize:int
+    scannedSize:int
 
     def run(self):
         super().run()
         ctx.schema = Schema(getAppDir() / 'schemas' / f'{ctx.args.schema_name}.yaml')
-        scan()
+
+        # reset stats
+        self.counted = 0
+        self.countedSize = 0
+        self.scannedSize = 0
+        self.ignoredFiles = 0
+        self.ignoredFolders = 0
+        self.folders = []
+        self.files = []
+
+        entry()
+
+        # cleanup
+        self.files.clear()
+        self.folders.clear()
 
     def registerCommandArguments(self):
         ...
