@@ -35,7 +35,8 @@ def entry():
     # write scan cache
     print('0')
 
-def scanFile(target:Path):
+
+def scanFile(target:str):
     module:ScanModule = ctx.currentModule
     
     if not os.path.exists(target):
@@ -50,18 +51,18 @@ def scanFile(target:Path):
     module.files.append(target)
 
 
-def scanFolder(target:Path):
+def scanFolder(target:str):
     module:ScanModule = ctx.currentModule
     schema = ctx.schema
 
-    ignore:list[str] = schema.get('ignore')
+    ignore:str = schema.get('ignore')
 
     if not os.path.exists(target):
         logger.error(f'target folder "{target}" not exists')
         return
 
     logger.info(f'scanning target folder "{target}"...')
-    files:list[Path] = []
+    files:list[str] = []
     scanned = 0
     ignoredFiles = 0
     ignoredFolders = 0
@@ -69,8 +70,8 @@ def scanFolder(target:Path):
     countedSize = 0
 
     GLOBAL = '.'
-    specStack = [(GLOBAL, pathspec.PathSpec.from_lines('gitignore', ignore))]  # (path, spec) or None
-    pathStack = [(Path(target), 1)]                                            # (path, depth)
+    specStack = [(GLOBAL, pathspec.PathSpec.from_lines('gitignore', ignore.splitlines()))]  # (path, spec) or None
+    pathStack = [(Path(target), 1)]                                                         # (path, depth)
 
     while pathStack:
         current, depth = pathStack.pop()
@@ -82,15 +83,17 @@ def scanFolder(target:Path):
 
         # file
         if not current.is_dir():
+            size = os.path.getsize(current)
+
             if isIgnored:
                 ignoredFiles += 1
             else:
-                files.append(current)
-            scannedSize += os.path.getsize(current)
+                files.append(str(current.relative_to(target)))
+                countedSize += size
+            
+            scannedSize += size
             scanned += 1
-
             iprint(f'{scanned}/{ignoredFiles} files scanned/ignored')
-            continue
         # folder
         else:
             if isIgnored:
@@ -102,13 +105,11 @@ def scanFolder(target:Path):
             else:
                 specStack.append(None)
 
+            # push folders to stack
             with os.scandir(current) as it:
                 for entry in it:
                     pathStack.append((Path(entry), depth + 1))
     print()
-
-    for p in files:
-        countedSize += os.path.getsize(p)
 
     # TODO: humanSizes
     # logger.info(f'reading success; total files: {len(files)} [{humanSize(countedSize)}/{humanSize(scannedSize)}]; ignored total: {ignored}')
@@ -119,4 +120,5 @@ def scanFolder(target:Path):
     module.scannedSize += scannedSize
     module.ignoredFiles += ignoredFiles
     module.counted += len(files)
-    module.folders.append(tuple(files))
+    module.foldersFiles.append(tuple(files))
+    module.folders.append(target)

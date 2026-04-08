@@ -6,21 +6,17 @@ from properties import *
 
 logger = logging.getLogger(__name__)
 
-# TODO: optimize
-def loadIgnorePatterns(directory:Path) -> pathspec.PathSpec|None:
+def loadIgnorePatterns(directory:str) -> pathspec.PathSpec|None:
     patterns = []
-
-    ignoreFilers =(
-        f'{directory}/.sbtignore',
-        f'{directory}/.gitignore'
-    )
+    sbtignore = f'{directory}/.sbtignore'
+    gitignore = f'{directory}/.gitignore'
     
     # TODO: config include_gitignore
-    if not os.path.exists(ignoreFilers[0]):
+    if not os.path.exists(sbtignore):
         return
-    logger.debug(f'found {ignoreFilers[0]}, loading ignore patterns...')
+    logger.debug(f'found {sbtignore}, loading ignore patterns...')
 
-    with open(ignoreFilers[0], 'r', encoding='utf-8') as f:
+    with open(sbtignore, 'r', encoding='utf-8') as f:
         for l in f.readlines():
             l = l.strip()
             l = l.replace('\\', '/')

@@ -10,8 +10,9 @@ class ScanModule(Module):
     description = 'Scan local targets for changes in filesystem' 
 
     # statistics
-    folders:list[tuple[Path]]
-    files:list[Path]
+    folders:list[str]
+    foldersFiles:list[tuple[str]]
+    files:list[str]
     counted:int
     ignoredFiles:int
     ignoredFolders:int
@@ -29,12 +30,14 @@ class ScanModule(Module):
         self.ignoredFiles = 0
         self.ignoredFolders = 0
         self.folders = []
+        self.foldersFiles = []
         self.files = []
 
         entry()
 
         # cleanup
         self.files.clear()
+        self.foldersFiles.clear()
         self.folders.clear()
 
     def registerCommandArguments(self):

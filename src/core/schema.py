@@ -91,7 +91,7 @@ def registerBaseSettings():
     )
     schema_config_registry.register(
         name='ignore',
-        type=(str, list[str]),
-        default=[],
+        type=str,
+        default='',
         description='Global ignore pattern; highest priority'
     )
