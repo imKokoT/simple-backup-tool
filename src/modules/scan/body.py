@@ -6,6 +6,8 @@ from .tools import *
 import logging
 import pathspec
 import os
+import gzip
+import json
 from pathlib import Path
 
 from typing import TYPE_CHECKING
@@ -32,8 +34,19 @@ def entry():
         else:
             scanFolder(target)
 
-    # write scan cache
-    print('0')
+    cachePath = tmpDir / 'scancache'
+    logger.debug(f'dump scan cache to {cachePath}')
+    cache = {
+        'folders': module.folders,
+        'foldersFiles': module.foldersFiles,
+        'files': module.files
+    } 
+    if DEBUG:
+        with open(cachePath, 'w', encoding='utf-8') as f:
+            json.dump(cache, f, indent=2, ensure_ascii=False)
+    else:
+        with gzip.open(cachePath, 'wb') as bs:
+            bs.write(json.dumps(cache).encode())
 
 
 def scanFile(target:str):

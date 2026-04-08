@@ -85,7 +85,7 @@ def registerBaseSettings():
     )
     schema_config_registry.register(
         name='targets',
-        type=(list[str],),
+        type=list[str],
         default=None,
         description='Target folders and files in local disk to backup'
     )
