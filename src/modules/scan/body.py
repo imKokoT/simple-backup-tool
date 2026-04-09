@@ -1,6 +1,8 @@
+from io import TextIOWrapper
 from core.app_config import config
 from core.cli import iprint
 from core.context import ctx
+from core.vfs import VFile
 from paths import getTmpDir
 from .tools import *
 import logging
@@ -34,19 +36,7 @@ def entry():
         else:
             scanFolder(target)
 
-    cachePath = tmpDir / 'scancache'
-    logger.debug(f'dump scan cache to {cachePath}')
-    cache = {
-        'folders': module.folders,
-        'foldersFiles': module.foldersFiles,
-        'files': module.files
-    } 
-    if DEBUG:
-        with open(cachePath, 'w', encoding='utf-8') as f:
-            json.dump(cache, f, indent=2, ensure_ascii=False)
-    else:
-        with gzip.open(cachePath, 'wb') as bs:
-            bs.write(json.dumps(cache).encode())
+    dumpScanCache()
 
 
 def scanFile(target:str):
@@ -135,3 +125,26 @@ def scanFolder(target:str):
     module.counted += len(files)
     module.foldersFiles.append(tuple(files))
     module.folders.append(target)
+
+
+def dumpScanCache():
+    module:ScanModule = ctx.currentModule
+    schema = ctx.schema
+    
+    tmpDir = getTmpDir() / schema.name
+    cachePath = tmpDir / 'scancache'
+    
+    logger.debug(f'dump scan cache to {cachePath}')
+    cache = {
+        'folders': module.folders,
+        'foldersFiles': module.foldersFiles,
+        'files': module.files
+    }
+    with VFile(cachePath, 'w') as vf:
+        if DEBUG:
+            with TextIOWrapper(vf, encoding="utf-8") as f:
+                json.dump(cache, f, indent=2, ensure_ascii=False)
+        else:
+            with gzip.GzipFile(fileobj=vf, mode="wb") as gz:
+                with TextIOWrapper(gz, encoding="utf-8") as f:
+                    json.dump(cache, f, ensure_ascii=False, separators=(',', ':'))

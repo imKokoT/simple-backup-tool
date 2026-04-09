@@ -31,17 +31,17 @@ class VFile(IOBase):
     def __init__(self, path:Path, mode:str='r', data:bytes=b'', location:Literal['ram', 'disk']|None=None):
         if location is None:
             # TODO app configurations of vfile location
-            self._file = FileIO(path, mode)
+            self._raw = FileIO(path, mode)
             if data:
-                self._file.write(data)
+                self._raw.write(data)
             self._location = 'disk'
         elif location == 'ram':
-            self._file = BytesIO(data)
+            self._raw = BytesIO(data)
             self._location = location
         elif location == 'disk':
-            self._file = FileIO(path, mode)
+            self._raw = FileIO(path, mode)
             if data:
-                self._file.write(data)
+                self._raw.write(data)
             self._location = location
         else:
             raise ValueError(f'Unknown storage location "{location}"')
@@ -51,18 +51,25 @@ class VFile(IOBase):
         
         vfs._onOpen(self)
 
-    def read(self, n:int = -1) -> bytes:                return self._file.read(n)
-    def write(self, b:bytes) -> int:                    return self._file.write(b)
-    def seek(self, offset:int, whence:int = 0) -> int:  return self._file.seek(offset, whence)
-    def tell(self) -> int:                              return self._file.tell()
+    def flush(self):                                    self._raw.flush()
+    def read(self, n:int = -1) -> bytes:                return self._raw.read(n)
+    def readline(self, size = -1)-> bytes:              return self._raw.readline(size)
+    def readlines(self, hint = -1) -> list[bytes]:      return self._raw.readlines(hint)
+    def seek(self, offset:int, whence:int = 0) -> int:  return self._raw.seek(offset, whence)
+    def seekable(self) -> bool:                         return self._raw.seekable() 
+    def tell(self) -> int:                              return self._raw.tell()
+    def truncate(self, size = None) -> int:             return self._raw.truncate(size)
+    def write(self, b:bytes) -> int:                    return self._raw.write(b)
+    def writelines(self, lines):                        self._raw.writelines(lines)
+    def writable(self)-> bool:                          return self._raw.writable()
 
     def close(self):
-        if not self._file.closed:
-            self._file.close()
+        if not self._raw.closed:
+            self._raw.close()
             vfs._onClose(self._path)
 
     def __getattr__(self, name):
-        return getattr(self._file, name)
+        return getattr(self._raw, name)
 
     def __enter__(self):
         return super().__enter__()
