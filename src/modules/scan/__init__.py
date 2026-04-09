@@ -13,10 +13,11 @@ class ScanModule(Module):
     folders:list[str]
     foldersFiles:list[tuple[str]]
     files:list[str]
-    counted:int
+    included:int
+    scanned:int
     ignoredFiles:int
     ignoredFolders:int
-    countedSize:int
+    includedSize:int
     scannedSize:int
 
     def run(self):
@@ -24,8 +25,9 @@ class ScanModule(Module):
         ctx.schema = Schema(getAppDir() / 'schemas' / f'{ctx.args.schema_name}.yaml')
 
         # reset stats
-        self.counted = 0
-        self.countedSize = 0
+        self.scanned = 0
+        self.included = 0
+        self.includedSize = 0
         self.scannedSize = 0
         self.ignoredFiles = 0
         self.ignoredFolders = 0

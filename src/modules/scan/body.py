@@ -36,6 +36,15 @@ def entry():
         else:
             scanFolder(target)
 
+    # TODO: human sizes
+    logger.info(
+        f'SCANNED TOTAL:\n'
+        f' - scanned files: {module.scanned}\n'
+        f' - included and ignored files: {module.included}/{module.ignoredFiles}\n'
+        f' - ignored folders: {module.ignoredFolders}\n'
+        f' - included/scanned size: {module.includedSize}/{module.scannedSize}'
+    )
+
     dumpScanCache()
 
 
@@ -48,9 +57,9 @@ def scanFile(target:str):
     logger.info(f'scanned target file "{target}"')
 
     size = os.path.getsize(target)
-    module.countedSize += size
+    module.includedSize += size
     module.scannedSize += size
-    module.counted += 1
+    module.included += 1
     module.files.append(target)
 
 
@@ -96,7 +105,7 @@ def scanFolder(target:str):
             
             scannedSize += size
             scanned += 1
-            iprint(f'{scanned}/{ignoredFiles} files scanned/ignored')
+            iprint(f'{scanned}/{ignoredFiles}|{ignoredFolders} files scanned/ignored files|folders')
         # folder
         else:
             if isIgnored:
@@ -116,13 +125,15 @@ def scanFolder(target:str):
 
     # TODO: humanSizes
     # logger.info(f'reading success; total files: {len(files)} [{humanSize(countedSize)}/{humanSize(scannedSize)}]; ignored total: {ignored}')
-    logger.info(f'total files: {len(files)} [{countedSize}/{scannedSize}]; ignored total: {ignoredFiles}')
+    logger.info(f'total files: {len(files)} [{countedSize}/{scannedSize}]; ignored total: {ignoredFiles} files / {ignoredFolders} folders')
     
     logger.debug(f'record folder stats to module')
-    module.countedSize += countedSize
+    module.includedSize += countedSize
     module.scannedSize += scannedSize
     module.ignoredFiles += ignoredFiles
-    module.counted += len(files)
+    module.ignoredFolders += ignoredFolders
+    module.included += len(files)
+    module.scanned += scanned
     module.foldersFiles.append(tuple(files))
     module.folders.append(target)
 
