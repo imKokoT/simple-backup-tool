@@ -1,6 +1,9 @@
 from io import BytesIO, FileIO, IOBase
 from pathlib import Path
 from typing import Literal
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class VirtualFS:
@@ -12,8 +15,10 @@ class VirtualFS:
 
     def _onClose(self, path:Path):
         self._vfs.pop(path)
+        logger.debug(f'closed VFile "{path}"')
 
     def _onOpen(self, vfile:'VFile'):
+        logger.debug(f'open VFile "{vfile._path}" on {vfile._location}')
         if vfile._path in self._vfs:
             raise FileExistsError(f'virtual file "{vfile._path}" already exists')
         self._vfs[vfile._path] = vfile
@@ -25,19 +30,24 @@ class VFile(IOBase):
     """Virtual file IO that can be stored in RAM or disk"""
     def __init__(self, path:Path, mode:str='r', data:bytes=b'', location:Literal['ram', 'disk']|None=None):
         if location is None:
-            raise NotImplementedError() # TODO app configurations of location
+            # TODO app configurations of vfile location
+            self._file = FileIO(path, mode)
+            if data:
+                self._file.write(data)
+            self._location = 'disk'
         elif location == 'ram':
             self._file = BytesIO(data)
+            self._location = location
         elif location == 'disk':
             self._file = FileIO(path, mode)
             if data:
                 self._file.write(data)
+            self._location = location
         else:
             raise ValueError(f'Unknown storage location "{location}"')
         
         self._path = path
         self._mode = mode
-        self._location = location
         
         vfs._onOpen(self)
 
@@ -53,3 +63,9 @@ class VFile(IOBase):
 
     def __getattr__(self, name):
         return getattr(self._file, name)
+
+    def __enter__(self):
+        return super().__enter__()
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        return super().__exit__(exc_type, exc_val, exc_tb)
