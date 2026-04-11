@@ -1,4 +1,5 @@
 from io import BytesIO, FileIO, IOBase
+import os
 from pathlib import Path
 from typing import Literal
 import logging
@@ -8,47 +9,70 @@ logger = logging.getLogger(__name__)
 
 class VirtualFS:
     """Virtual filesystem to manage virtual files"""
-    _vfs:dict[Path, 'VFile'] = {}
+    _opened:dict[Path, 'VFile'] = {}
+    _vfs:dict[Path, BytesIO] = {}
 
     def get(self, path:Path) -> 'VFile | None':
-        return self._vfs.get(path)
+        """get opened VFile"""
+        return self._opened.get(path)
+    
+    def free(self, path:Path):
+        """Free data of the closed in-memory VFile"""
+        if path in self._opened:
+            raise ValueError(f'VFile "{path}" not closed')
+        if path not in self._vfs:
+            return
+        vf = self._vfs.pop(path)
+        vf.close()
+        logger.debug(f'freed "{path}"')
 
-    def _onClose(self, path:Path):
-        self._vfs.pop(path)
-        logger.debug(f'closed VFile "{path}"')
+    def _onClose(self, vf:'VFile'):
+        self._opened.pop(vf._path)
+        if vf._location != 'ram':
+            vf._raw.close()
+        logger.debug(f'closed VFile "{vf._path}"')
 
-    def _onOpen(self, vfile:'VFile'):
-        logger.debug(f'open VFile "{vfile._path}" on {vfile._location}')
-        if vfile._path in self._vfs:
-            raise FileExistsError(f'virtual file "{vfile._path}" already exists')
-        self._vfs[vfile._path] = vfile
+    def _onOpen(self, vf:'VFile'):
+        if vf._path in self._opened:
+            raise FileExistsError(f'virtual file "{vf._path}" already exists')
+        
+        if vf._location is None: # TODO: add app setting
+            vf._location = 'disk'
 
+        if vf._location != 'ram' and vf._path in self._vfs:
+            raise RuntimeError(f'cannot open VFile on {vf._location} while it exists in-memory')
+        
+        if vf._location == 'ram':
+            if vf._path not in self._vfs:
+                self._vfs[vf._path] = BytesIO()
+            vf._raw = self._vfs[vf._path]
+
+            if 'w' in vf._mode:
+                vf.truncate()
+                vf.seek(0)
+        elif vf._location == 'disk':
+            vf._raw = FileIO(vf._path, vf._mode)
+        else:
+            raise ValueError(f'invalid VFile location {vf._location}')
+        
+        self._opened[vf._path] = vf
+        logger.debug(f'opened VFile "{vf._path}" on {vf._location}')
+        
 vfs = VirtualFS()
 
 
 class VFile(IOBase):
-    """Virtual file IO that can be stored in RAM or disk"""
-    def __init__(self, path:Path, mode:str='r', data:bytes=b'', location:Literal['ram', 'disk']|None=None):
-        if location is None:
-            # TODO app configurations of vfile location
-            self._raw = FileIO(path, mode)
-            if data:
-                self._raw.write(data)
-            self._location = 'disk'
-        elif location == 'ram':
-            self._raw = BytesIO(data)
-            self._location = location
-        elif location == 'disk':
-            self._raw = FileIO(path, mode)
-            if data:
-                self._raw.write(data)
-            self._location = location
-        else:
-            raise ValueError(f'Unknown storage location "{location}"')
-        
+    """
+    Virtual file IO that can be stored in RAM or disk
+    
+    NOTE: You can create only one VFile per path
+    """ 
+    def __init__(self, path:Path, mode:str='r', location:Literal['ram', 'disk']|None=None):
         self._path = path
         self._mode = mode
-        
+        self._location = location
+        self._raw:IOBase
+
         vfs._onOpen(self)
 
     def flush(self):                                    self._raw.flush()
@@ -65,8 +89,7 @@ class VFile(IOBase):
 
     def close(self):
         if not self._raw.closed:
-            self._raw.close()
-            vfs._onClose(self._path)
+            vfs._onClose(self)
 
     def __getattr__(self, name):
         return getattr(self._raw, name)
