@@ -45,6 +45,19 @@ def entry():
         f' - included/scanned size: {module.includedSize}/{module.scannedSize}'
     )
 
+    scancachePath = getTmpDir() / schema.name / 'scanhash'
+    if not scancachePath.exists():
+        dumpScanCache()
+        return
+
+    with VFile(scancachePath, 'r', location='disk') as vf:
+        if module.scanhash.hexdigest() == vf.read().decode():
+            logger.info('No changes detected since last scan')
+
+            # TODO: config of what to do when no changes between scans
+            logger.info('aborting...')
+            quit(0)
+    
     dumpScanCache()
 
 
