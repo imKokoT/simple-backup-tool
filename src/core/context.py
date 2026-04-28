@@ -1,5 +1,6 @@
 from argparse import Namespace
 
+import time
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from core.module import Chain, Module
@@ -8,6 +9,7 @@ if TYPE_CHECKING:
 
 class Context:
     """Stores runtime data"""
+    sessionTime = time.ctime() 
     args:Namespace
     schema:Schema
 

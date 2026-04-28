@@ -30,7 +30,7 @@ def entry():
     tmpDir.mkdir(parents=True, exist_ok=True)
 
     # scan targets
-    for target in targets:
+    for target in sorted(targets):
         if os.path.isfile(target):
             scanFile(target)
         else:
@@ -56,11 +56,17 @@ def scanFile(target:str):
         return
     logger.info(f'scanned target file "{target}"')
 
-    size = os.path.getsize(target)
+    stat = os.stat(target)
+    size = stat.st_size
     module.includedSize += size
     module.scannedSize += size
     module.included += 1
     module.files.append(target)
+
+    # count hash
+    module.scanhash.update(target.encode())
+    module.scanhash.update(str(size).encode())
+    module.scanhash.update(str(stat.st_mtime).encode())
 
 
 def scanFolder(target:str):
@@ -95,13 +101,19 @@ def scanFolder(target:str):
 
         # file
         if not current.is_dir():
-            size = os.path.getsize(current)
+            stat = current.stat()
+            size = stat.st_size
 
             if isIgnored:
                 ignoredFiles += 1
             else:
-                files.append(str(current.relative_to(target)))
+                rp = str(current.relative_to(target))
+                files.append(rp)
                 countedSize += size
+                # count hash
+                module.scanhash.update(rp.encode())
+                module.scanhash.update(str(size).encode())
+                module.scanhash.update(str(stat.st_mtime).encode())
             
             scannedSize += size
             scanned += 1
@@ -144,13 +156,19 @@ def dumpScanCache():
     
     tmpDir = getTmpDir() / schema.name
     cachePath = tmpDir / 'scancache'
-    
+    hashPath = tmpDir / 'scanhash'
+
     logger.debug(f'dump scan cache to {cachePath}')
     cache = {
+        'meta': {
+            'scanhash': module.scanhash.hexdigest(),
+            'session': ctx.sessionTime
+        },
         'folders': module.folders,
         'foldersFiles': module.foldersFiles,
         'files': module.files
     }
+
     with VFile(cachePath, 'w') as vf:
         if DEBUG:
             with TextIOWrapper(vf, encoding="utf-8") as f:
@@ -159,3 +177,6 @@ def dumpScanCache():
             with gzip.GzipFile(fileobj=vf, mode="wb") as gz:
                 with TextIOWrapper(gz, encoding="utf-8") as f:
                     json.dump(cache, f, ensure_ascii=False, separators=(',', ':'))
+
+    with VFile(hashPath, 'w', location='disk') as vf:
+        vf.write(module.scanhash.hexdigest().encode())

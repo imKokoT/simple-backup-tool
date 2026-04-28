@@ -3,6 +3,7 @@ from core.module import Module
 from core.schema import Schema, schema_config_registry
 from paths import getAppDir
 from .body import *
+import hashlib
 
 
 class ScanModule(Module):
@@ -19,6 +20,7 @@ class ScanModule(Module):
     ignoredFolders:int
     includedSize:int
     scannedSize:int
+    scanhash:hashlib.blake2b
 
     def run(self):
         super().run()
@@ -34,6 +36,7 @@ class ScanModule(Module):
         self.folders = []
         self.foldersFiles = []
         self.files = []
+        self.scanhash = hashlib.blake2b()
 
         entry()
 
