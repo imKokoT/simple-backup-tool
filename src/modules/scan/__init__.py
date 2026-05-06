@@ -1,7 +1,4 @@
-from core.context import ctx
 from core.module import Module
-from core.schema import Schema
-from paths import getAppDir
 from .body import *
 import hashlib
 
@@ -14,7 +11,6 @@ class ScanModule(Module):
         'targets'
     ]
     chainArgs = [
-        'schema_name',
         'force'
     ]
 
@@ -32,7 +28,6 @@ class ScanModule(Module):
 
     def run(self):
         super().run()
-        ctx.schema = Schema(getAppDir() / 'schemas' / f'{ctx.args.schema_name}.yaml')
 
         entry()
 
