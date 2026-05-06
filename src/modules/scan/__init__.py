@@ -1,6 +1,6 @@
 from core.context import ctx
 from core.module import Module
-from core.schema import Schema, schema_config_registry
+from core.schema import Schema
 from paths import getAppDir
 from .body import *
 import hashlib
@@ -8,7 +8,15 @@ import hashlib
 
 class ScanModule(Module):
     name = 'scan'
-    description = 'Scan local targets for changes in filesystem' 
+    description = 'Scan local targets for changes from filesystem'
+    schemaParams = [
+        'ignore',
+        'targets'
+    ]
+    chainArgs = [
+        'schema_name',
+        'force'
+    ]
 
     # statistics
     folders:list[str]
@@ -47,7 +55,3 @@ class ScanModule(Module):
 
     def registerCommandArguments(self):
         ...
-
-    def requireSchemaParams(self):
-        schema_config_registry.require('ignore')
-        schema_config_registry.require('targets')

@@ -54,9 +54,9 @@ def entry():
         if module.scanhash.hexdigest() == vf.read().decode():
             logger.info('No changes detected since last scan')
 
-            # TODO: config of what to do when no changes between scans
-            logger.info('aborting...')
-            quit(0)
+            if not args.force:
+                logger.info('aborting...')
+                quit(0)
     
     dumpScanCache()
 

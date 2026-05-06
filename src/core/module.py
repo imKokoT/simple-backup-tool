@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from argparse import ArgumentParser
 from core.context import ctx
+from core.schema import schema_config_registry
 import logging
 
 logger = logging.getLogger(__name__)
@@ -9,14 +10,13 @@ logger = logging.getLogger(__name__)
 class Module(ABC):
     name:str
     description:str
+    schemaParams:list[str] = []
+    chainArgs:list[str] = []
 
     def __init__(self, argParser:ArgumentParser):
         self.parser:ArgumentParser = argParser
         self.argGroup = self.parser.add_argument_group(self.name)
 
-    @abstractmethod
-    def requireSchemaParams(self): 
-        """define what schema params are required by module"""
 
     @abstractmethod
     def registerCommandArguments(self):
@@ -25,6 +25,16 @@ class Module(ABC):
     def run(self):
         """run module code. must be overridden with <code>super().run()</code> in the body"""
         ctx.currentModule = self
+        self._requireChainArguments()
+    
+    def _requireSchemaParams(self): 
+        for p in self.schemaParams:
+            schema_config_registry.require(p)
+
+    def _requireChainArguments(self):
+        for a in self.chainArgs:
+            if a not in ctx.args.__dict__.keys():
+                raise KeyError(f'{self} require from Chain command argument "{a}"')
 
 
 class ModuleRegister:
@@ -37,8 +47,8 @@ class ModuleRegister:
             logger.critical(msg)
             raise ValueError(msg)
         
+        module._requireSchemaParams()
         module.registerCommandArguments()
-        module.requireSchemaParams()
         self._modules[module.name] = module
         
         logger.debug(f'registered "{module.name}" ({module})')
