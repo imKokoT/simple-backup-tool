@@ -19,32 +19,20 @@ class ScanModule(Module):
     ]
 
     # statistics
-    folders:list[str]
-    foldersFiles:list[tuple[str]]
-    files:list[str]
-    included:int
-    scanned:int
-    ignoredFiles:int
-    ignoredFolders:int
-    includedSize:int
-    scannedSize:int
-    scanhash:hashlib.blake2b
+    folders:list[str] = []
+    foldersFiles:list[tuple[str]] = []
+    files:list[str] = []
+    included:int = 0
+    scanned:int = 0
+    ignoredFiles:int = 0
+    ignoredFolders:int = 0
+    includedSize:int = 0
+    scannedSize:int = 0
+    scanhash = hashlib.blake2b()
 
     def run(self):
         super().run()
         ctx.schema = Schema(getAppDir() / 'schemas' / f'{ctx.args.schema_name}.yaml')
-
-        # reset stats
-        self.scanned = 0
-        self.included = 0
-        self.includedSize = 0
-        self.scannedSize = 0
-        self.ignoredFiles = 0
-        self.ignoredFolders = 0
-        self.folders = []
-        self.foldersFiles = []
-        self.files = []
-        self.scanhash = hashlib.blake2b()
 
         entry()
 
