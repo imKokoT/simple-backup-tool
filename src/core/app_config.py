@@ -89,3 +89,9 @@ def registerBaseSettings():
         default=False,
         description='If true, byte sizes will print in "B", "KB", "MB", "GB", "TB"'
     )
+    app_config_registry.register(
+        name='backup.load_gitignore',
+        type=bool,
+        default=False,
+        description='Load .gitignore patterns; .sbtignore has higher priority'
+    )

@@ -2,25 +2,32 @@ import logging
 import os
 from pathlib import Path
 import pathspec
+from core.app_config import config
 from properties import *
 
 logger = logging.getLogger(__name__)
+
 
 def loadIgnorePatterns(directory:str) -> pathspec.PathSpec|None:
     patterns = []
     sbtignore = f'{directory}/.sbtignore'
     gitignore = f'{directory}/.gitignore'
+    raw:list[str] = []
     
-    # TODO: config include_gitignore
-    if not os.path.exists(sbtignore):
-        return
-    logger.debug(f'found {sbtignore}, loading ignore patterns...')
+    if config.get('backup.load_gitignore') and os.path.exists(gitignore):
+        logger.debug(f'found {gitignore}, loading ignore patterns...')
+        with open(gitignore, 'r', encoding='utf-8') as f:
+            raw += f.readlines()
 
-    with open(sbtignore, 'r', encoding='utf-8') as f:
-        for l in f.readlines():
-            l = l.strip()
-            l = l.replace('\\', '/')
-            patterns.append(l)
+    if os.path.exists(sbtignore):
+        logger.debug(f'found {sbtignore}, loading ignore patterns...')
+        with open(sbtignore, 'r', encoding='utf-8') as f:
+            raw += f.readlines()
+
+    for l in raw:
+        l = l.strip()
+        l = l.replace('\\', '/')
+        patterns.append(l)
     if len(patterns) == 0:
         return
         
