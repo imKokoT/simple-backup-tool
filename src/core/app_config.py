@@ -50,7 +50,7 @@ class AppConfig:
 
         logger.debug('loaded config.yaml')
 
-        if len(data) != len(app_config_registry.all()):
+        if data.keys() != app_config_registry.keys():
             self.dump()
             logger.info('updated config.yaml to actual version')
         
@@ -84,7 +84,7 @@ config = AppConfig()
 def registerBaseSettings():
     """Root application settings"""
     app_config_registry.register(
-        name='accessability.human_sizes',
+        name='appearance.human_sizes',
         type=bool,
         default=False,
         description='If true, byte sizes will print in "B", "KB", "MB", "GB", "TB"'

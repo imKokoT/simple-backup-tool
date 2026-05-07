@@ -1,6 +1,7 @@
 import shutil
 import sys
 from typing import Literal
+from core.app_config import config
 
 
 def getConfirm(expected:Literal['y','n'], msg:str='', default:Literal['y','n']='n') -> bool:
@@ -45,3 +46,15 @@ def progressBar(unit:float, end:bool=False, ppu:float=1.0):
         return
     if progress >= 1:
         print()
+
+
+def humanSize(sizeBytes:int) -> str:
+    '''returns formatted size as string in B,KB,MB and etc'''
+    if not config.get('appearance.human_sizes'):
+        return f'{sizeBytes}B'
+    if sizeBytes == 0:
+        return '0B'
+    size_units = ('B', 'KB', 'MB', 'GB', 'TB', 'PB')
+    unit_index = int((len(str(sizeBytes)) - 1) / 3)
+    readable_size = sizeBytes / (1024 ** unit_index)
+    return f"{readable_size:.2f}{size_units[unit_index]}"

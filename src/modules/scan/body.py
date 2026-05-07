@@ -1,6 +1,5 @@
 from io import TextIOWrapper
-from core.app_config import config
-from core.cli import iprint
+from core.cli import humanSize, iprint
 from core.context import ctx
 from core.vfs import VFile
 from paths import getTmpDir
@@ -42,7 +41,7 @@ def entry():
         f' - scanned files: {module.scanned}\n'
         f' - included and ignored files: {module.included}/{module.ignoredFiles}\n'
         f' - ignored folders: {module.ignoredFolders}\n'
-        f' - included/scanned size: {module.includedSize}/{module.scannedSize}'
+        f' - included/scanned size: {humanSize(module.includedSize)}/{humanSize(module.scannedSize)}'
     )
 
     scancachePath = getTmpDir() / schema.name / 'scanhash'
@@ -148,9 +147,8 @@ def scanFolder(target:str):
                     pathStack.append((Path(entry), depth + 1))
     print()
 
-    # TODO: humanSizes
-    # logger.info(f'reading success; total files: {len(files)} [{humanSize(countedSize)}/{humanSize(scannedSize)}]; ignored total: {ignored}')
-    logger.info(f'total files: {len(files)} [{countedSize}/{scannedSize}]; ignored total: {ignoredFiles} files / {ignoredFolders} folders')
+    logger.info(f'total files: {len(files)} [{humanSize(countedSize)}/{humanSize(scannedSize)}]; '
+                f'ignored total: {ignoredFiles} files / {ignoredFolders} folders')
     
     logger.debug(f'record folder stats to module')
     module.includedSize += countedSize
