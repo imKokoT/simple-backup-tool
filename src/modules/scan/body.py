@@ -78,8 +78,8 @@ def scanFile(target:str):
 
     # count hash
     module.scanhash.update(target.encode())
-    module.scanhash.update(str(size).encode())
-    module.scanhash.update(str(stat.st_mtime).encode())
+    module.scanhash.update(size.to_bytes(8))
+    module.scanhash.update(stat.st_mtime_ns.to_bytes(8))
 
 
 def scanFolder(target:str):
@@ -125,8 +125,8 @@ def scanFolder(target:str):
                 countedSize += size
                 # count hash
                 module.scanhash.update(rp.encode())
-                module.scanhash.update(str(size).encode())
-                module.scanhash.update(str(stat.st_mtime).encode())
+                module.scanhash.update(size.to_bytes(8))
+                module.scanhash.update(stat.st_mtime_ns.to_bytes(8))
             
             scannedSize += size
             scanned += 1
