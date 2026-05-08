@@ -83,15 +83,3 @@ def registerBaseSettings():
         default=None,
         description='Include other schema params from config directory; requires schema\'s name'
     )
-    schema_config_registry.register(
-        name='targets',
-        type=list[str],
-        default=None,
-        description='Target folders and files in local disk to backup'
-    )
-    schema_config_registry.register(
-        name='ignore',
-        type=str,
-        default='',
-        description='Global ignore pattern; highest priority'
-    )

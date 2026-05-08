@@ -8,6 +8,8 @@ logger = logging.getLogger(__name__)
 
 
 class Module(ABC):
+    schema_config_registry = schema_config_registry
+
     name:str
     description:str
     schemaParams:list[str] = []
@@ -21,6 +23,10 @@ class Module(ABC):
     @abstractmethod
     def registerCommandArguments(self):
         """register additional options provided by module for CLI"""
+
+    @abstractmethod
+    def registerSchemaParams(self):
+        """register Module's schema parameters"""
 
     def run(self):
         """run module code. must be overridden with <code>super().run()</code> in the body"""
@@ -42,16 +48,16 @@ class ModuleRegister:
         self._modules:dict[str, Module] = {}
 
     def register(self, module:Module):
+        logger.debug(f'registering "{module.name}"... ({module})')
         if module.name in self._modules.keys():
             msg = f'Module "{module.name}" already exists!'
             logger.critical(msg)
             raise ValueError(msg)
         
         module._requireSchemaParams()
+        module.registerSchemaParams()
         module.registerCommandArguments()
         self._modules[module.name] = module
-        
-        logger.debug(f'registered "{module.name}" ({module})')
 
     def get(self, name:str) -> Module:
         if name not in self._modules:

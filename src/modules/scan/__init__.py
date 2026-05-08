@@ -6,10 +6,6 @@ import hashlib
 class ScanModule(Module):
     name = 'scan'
     description = 'Scan local targets for changes from filesystem'
-    schemaParams = [
-        'ignore',
-        'targets'
-    ]
     chainArgs = [
         'force'
     ]
@@ -38,3 +34,17 @@ class ScanModule(Module):
 
     def registerCommandArguments(self):
         ...
+
+    def registerSchemaParams(self):
+        self.schema_config_registry.register(
+            name='targets',
+            type=list[str],
+            default=None,
+            description='Target folders and files in local disk to backup'
+        )
+        self.schema_config_registry.register(
+            name='ignore',
+            type=str,
+            default='',
+            description='Global ignore pattern; highest priority'
+        )
