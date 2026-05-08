@@ -19,6 +19,7 @@ def parseArgs(args):
     
     # register modules
     register.register(modules.scan.ScanModule(parser))
+    register.register(modules.packer.PackerModule(parser))
     # init chains
     ctx.chains = [
             BackupChain(parser)

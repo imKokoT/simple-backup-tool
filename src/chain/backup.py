@@ -8,7 +8,8 @@ class BackupChain(Chain):
     name = 'backup'
     description = 'Backup chain'
     chian = [
-        'scan'
+        'scan',
+        'packer'
     ]
 
     def registerCommandArguments(self):
@@ -17,4 +18,6 @@ class BackupChain(Chain):
 
     def run(self, args):
         ctx.schema = Schema(getAppDir() / 'schemas' / f'{ctx.args.schema_name}.yaml')
+        
         register.get(self.chian[0]).run()
+        register.get(self.chian[1]).run()
