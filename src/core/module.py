@@ -19,7 +19,6 @@ class Module(ABC):
         self.parser:ArgumentParser = argParser
         self.argGroup = self.parser.add_argument_group(self.name)
 
-
     @abstractmethod
     def registerCommandArguments(self):
         """register additional options provided by module for CLI"""
@@ -33,9 +32,9 @@ class Module(ABC):
         ctx.currentModule = self
         self._requireChainArguments()
     
-    def _requireSchemaParams(self): 
+    def _registeredSchemaParams(self): 
         for p in self.schemaParams:
-            schema_config_registry.require(p)
+            schema_config_registry.isRegistered(p)
 
     def _requireChainArguments(self):
         for a in self.chainArgs:
@@ -54,7 +53,7 @@ class ModuleRegister:
             logger.critical(msg)
             raise ValueError(msg)
         
-        module._requireSchemaParams()
+        module._registeredSchemaParams()
         module.registerSchemaParams()
         module.registerCommandArguments()
         self._modules[module.name] = module

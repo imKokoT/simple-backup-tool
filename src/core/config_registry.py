@@ -1,8 +1,9 @@
 from dataclasses import dataclass
 import logging
-from typing import Union, get_origin, get_args, Any, Callable, Type
+from typing import TypeVar, Union, get_origin, get_args, Any, Callable, Type
 
 logger = logging.getLogger(__name__)
+T = TypeVar('T')
 
 
 def isinstance_generic(obj, typ):
@@ -42,10 +43,11 @@ def isinstance_generic(obj, typ):
 class ConfigKey:
     """Describes key of some setting"""
     name:str
-    type:Type
+    type:type[T]
     default:Any
     description:str = ""
-    validator:Callable[[Any], bool] | None = None
+    validator:Callable[[T], bool] | None = None
+    required:bool = False
 
     def validate(self, value: Any):
         if not isinstance_generic(value, self.type):
@@ -65,12 +67,12 @@ class ConfigRegistry:
 
     def register(
         self,
-        name: str,
-        *,
-        type: type,
-        default,
-        description: str = "",
-        validator=None,
+        name:str,
+        type:type[T],
+        default:Any,
+        description:str = "",
+        validator:Callable[[T], bool] | None = None,
+        required:bool = False
     ):
         """Register ConfigKey to registry"""
         if name in self._keys:
@@ -82,10 +84,11 @@ class ConfigRegistry:
             default=default,
             description=description,
             validator=validator,
+            required=required
         )
         logger.debug(f'registered "{name}" ConfigKey in registry "{self.name}"')
 
-    def require(self, key:str):
+    def isRegistered(self, key:str):
         if key not in self._keys:
             raise RuntimeError(f'ConfigKey "{key}" not registered')
 

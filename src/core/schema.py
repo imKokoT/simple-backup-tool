@@ -22,7 +22,10 @@ class Schema:
         self.load()
     
     def get(self, key:str):
-        if key not in self._values:    
+        if key not in self._values:
+            if schema_config_registry.get(key).required:
+                logger.error(f'loaded schema requires "{key}" parameter!')
+                quit(1)
             self._values[key] = schema_config_registry.get(key).default
         return self._values[key]
 

@@ -40,7 +40,8 @@ class ScanModule(Module):
             name='targets',
             type=list[str],
             default=None,
-            description='Target folders and files in local disk to backup'
+            description='Target folders and files in local disk to backup',
+            required=True
         )
         self.schema_config_registry.register(
             name='ignore',
