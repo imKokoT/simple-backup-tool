@@ -39,6 +39,38 @@ def isinstance_generic(obj, typ):
     return isinstance(obj, origin)
 
 
+@dataclass(init=False)
+class ConfigKeyDescription:
+    """
+    Dynamic ConfigKey description, that could be useful, for instance, when register
+    configs with mutable validation
+    
+    Example:
+    ```python
+    mutableVariant = ['a', 'b', 'c']
+
+    d = D('possible values: {variant}',
+          variants=lambda _: ', '.join(mutableVariant))
+
+    print(d)  # possible values: a, b, c
+
+    mutableVariant += ['d', 'e']
+
+    print(d)  # possible values: a, b, c, d, e
+    ```
+    """
+    def __init__(self, raw:str, **kwargs:Callable[[], str]):
+        self.raw = raw
+        self.kwargs = kwargs
+
+    def __str__(self):
+        out = {k: v() for k, v in self.kwargs.items()}
+        return self.raw.format(**out)
+
+# shortcut
+D = ConfigKeyDescription
+
+
 @dataclass(slots=True)
 class ConfigKey:
     """Describes key of some setting"""
@@ -47,7 +79,7 @@ class ConfigKey:
     name:str
     type:type[T]
     default:Any
-    description:str = ""
+    description:D | str = ""
     validator:Callable[[T], bool] | None = None
     required:bool = False
 
@@ -74,7 +106,7 @@ class ConfigRegistry:
         name:str,
         type:type[T],
         default:Any,
-        description:str = "",
+        description:ConfigKeyDescription | str = "",
         validator:Callable[[T], bool] | None = None,
         required:bool = False
     ):
