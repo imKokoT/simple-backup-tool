@@ -12,8 +12,8 @@ class Module(ABC):
 
     name:str
     description:str
-    schemaParams:list[str] = []
-    chainArgs:list[str] = []
+    schemaParams:list[str] = [] # registered Schema params
+    chainArgs:list[str] = []    # defined Chain's command arguments
 
     def __init__(self, argParser:ArgumentParser):
         self.parser:ArgumentParser = argParser

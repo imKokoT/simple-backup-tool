@@ -36,11 +36,11 @@ class AppConfig:
                 data = yaml.load(f)
         except YAMLError as e:
             logger.error(f"config.yaml has bad format: {e}")
-            raise RuntimeError("Invalid config.yaml") from e
+            quit(1)
 
         if not isinstance(data, dict):
             logger.error(f'config.yaml root must be a mapping')
-            raise RuntimeError("config.yaml root must be a mapping")
+            quit(1)
 
         for k,v in data.items():
             if k not in app_config_registry.keys():

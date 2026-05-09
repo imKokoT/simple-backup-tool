@@ -35,7 +35,6 @@ def entry():
         else:
             scanFolder(target)
 
-    # TODO: human sizes
     logger.info(
         f'SCANNED TOTAL:\n'
         f' - scanned files: {module.scanned}\n'

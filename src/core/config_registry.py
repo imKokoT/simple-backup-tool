@@ -42,6 +42,8 @@ def isinstance_generic(obj, typ):
 @dataclass(slots=True)
 class ConfigKey:
     """Describes key of some setting"""
+    _registry:'ConfigRegistry'
+
     name:str
     type:type[T]
     default:Any
@@ -51,9 +53,11 @@ class ConfigKey:
 
     def validate(self, value: Any):
         if not isinstance_generic(value, self.type):
-            raise TypeError(f'{self.name}: expected {self.type}')
+            logger.error(f'ConfigKey "{self.name}" from "{self._registry.name}" excepts type {self.type}')
+            quit(1)
         if self.validator and not self.validator(value):
-            raise ValueError(f'{self.name}: validation failed')
+            logger.error(f'ConfigKey "{self.name}" from "{self._registry.name}" is invalid')
+            quit(1)
 
 
 class ConfigRegistry:
@@ -79,6 +83,7 @@ class ConfigRegistry:
             raise KeyError(f'ConfigKey "{name}" already registered')
 
         self._keys[name] = ConfigKey(
+            self,
             name=name,
             type=type,
             default=default,

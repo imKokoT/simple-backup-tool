@@ -42,20 +42,24 @@ class Schema:
 
         path = path.resolve()
         if path in visited:
-            raise RuntimeError(f'include cycle detected: {path}')
+            logger.error(f'include cycle detected: {path}')
+            quit(1)
         visited.add(path)
 
         if not path.exists():
-            raise FileNotFoundError(path)
+            logger.error(f'schema path {path} does not exist')
+            quit(1)
 
         try:
             with path.open("r", encoding="utf-8") as f:
                 data = yaml.load(f)
         except YAMLError as e:
-            raise RuntimeError(f"invalid schema: {path}") from e
+            logger.error(f"invalid schema: {path}\nError: {e}")
+            quit(1)
 
         if not isinstance(data, dict):
-            raise RuntimeError(f"schema root must be a mapping: {path}")
+            logger.error(f"schema\'s root must be a mapping: {path}")
+            quit(1)
 
         # include
         includes = data.get("include", [])
