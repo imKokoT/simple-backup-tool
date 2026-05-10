@@ -3,6 +3,7 @@ from io import TextIOWrapper
 import json
 import logging
 from core.context import ctx
+from core.module import module_register
 from core.vfs import VFile
 from paths import getTmpDir
 from properties import *
@@ -22,6 +23,9 @@ def entry():
 
     loadScancache()
 
+    m = module_register.get('archiver.internal')
+    m.invoke(mode='compress')
+
 
 def loadScancache():
     module:PackerModule = ctx.currentModule
@@ -37,7 +41,7 @@ def loadScancache():
             with gzip.GzipFile(fileobj=vf, mode="rb") as gz:
                 with TextIOWrapper(gz, encoding="utf-8") as f:
                     data = json.load(f)
-                    
+
     try:
         module.packConfig.createdAt = data['meta']['session']
         module.packConfig.targetFolders = data['folders']

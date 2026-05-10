@@ -1,4 +1,4 @@
-from core.module import Chain, register
+from core.module import Chain, module_register
 from core.context import ctx
 from core.schema import Schema
 from paths import getAppDir
@@ -19,5 +19,5 @@ class BackupChain(Chain):
     def run(self, args):
         ctx.schema = Schema(getAppDir() / 'schemas' / f'{ctx.args.schema_name}.yaml')
         
-        register.get(self.chian[0]).invoke()
-        register.get(self.chian[1]).invoke()
+        module_register.get(self.chian[0]).invoke()
+        module_register.get(self.chian[1]).invoke()

@@ -24,3 +24,7 @@ class PackConfig:
             'folders': self.targetFolders,
             'files': self.targetFiles
         }
+    
+    def getMeta(self) -> dict:
+        # TODO: return pack metadata
+        raise NotImplementedError()

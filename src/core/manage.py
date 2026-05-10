@@ -1,7 +1,7 @@
 from chain.backup import BackupChain
 import modules
 from properties import *
-from core.module import register
+from core.module import module_register
 from core.context import ctx
 import argparse
 import logging
@@ -18,8 +18,9 @@ def parseArgs(args):
     parser = argparse.ArgumentParser()
     
     # register modules
-    register.register(modules.scan.ScanModule(parser))
-    register.register(modules.packer.PackerModule(parser))
+    module_register.register(modules.scan.ScanModule(parser))
+    module_register.register(modules.packer.PackerModule(parser))
+    module_register.register(modules.archiver_internal.ArchiverInternalModule(parser))
     # init chains
     ctx.chains = [
             BackupChain(parser)

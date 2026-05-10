@@ -21,6 +21,7 @@ def _setCurrent(module):
 
 class Module(ABC):
     schema_config_registry = schema_config_registry
+    invokeArgs:dict = {}
 
     name:str
     description:str
@@ -62,11 +63,13 @@ class Module(ABC):
         **WARNING**: call `self.invoke()` instead of this to run module logic
         """
 
-    def invoke(self):
+    def invoke(self, **kwargs):
         """invoke Module's entry"""
         with _setCurrent(self):
             self._requireChainArguments()
+            self.invokeArgs = kwargs
             self.entry()
+            self.invokeArgs = {}
     
     def _registeredSchemaParams(self): 
         for p in self.schemaParams:
@@ -104,7 +107,7 @@ class ModuleRegister:
     def all(self):
         return self._modules.values()
 
-register = ModuleRegister()
+module_register = ModuleRegister()
 
 
 class Chain(ABC):

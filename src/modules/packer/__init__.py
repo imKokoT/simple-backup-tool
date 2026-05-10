@@ -11,7 +11,7 @@ class PackerModule(Module):
     description = 'Pack files from scancache into archive'
 
     archiverTypes = ['internal']
-    supportedFormats = {'gz'}
+    supportedFormats = {}
     archiverModules = [
         'archiver.internal'
     ]
