@@ -26,6 +26,9 @@ def entry():
     m = module_register.get('archiver.internal')
     m.invoke(mode='compress')
 
+    # TODO: packing summary, after VFS Path will be created
+    logger.info(f'created pack successfully!')
+
 
 def loadScancache():
     module:PackerModule = ctx.currentModule

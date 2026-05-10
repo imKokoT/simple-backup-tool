@@ -1,9 +1,11 @@
+import io
+import json
 import logging
 import tarfile
 from core.context import ctx
 from core.module import module_register
 from core.vfs import VFile
-from paths import getTmpDir
+from properties import *
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -50,8 +52,26 @@ def compress():
         case 'xz': module.pack = tarfile.open(None, 'w:xz', fileobj=vf, preset=compressLevel) # who is that impressive guy, who didn't standardize compress level
         case 'bz2': module.pack = tarfile.open(None, 'w:bz2', fileobj=vf, compresslevel=compressLevel)
         case 'zst': module.pack = tarfile.open(packer.packPath, 'w:zst', level=compressLevel)
-        
-    # add folders and files
+    
+    # TODO: move pack creation to some interface
+    # add files
+    logger.info('adding target files...')
+    pack = module.pack
+    for i, f in enumerate(packConfig.targetFiles):
+        pack.add(f, f'files/{hex(i)[2:]}')
+
+    # add folders
+    for i, (tf, files) in enumerate(zip(packConfig.targetFolders, packConfig.foldersFiles)):
+        logger.info(f'adding target folder {tf}')
+        for file in files:
+            pack.add(f'{tf}/{file}', f'folders/{hex(i)[2:]}/{file}')
+    
+    # configure
+    jsonMeta = tarfile.TarInfo('config')
+    jsonData = json.dumps(packConfig.get(), indent=1)
+    jsonData = io.BytesIO(jsonData.encode())
+    jsonMeta.size = len(jsonData.getvalue())
+    pack.addfile(jsonMeta, fileobj=jsonData)
 
     module.pack.close()
 

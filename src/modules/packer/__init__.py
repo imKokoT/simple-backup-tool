@@ -22,6 +22,7 @@ class PackerModule(Module):
     def entry(self):
         self.packPath = getTmpDir() / ctx.schema.name / 'pack'
         self.packConfig = PackConfig()
+        self.packConfig.schema = ctx.schema
         entry()
 
     def registerCommandArguments(self):

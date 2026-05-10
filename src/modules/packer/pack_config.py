@@ -18,7 +18,7 @@ class PackConfig:
             'created_at': self.createdAt,
             'schema': {
                 'name': self.schema.name,
-                'path': self.schema.path,
+                'path': str(self.schema.path),
                 'values': self.schema._values
             },
             'folders': self.targetFolders,
