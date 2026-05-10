@@ -1,3 +1,4 @@
+import sys
 from tarfile import TarFile
 from core.module import Module
 from .body import entry
@@ -12,10 +13,14 @@ class ArchiverInternalModule(Module):
         'packer.level'
     ]
 
-    supportedFormats = {'tar','gz','xz','bz','zst'}
+    supportedFormats = {'tar','gz','xz','bz'}
     pack:TarFile
 
     def entry(self):
+        # Python 3.14+
+        if sys.version_info[1] >= 14:
+            self.supportedFormats.add('zst')
+
         entry()
 
     def registerCommandArguments(self):

@@ -33,6 +33,11 @@ def compress():
     compressFormat:str = schema.get('packer.format')
     compressLevel:int = schema.get('packer.level')
 
+    if compressFormat not in module.supportedFormats:
+        logger.error(f'{module.name} does not support format {compressFormat}; '
+                    f'supported formats: {', '.join(module.supportedFormats)}')
+        quit(1)
+
     # open archive
     logger.info(f'open {compressFormat.upper()} archive with {module.name}')
     vf = VFile(packer.packPath, 'w')
@@ -44,14 +49,9 @@ def compress():
         case 'gz': module.pack = tarfile.open(None, 'w:gz', fileobj=vf, compresslevel=compressLevel)
         case 'xz': module.pack = tarfile.open(None, 'w:xz', fileobj=vf, preset=compressLevel) # who is that impressive guy, who didn't standardize compress level
         case 'bz2': module.pack = tarfile.open(None, 'w:bz2', fileobj=vf, compresslevel=compressLevel)
-        case 'zst':
-            if compressLevel > 0:
-                logger.warning(f'{module.name}\'s ZST does not support compress level')
-            module.pack = tarfile.open(packer.packPath, 'w:zst')
-        case _:
-            logger.error(f'{module.name} does not support format {compressFormat}; '
-                        f'supported formats: {', '.join(module.supportedFormats)}')
-            quit(1)
+        case 'zst': module.pack = tarfile.open(packer.packPath, 'w:zst', level=compressLevel)
+        
+    # add folders and files
 
     module.pack.close()
 
