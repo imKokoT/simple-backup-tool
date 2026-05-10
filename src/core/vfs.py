@@ -79,6 +79,7 @@ class VFile(IOBase):
     def read(self, n:int = -1) -> bytes:                return self._raw.read(n)
     def readline(self, size = -1)-> bytes:              return self._raw.readline(size)
     def readlines(self, hint = -1) -> list[bytes]:      return self._raw.readlines(hint)
+    def readable(self):                                 return self._raw.readable()
     def seek(self, offset:int, whence:int = 0) -> int:  return self._raw.seek(offset, whence)
     def seekable(self) -> bool:                         return self._raw.seekable() 
     def tell(self) -> int:                              return self._raw.tell()

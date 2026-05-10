@@ -50,7 +50,7 @@ class ConfigKeyDescription:
     mutableVariant = ['a', 'b', 'c']
 
     d = D('possible values: {variant}',
-          variants=lambda _: ', '.join(mutableVariant))
+          variants=lambda: ', '.join(mutableVariant))
 
     print(d)  # possible values: a, b, c
 

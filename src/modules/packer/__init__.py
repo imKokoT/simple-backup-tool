@@ -1,5 +1,8 @@
+from pathlib import Path
 from core.config_registry import D
 from core.module import Module
+from modules.packer.pack_config import PackConfig
+from paths import getTmpDir
 from .body import *
 
 
@@ -9,8 +12,16 @@ class PackerModule(Module):
 
     archiverTypes = ['internal']
     supportedFormats = {'gz'}
+    archiverModules = [
+        'archiver.internal'
+    ]
+
+    packPath:Path
+    packConfig:PackConfig
 
     def entry(self):
+        self.packPath = getTmpDir() / ctx.schema.name / 'pack'
+        self.packConfig = PackConfig()
         entry()
 
     def registerCommandArguments(self):
