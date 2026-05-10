@@ -22,9 +22,7 @@ class ScanModule(Module):
     scannedSize:int = 0
     scanhash = hashlib.blake2b()
 
-    def run(self):
-        super().run()
-
+    def entry(self):
         entry()
 
         # cleanup

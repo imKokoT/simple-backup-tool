@@ -10,8 +10,7 @@ class PackerModule(Module):
     archiverTypes = ['internal']
     supportedFormats = {'gz'}
 
-    def run(self):
-        super().run()
+    def entry(self):
         entry()
 
     def registerCommandArguments(self):

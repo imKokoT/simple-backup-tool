@@ -11,9 +11,9 @@ class Context:
     """Stores runtime data"""
     sessionTime = time.ctime() 
     args:Namespace
-    schema:Schema
 
-    currentModule:Module    # NOTE: if 'None' here, may you forgot to add super().run() at your module
+    currentModule:Module = None # NOTE: if 'None' here, may you forgot to run module through invoke()
     chains:list[Chain]
+    schema:Schema
 
 ctx = Context()

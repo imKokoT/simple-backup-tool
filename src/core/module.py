@@ -1,10 +1,22 @@
 from abc import ABC, abstractmethod
 from argparse import ArgumentParser
+from contextlib import contextmanager
 from core.context import ctx
 from core.schema import schema_config_registry
 import logging
 
 logger = logging.getLogger(__name__)
+
+
+@contextmanager
+def _setCurrent(module):
+    old = ctx.currentModule
+    ctx.currentModule = module
+
+    try:
+        yield
+    finally:
+        ctx.currentModule = old
 
 
 class Module(ABC):
@@ -27,10 +39,34 @@ class Module(ABC):
     def registerSchemaParams(self):
         """register Module's schema parameters"""
 
-    def run(self):
-        """run module code. must be overridden with <code>super().run()</code> in the body"""
-        ctx.currentModule = self
-        self._requireChainArguments()
+    @abstractmethod
+    def entry(self):
+        """
+        Module's body logic
+
+        It is good idea to leave entry as simpler as possible
+        Example:
+        ```python
+        from core.module import Module
+        from .body import entry # Module-scope module with `entry()` func
+
+        class ExampleModule(Module):
+            ...
+
+            def entry(self):
+                entry()
+
+            ...
+        ``` 
+        
+        **WARNING**: call `self.invoke()` instead of this to run module logic
+        """
+
+    def invoke(self):
+        """invoke Module's entry"""
+        with _setCurrent(self):
+            self._requireChainArguments()
+            self.entry()
     
     def _registeredSchemaParams(self): 
         for p in self.schemaParams:

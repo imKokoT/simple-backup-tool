@@ -19,5 +19,5 @@ class BackupChain(Chain):
     def run(self, args):
         ctx.schema = Schema(getAppDir() / 'schemas' / f'{ctx.args.schema_name}.yaml')
         
-        register.get(self.chian[0]).run()
-        register.get(self.chian[1]).run()
+        register.get(self.chian[0]).invoke()
+        register.get(self.chian[1]).invoke()
