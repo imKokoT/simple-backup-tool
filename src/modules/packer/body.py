@@ -2,9 +2,10 @@ import gzip
 from io import TextIOWrapper
 import json
 import logging
+from core.cli import humanSize
 from core.context import ctx
 from core.module import module_register
-from core.vfs import VFile
+from core.vfs import VFile, size
 from paths import getTmpDir
 from properties import *
 
@@ -32,8 +33,7 @@ def entry():
     )
     m.invoke(mode='compress')
 
-    # TODO: packing summary, after VFS Path will be created
-    logger.info(f'created pack successfully!')
+    logger.info(f'created pack successfully! final size: {humanSize(size(module.packPath))}')
 
 
 def loadScancache():

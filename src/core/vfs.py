@@ -1,5 +1,4 @@
 from io import BytesIO, FileIO, IOBase
-import os
 from pathlib import Path
 from typing import Literal
 import logging
@@ -100,3 +99,28 @@ class VFile(IOBase):
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         return super().__exit__(exc_type, exc_val, exc_tb)
+
+
+# extension
+def exists(path:str|Path) -> bool:
+    '''returns true if path exists
+    
+    You must call this function if the file path which you check designed to be managed by VFS'''
+    if path is str: 
+        path = Path(path)
+
+    return vfs._vfs.get(path) != None or path.exists()
+
+
+def size(path:str|Path) -> int:
+    '''returns size in bytes
+    
+    You must call this function if the file path which you check designed to be managed by VFS'''
+    if path is str: 
+        path = Path(path)
+    
+    b = vfs._vfs.get(path)
+    if b is not None:
+        return b.getbuffer().nbytes
+    else:
+        return path.stat().st_size
