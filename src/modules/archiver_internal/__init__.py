@@ -1,6 +1,6 @@
 import sys
-from tarfile import TarFile
 from core.module import Module
+from core.pack import Pack
 from .body import entry
 
 
@@ -14,7 +14,7 @@ class ArchiverInternalModule(Module):
     ]
 
     supportedFormats = {'tar','gz','xz','bz'}
-    pack:TarFile
+    pack:Pack
 
     def entry(self):
         # Python 3.14+
