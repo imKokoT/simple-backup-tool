@@ -23,7 +23,13 @@ def entry():
 
     loadScancache()
 
-    m = module_register.get('archiver.internal')
+    # select module for packing/compressing
+    m = module_register.get(
+        module.archiverModules[
+            module.archiverTypes.index(
+                schema.get('packer.archiver')
+            )]
+    )
     m.invoke(mode='compress')
 
     # TODO: packing summary, after VFS Path will be created
