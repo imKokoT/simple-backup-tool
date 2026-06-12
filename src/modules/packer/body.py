@@ -25,13 +25,17 @@ def entry():
     loadScancache()
 
     # select module for packing/compressing
-    m = module_register.get(
+    archiver = module_register.get(
         module.archiverModules[
             module.archiverTypes.index(
                 schema.get('packer.archiver')
             )]
     )
-    m.invoke(mode='compress')
+
+    # prepare pack stream & invoke archiver 
+    # TODO: add encryption layer if is set
+    module.packStream = s = VFile(module.packPath, 'w')
+    archiver.invoke(stream=s, mode='compress')
 
     logger.info(f'created pack successfully! final size: {humanSize(size(module.packPath))}')
 

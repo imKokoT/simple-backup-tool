@@ -41,8 +41,7 @@ def compress():
     # open archive
     logger.info(f'open {compressFormat.upper()} archive with {module.name}')
     module.pack = pack = Pack(
-        TarBackend(compressFormat, compressLevel),
-        packer.packPath, 
+        TarBackend(module.invokeArgs['stream'], compressFormat, compressLevel),
         'w'
     )
     

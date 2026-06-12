@@ -14,6 +14,11 @@ logger = logging.getLogger(__name__)
 
 
 class ArchiveBackend(ABC):
+    stream:io.IOBase  # stream object where the backend writes archive
+
+    def __init__(self, stream:io.IOBase):
+        self.stream = stream
+
     @abstractmethod
     def add_file(self, src:Path, dst:str):
         '''add a file to the archive from path'''
@@ -23,7 +28,7 @@ class ArchiveBackend(ABC):
         '''add a file to archive from bytes'''
 
     @abstractmethod
-    def open(self, path:Path, mode:Literal['r', 'w']): ...
+    def open(self, mode:Literal['r', 'w']): ...
 
     @abstractmethod
     def close(self): ...
@@ -59,13 +64,12 @@ class Pack:
     _configured = False
     _packed = False
 
-    def __init__(self, backend:ArchiveBackend, path:Path, mode:Literal['r', 'w']):
+    def __init__(self, backend:ArchiveBackend, mode:Literal['r', 'w']):
         self._backend = backend
-        self.path = path
         self.mode = mode
 
-        logger.debug(f'open pack "{path}"')
-        self._backend.open(path, mode)
+        logger.debug(f'open pack')
+        self._backend.open(mode)
 
     def dumpConfig(self, config:PackConfig):
         '''Finalize pack; must be called after data is packed'''
@@ -105,4 +109,4 @@ class Pack:
             raise RuntimeError(f'tried to close pack without packing data"{self.path}"')
         
         self._backend.close()
-        logger.debug(f'closed pack "{self.path}"')
+        logger.debug(f'closed pack')
