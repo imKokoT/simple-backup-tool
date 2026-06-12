@@ -10,6 +10,9 @@ from .body import *
 class PackerModule(Module):
     name = 'packer'
     description = 'Pack files from scancache into archive'
+    schemaParams = [
+        'encryption'
+    ]
 
     archiverTypes = ['internal']
     supportedFormats = {}

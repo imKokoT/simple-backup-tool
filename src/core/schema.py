@@ -90,3 +90,8 @@ def registerBaseSettings():
         default=None,
         description='Include other schema params from config directory; requires schema\'s name'
     )
+    schema_config_registry.register(
+        name='password',
+        type=str,
+        default=None
+    )

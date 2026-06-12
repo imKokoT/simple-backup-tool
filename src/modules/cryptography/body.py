@@ -7,8 +7,3 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-
-def entry():
-    module:CryptographyModule = ctx.currentModule
-    schema = ctx.schema
-    args = ctx.args

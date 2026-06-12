@@ -19,6 +19,7 @@ def parseArgs(args):
     
     # register modules
     module_register.register(modules.scan.ScanModule(parser))
+    module_register.register(modules.cryptography.CryptographyModule(parser))
     module_register.register(modules.packer.PackerModule(parser))
     module_register.register(modules.archiver_internal.ArchiverInternalModule(parser))
     # init chains

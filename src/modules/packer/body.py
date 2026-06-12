@@ -12,6 +12,7 @@ from properties import *
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from . import PackerModule
+    from modules.cryptography import CryptographyModule
 
 logger = logging.getLogger(__name__)
 
@@ -33,8 +34,10 @@ def entry():
     )
 
     # prepare pack stream & invoke archiver 
-    # TODO: add encryption layer if is set
     module.packStream = s = VFile(module.packPath, 'w')
+    if schema.get('encryption'):
+        c:CryptographyModule = module_register.get('cryptography')
+        s = c.encryption(s)
     archiver.invoke(stream=s, mode='compress')
 
     logger.info(f'created pack successfully! final size: {humanSize(size(module.packPath))}')
