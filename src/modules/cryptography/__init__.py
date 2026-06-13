@@ -1,7 +1,7 @@
 from core.config_registry import D
 from core.module import Module
 from .body import *
-from .encryption import EncryptionStream
+from .encryption_stream import EncryptionStream
 
 
 class CryptographyModule(Module):
@@ -11,7 +11,7 @@ class CryptographyModule(Module):
     supportedAlgorithms = [
         'aes',
     ]
-    encryption = EncryptionStream
+    encryptionStream = EncryptionStream
 
     def entry(self):
         raise NotImplementedError()

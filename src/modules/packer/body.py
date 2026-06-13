@@ -37,7 +37,7 @@ def entry():
     module.packStream = s = VFile(module.packPath, 'w')
     if schema.get('encryption'):
         c:CryptographyModule = module_register.get('cryptography')
-        s = c.encryption(s)
+        s = c.encryptionStream(s)
     archiver.invoke(stream=s, mode='compress')
 
     logger.info(f'created pack successfully! final size: {humanSize(size(module.packPath))}')
