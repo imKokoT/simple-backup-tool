@@ -5,6 +5,7 @@ from core.context import ctx
 from core.module import module_register
 from core.vfs import VFile
 from .encryption_backend import EncryptionBackend
+from .backends.aes import AESEncryptionBackend
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +22,7 @@ class EncryptionStream(io.IOBase):
 
         match self._method:
             case 'aes':
-                self._encryptor = ...
+                self._encryptor = AESEncryptionBackend(self.stream)
             case _:
                 raise ValueError(f'unsupported encryption method: {self._method}')
             

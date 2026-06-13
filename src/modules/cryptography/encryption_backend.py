@@ -29,7 +29,7 @@ class EncryptionBackend(ABC):
         s += self._stream.write(h.salt)
         s += self._stream.write(h.algorithm.to_bytes())
         s += self._stream.write(h.nonce)
-        logging.debug(f'wrote {s} byte(s) EPKG header V{VERSION}')
+        logger.debug(f'wrote {s} byte(s) EPKG header V{int.from_bytes(VERSION)}')
         
     @abstractmethod
     def write(self, data:bytes): ...
