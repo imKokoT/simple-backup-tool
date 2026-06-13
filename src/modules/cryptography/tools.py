@@ -8,7 +8,7 @@ SALT = 16
 
 class Algorithm(IntEnum):
     AES256_GCM = 1
-    # CHACHA20_POLY1305 = 2
+    CHACHA20_POLY1305 = 2
     # XCHACHA20_POLY1305 = 3
 
 

@@ -10,6 +10,7 @@ class CryptographyModule(Module):
 
     supportedAlgorithms = [
         'aes',
+        'chacha20poly1305'
     ]
     encryptionStream = EncryptionStream
 

@@ -26,8 +26,8 @@ class EncryptionBackend(ABC):
         h = self._header
         s = self._stream.write(h.magic)
         s += self._stream.write(VERSION)
-        s += self._stream.write(h.salt)
         s += self._stream.write(h.algorithm.to_bytes())
+        s += self._stream.write(h.salt)
         s += self._stream.write(h.nonce)
         logger.debug(f'wrote {s} byte(s) EPKG header V{int.from_bytes(VERSION)}')
         

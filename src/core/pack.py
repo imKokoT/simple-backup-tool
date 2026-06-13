@@ -6,6 +6,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal
 
+from core.vfs import VFile
+
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from core.schema import Schema
@@ -14,9 +16,9 @@ logger = logging.getLogger(__name__)
 
 
 class ArchiveBackend(ABC):
-    stream:io.IOBase  # stream object where the backend writes archive
+    stream:VFile  # stream object where the backend writes archive
 
-    def __init__(self, stream:io.IOBase):
+    def __init__(self, stream:VFile):
         self.stream = stream
 
     @abstractmethod

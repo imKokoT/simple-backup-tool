@@ -30,6 +30,7 @@ class TarBackend(ArchiveBackend):
         
     def close(self):
         self.arch.close()
+        self.stream.close()
     
     def add_file(self, src, dst):
         self.arch.add(src, dst)
