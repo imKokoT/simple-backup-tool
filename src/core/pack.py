@@ -3,6 +3,7 @@ import json
 import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+import os
 from pathlib import Path
 from typing import Literal
 
@@ -84,6 +85,9 @@ class Pack:
         raise NotImplementedError()
 
     def add_file(self, src:Path, dst:str):
+        if not os.path.exists(src):
+            logger.error(f'failed to pack file {src} because it not exists')
+            return
         self._backend.add_file(src, dst)
 
     def add_bytes(self, data:bytes, dst:str):
