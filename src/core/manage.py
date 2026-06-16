@@ -22,6 +22,7 @@ def parseArgs(args):
     module_register.register(modules.cryptography.CryptographyModule(parser))
     module_register.register(modules.packer.PackerModule(parser))
     module_register.register(modules.archiver_internal.ArchiverInternalModule(parser))
+    module_register.register(modules.cloud.CloudModule(parser))
     # init chains
     ctx.chains = [
             BackupChain(parser)

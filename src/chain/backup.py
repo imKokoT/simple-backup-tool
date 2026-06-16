@@ -9,7 +9,8 @@ class BackupChain(Chain):
     description = 'Backup chain'
     chian = [
         'scan',
-        'packer'
+        'packer',
+        'cloud'
     ]
 
     def registerCommandArguments(self):
@@ -21,3 +22,4 @@ class BackupChain(Chain):
         
         module_register.get(self.chian[0]).invoke()
         module_register.get(self.chian[1]).invoke()
+        module_register.get(self.chian[2]).invoke()
