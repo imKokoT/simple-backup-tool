@@ -1,9 +1,10 @@
 import io
 import json
 import logging
+import os
+import struct
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-import os
 from pathlib import Path
 from typing import Literal
 
@@ -15,12 +16,21 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+MAGIC = b'SBTP'
+VERSION = 1
+
 
 class ArchiveBackend(ABC):
-    stream:VFile  # stream object where the backend writes archive
+    stream:VFile         # stream object where the backend writes archive
+    backend_args:bytes   # helper args to manage archive; MAX 16 bytes
+    BACKEND_ID:bytes     # important to detect what backed to use to open archive; MAX 32 bytes
 
     def __init__(self, stream:VFile):
         self.stream = stream
+
+    @abstractmethod
+    def set_backend_args(self):
+        '''set args that will be written to pack header'''
 
     @abstractmethod
     def add_file(self, src:Path, dst:str):
@@ -56,10 +66,6 @@ class PackConfig:
             'folders': self.targetFolders,
             'files': self.targetFiles
         }
-    
-    def getMeta(self) -> dict:
-        # TODO: return pack metadata
-        raise NotImplementedError()
 
 
 class Pack:
@@ -72,6 +78,20 @@ class Pack:
         self.mode = mode
 
         logger.debug(f'open pack')
+        # TODO: read header
+        # write header
+        backend.set_backend_args()
+        self._steam = s = backend.stream
+        s.write(struct.pack(
+            '<4sB32s16s64s',
+            MAGIC,
+            VERSION,
+            backend.BACKEND_ID,
+            backend.backend_args,
+            bytes(64) # reserved space
+        ))
+
+        logger.debug(f'open archive within backend')
         self._backend.open(mode)
 
     def dumpConfig(self, config:PackConfig):

@@ -7,11 +7,15 @@ logger = logging.getLogger(__name__)
 
 class TarBackend(ArchiveBackend):
     arch:tarfile.TarFile
+    BACKEND_ID = b'internal'
     
     def __init__(self, stream, compressFormat:str, compressLevel:int):
         super().__init__(stream)
         self.compressFormat = compressFormat
         self.compressLevel = compressLevel
+
+    def set_backend_args(self):
+        self.backend_args = bytes(16)
 
     def open(self, mode):
         if mode == 'r':
