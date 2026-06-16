@@ -54,3 +54,6 @@ class PackerModule(Module):
             type=int,
             default=5,
         )
+
+    def registerAppConfigs(self):
+        ...

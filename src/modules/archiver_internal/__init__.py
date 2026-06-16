@@ -28,3 +28,6 @@ class ArchiverInternalModule(Module):
 
     def registerSchemaParams(self):
         ...
+
+    def registerAppConfigs(self):
+        ...

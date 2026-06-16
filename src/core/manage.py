@@ -1,5 +1,6 @@
-from chain.backup import BackupChain
 import modules
+from chain.backup import BackupChain
+from core import app_config
 from properties import *
 from core.module import module_register
 from core.context import ctx
@@ -28,5 +29,6 @@ def parseArgs(args):
             BackupChain(parser)
         ]
 
+    app_config.config.load()
     args = ctx.args = parser.parse_args()
     args.func(ctx.args)

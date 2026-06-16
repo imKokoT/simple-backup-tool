@@ -3,6 +3,7 @@ from argparse import ArgumentParser
 from contextlib import contextmanager
 from core.context import ctx
 from core.schema import schema_config_registry
+from core.app_config import app_config_registry
 import logging
 
 logger = logging.getLogger(__name__)
@@ -21,6 +22,7 @@ def _setCurrent(module):
 
 class Module(ABC):
     schema_config_registry = schema_config_registry
+    app_config_registry = app_config_registry
     invokeArgs:dict = {}
 
     name:str
@@ -39,6 +41,10 @@ class Module(ABC):
     @abstractmethod
     def registerSchemaParams(self):
         """register Module's schema parameters"""
+
+    @abstractmethod
+    def registerAppConfigs(self):
+        """register module-scope settings to app config register"""
 
     @abstractmethod
     def entry(self):
@@ -92,6 +98,7 @@ class ModuleRegister:
             logger.critical(msg)
             raise ValueError(msg)
         
+        module.registerAppConfigs()
         module._registeredSchemaParams()
         module.registerSchemaParams()
         module.registerCommandArguments()

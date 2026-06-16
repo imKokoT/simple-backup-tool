@@ -27,3 +27,6 @@ class CloudModule(Module):
             default=None,
             description='Credential file to access a cloud'
         )
+
+    def registerAppConfigs(self):
+        ...

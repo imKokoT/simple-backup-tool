@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from properties import VERSION
+from properties import VERSION, DEBUG, EXPERIMENTAL
 import logger
 from core.manage import parseArgs
 from core import app_config
@@ -15,10 +15,9 @@ def main():
     creating templates, automate processes etc.
     """
     logger.init()
-    logger.logging.debug(f'DEBUG MODE ON; v{VERSION}')
+    logger.logging.debug(f'v{VERSION} | {DEBUG=} {EXPERIMENTAL=}')
 
     app_config.registerBaseSettings()
-    app_config.config.load()
     schema.registerBaseSettings()
     
     parseArgs(sys.argv)

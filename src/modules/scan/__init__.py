@@ -47,3 +47,11 @@ class ScanModule(Module):
             default='',
             description='Global ignore pattern; highest priority'
         )
+    
+    def registerAppConfigs(self):
+        self.app_config_registry.register(
+            name='backup.load_gitignore',
+            type=bool,
+            default=False,
+            description='Load .gitignore patterns; .sbtignore still has higher priority'
+        )

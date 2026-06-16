@@ -29,3 +29,6 @@ class CryptographyModule(Module):
                           values=self.supportedAlgorithms),
             validator=lambda x: x in self.supportedAlgorithms
         )
+
+    def registerAppConfigs(self):
+        ...
