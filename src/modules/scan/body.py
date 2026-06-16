@@ -55,8 +55,9 @@ def entry():
             if not args.force:
                 logger.info('aborting...')
                 quit(0)
-        else:
-            dumpScanCache()
+            return
+    
+    dumpScanCache()
 
 
 def scanFile(target:str):
