@@ -12,10 +12,7 @@ COPYRIGHT = 'imKokoT'
 LINK = '''https://github.com/imKokoT/simple-backup-tool'''
 C_YEARS = '2024-2026'
 
-SCOPES = ['''https://www.googleapis.com/auth/drive''']
-
 MAX_SESSION_LOGS = 10
-EVENT_UPDATE_DELAY = 0.05 
 
 DC = colorama.Style.RESET_ALL
 

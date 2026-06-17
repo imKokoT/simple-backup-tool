@@ -1,4 +1,5 @@
 import logging
+import os
 
 from core.context import ctx
 
@@ -13,6 +14,8 @@ def entry():
     module:CloudGoogleDriveModule = ctx.currentModule
     schema = ctx.schema
     args = ctx.args
+
+    os.makedirs(f'./configs/secrets', exist_ok=True)
 
     if module.invokeArgs['action'] == 'send':
         send()
