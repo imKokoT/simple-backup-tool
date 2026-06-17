@@ -1,7 +1,12 @@
 import logging
 import os
+from googleapiclient.discovery import build
+from httplib2 import ServerNotFoundError
+from googleapiclient.errors import HttpError
+from google.auth.exceptions import RefreshError
 
 from core.context import ctx
+from .tools import authenticate
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -28,4 +33,25 @@ def send():
     schema = ctx.schema
     args = ctx.args
 
-    logger.info('authorizing Google Drive credentials')
+    logger.info('authenticating Google Drive credentials')
+    module.creds = creds = authenticate()
+    
+    try:
+        logger.info('building service')
+        module.service = build("drive", "v3", credentials=creds)
+
+        logger.info('sending pack to the cloud...')
+        if module.serviceCred:
+            ...
+        else:
+            ...
+
+    except HttpError as e:
+        logger.error(f'failed to backup; error: {e}')
+        exit(1)
+    except RefreshError as e:
+        logger.error(f'failed to backup; error: {e}')
+        exit(1)
+    except ServerNotFoundError as e:
+        logger.error(f'failed to backup; possibly network error: {e}')
+        exit(1)

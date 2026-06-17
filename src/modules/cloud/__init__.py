@@ -26,7 +26,7 @@ class CloudModule(Module):
             required=True
         )
         self.schema_config_registry.register(
-            name='credential',
+            name='credentials',
             type=str,
             default=None,
             description='Credential file to access a cloud'
