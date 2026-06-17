@@ -7,6 +7,10 @@ class CloudModule(Module):
     name = 'cloud'
     description = 'This module manages access to a cloud'
 
+    cloudModules = [
+        'cloud_google_drive'
+    ]
+
     def entry(self):
         entry()
 
@@ -26,6 +30,14 @@ class CloudModule(Module):
             type=str,
             default=None,
             description='Credential file to access a cloud'
+        )
+        self.schema_config_registry.register(
+            name='cloud',
+            type=str,
+            default=self.cloudModules[0],
+            description=D('What cloud to use; possible values {variant}',
+                          variant=', '.join(self.cloudModules)),
+            validator=lambda x: x in self.cloudModules
         )
 
     def registerAppConfigs(self):
