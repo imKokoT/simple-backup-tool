@@ -5,7 +5,9 @@ from httplib2 import ServerNotFoundError
 from googleapiclient.errors import HttpError
 from google.auth.exceptions import RefreshError
 
+from core.cli import humanSize
 from core.context import ctx
+from core.vfs import size
 from .tools import authenticate, getStorageQuota
 from .drive import *
 
@@ -46,7 +48,14 @@ def send():
         cleanup(folderId)
 
         quota = getStorageQuota()
+        availableSpace = quota['limit'] - quota['usage']
+        archiveSize = size(getTmpDir() / ctx.schema.name / 'pack')
         logger.debug(f'storage quota: {quota}')
+
+        if archiveSize > availableSpace:
+            logger.error(f'archive too large: actual archive size={humanSize(archiveSize)},'
+                         f' while available space={humanSize(availableSpace)}')
+            quit(1)
 
         logger.info('sending pack to the cloud...')
         if module.serviceCred:
