@@ -64,11 +64,11 @@ def authenticate() -> Credentials:
                     logger.error(f'failed to open webbrowser; error: {e}')
                     creds = flow.run_local_server(port=0, open_browser=False)
                 
-            saveToken(creds)
+            _saveToken(creds)
         return creds
 
 
-def saveToken(creds:Credentials):
+def _saveToken(creds:Credentials):
     schema = ctx.schema
 
     tmp = getTmpDir() / schema.name 
@@ -76,3 +76,13 @@ def saveToken(creds:Credentials):
         t.write(creds.to_json())
 
     logger.debug('saved refresh token to tmp')
+
+
+def getStorageQuota() -> dict:
+    module:CloudGoogleDriveModule = ctx.currentModule
+
+    quota = module.service.about().get(fields='storageQuota').execute()['storageQuota']
+    return {
+        'limit': int(quota['limit']) if quota.get('limit') else None,
+        'usage': int(quota['usage'])
+    }

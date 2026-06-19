@@ -6,7 +6,8 @@ from googleapiclient.errors import HttpError
 from google.auth.exceptions import RefreshError
 
 from core.context import ctx
-from .tools import authenticate
+from .tools import authenticate, getStorageQuota
+from .drive import *
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -40,16 +41,22 @@ def send():
         logger.info('building service')
         module.service = build("drive", "v3", credentials=creds)
 
+        folderId = getDestination(schema.get('destination'), None)
+
+        cleanup(folderId)
+
+        quota = getStorageQuota()
+        logger.debug(f'storage quota: {quota}')
+
         logger.info('sending pack to the cloud...')
         if module.serviceCred:
-            ...
+            raise NotImplementedError()
         else:
-            ...
+            sendArchive(folderId)
 
-    except HttpError as e:
-        logger.error(f'failed to backup; error: {e}')
-        exit(1)
-    except RefreshError as e:
+        logger.info(f'archive was sent to the cloud successfully!')
+
+    except (HttpError, RefreshError) as e:
         logger.error(f'failed to backup; error: {e}')
         exit(1)
     except ServerNotFoundError as e:
