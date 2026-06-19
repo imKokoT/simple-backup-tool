@@ -25,7 +25,12 @@ class CloudGoogleDriveModule(Module):
         ...
 
     def registerSchemaParams(self):
-        ...
+        self.schema_config_registry.register(
+            name='root',
+            type=str,
+            default=None,
+            description='Root folder ID; this setting is required if you use service credentials'
+        )
 
     def registerAppConfigs(self):
         ...

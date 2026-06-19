@@ -43,7 +43,11 @@ def send():
         logger.info('building service')
         module.service = build("drive", "v3", credentials=creds)
 
-        folderId = getDestination(schema.get('destination'), None)
+        if module.serviceCred and not schema.get('root'):
+            logger.error('schema.root is required if you use service credentials')
+            quit(1)
+
+        folderId = getDestination(schema.get('destination'), schema.get('root'))
 
         cleanup(folderId)
 
@@ -58,10 +62,7 @@ def send():
             quit(1)
 
         logger.info('sending pack to the cloud...')
-        if module.serviceCred:
-            raise NotImplementedError()
-        else:
-            sendArchive(folderId)
+        sendArchive(folderId)
 
         logger.info(f'archive was sent to the cloud successfully!')
 
