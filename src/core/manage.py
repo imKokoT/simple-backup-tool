@@ -1,5 +1,5 @@
 import modules
-from chain.backup import BackupChain
+import chain
 from core import app_config
 from properties import *
 from core.module import module_register
@@ -27,7 +27,8 @@ def parseArgs(args):
     module_register.register(modules.cloud_google_drive.CloudGoogleDriveModule(parser))
     # init chains
     ctx.chains = [
-            BackupChain(parser)
+            chain.BackupChain(parser),
+            chain.RestoreChain(parser)
         ]
 
     app_config.config.load()
