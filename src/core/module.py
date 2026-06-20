@@ -123,7 +123,7 @@ class Chain(ABC):
     """
     name:str
     description:str
-    chian:list[str]
+    chain:list[str]
      
     def __init__(self, argParser:ArgumentParser):
         self.parser:ArgumentParser = argParser
