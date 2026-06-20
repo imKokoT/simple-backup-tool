@@ -17,6 +17,10 @@ def parseArgs(args):
         return
     
     parser = argparse.ArgumentParser()
+    subparsers = parser.add_subparsers(
+        dest="command",
+        required=True
+    )
     
     # register modules
     module_register.register(modules.scan.ScanModule(parser))
@@ -27,9 +31,9 @@ def parseArgs(args):
     module_register.register(modules.cloud_google_drive.CloudGoogleDriveModule(parser))
     # init chains
     ctx.chains = [
-            chain.BackupChain(parser),
-            chain.RestoreChain(parser)
-        ]
+        chain.BackupChain(subparsers),
+        chain.RestoreChain(subparsers)
+    ]
 
     app_config.config.load()
     args = ctx.args = parser.parse_args()

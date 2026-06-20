@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from argparse import ArgumentParser
+from argparse import ArgumentParser, _SubParsersAction
 from contextlib import contextmanager
 from core.context import ctx
 from core.schema import schema_config_registry
@@ -125,10 +125,8 @@ class Chain(ABC):
     description:str
     chain:list[str]
      
-    def __init__(self, argParser:ArgumentParser):
-        self.parser:ArgumentParser = argParser
-        self.subparsers = self.parser.add_subparsers(dest="command", required=True)
-        self.subparser = self.subparsers.add_parser(self.name, help=self.description)
+    def __init__(self, subparsers:_SubParsersAction[ArgumentParser]):
+        self.subparser = subparsers.add_parser(self.name, help=self.description)
         self.registerCommandArguments()
         self.subparser.set_defaults(func=self.run)
 
