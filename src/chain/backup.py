@@ -40,16 +40,29 @@ class BackupChain(Chain):
                 json.dump(data, f)
 
         if lockPath.exists():
-            logger.warning('it looks like this backup chain was not completed for some reason')
-
-            if getConfirm('y', 'Do you want to continue last chain [Y] or restart chain [N]'):
-                with open(lockPath, 'r') as f:
-                    lockData = json.load(f)
+            with open(lockPath, 'r') as f:
+                lockData = json.load(f)
+            
+            # if other chain lock detected
+            if lockData.get('chain') != self.name:
+                logger.warning(f'it looks like other chain({lockData["chain"]}) was not completed for some reason')
+                if getConfirm('y', 'Do you what to abort [Y] or continue current chain [N]'):
+                    logger.info('aborting...')
+                    quit(0)
+                else:
+                    os.remove(lockPath)
+            # if locked current chain
             else:
-                os.remove(lockPath)
-        
+                logger.warning('it looks like this backup chain was not completed for some reason')
+
+                if not getConfirm('y', 'Do you want to continue last chain [Y] or restart chain [N]'):
+                    os.remove(lockPath)
+            
         if not lockPath.exists():
-            lockData = {'progress': {}}
+            lockData = {
+                'chain': self.name,
+                'progress': {}
+            }
             updateLock(lockPath, lockData)
 
         logger.info('started backup chain')
