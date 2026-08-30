@@ -71,8 +71,8 @@ def cleanup(folderId:str):
             service.files().delete(fileId=file_id).execute()
 
 
-def deleteAllNotSharedServiceArchives(folderId:str = 'root'):
-    '''delete all not shared archives and its meta'''
+def deleteAllNonShared(folderId:str = 'root'):
+    '''delete all not shared service archives and its meta'''
     module:CloudGoogleDriveModule = ctx.currentModule
     service = module.service
 
@@ -94,7 +94,7 @@ def deleteAllNotSharedServiceArchives(folderId:str = 'root'):
 
     for item in items:    
         if item['mimeType'] == 'application/vnd.google-apps.folder':
-            deleteAllNotSharedServiceArchives(folderId=item['id'])
+            deleteAllNonShared(folderId=item['id'])
         
         if re.search(ARCHIVE_PATTERN, item['name']):
             logger.debug(f"Deleting: {item['name']}[id:{item['id']}] ({item['mimeType']})")

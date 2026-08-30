@@ -12,8 +12,6 @@ logger = logging.getLogger(__name__)
 
 def entry():
     module:CloudModule = ctx.currentModule
-    schema = ctx.schema
-    args = ctx.args
 
     if module.invokeArgs['action'] == 'send':
         send()
@@ -40,7 +38,21 @@ def send():
 
 def download():
     module:CloudModule = ctx.currentModule
-    schema = ctx.schema
     args = ctx.args
 
-    raise NotImplementedError()
+    if not args.cloud:
+        logger.error(f'"cloud" parameter must be provided')
+        exit(1)
+    if args.cloud not in module.cloudModules:
+        logger.error(f'cloud "{args.cloud}" does not exists')
+        exit(1)
+
+    # select cloud module
+    cloud = module_register.get(
+        module.cloudModules[
+            module.cloudModules.index(args.cloud)
+        ]
+    )
+
+    logger.info(f'Initializing downloading of the pack from {cloud.name}')
+    cloud.invoke(action='download')

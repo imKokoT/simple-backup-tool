@@ -18,7 +18,7 @@ class RestoreChain(Chain):
         'cloud'
     ]
     chainKwargs = [
-        {}
+        {'action': 'download'}
     ]
 
     def registerCommandArguments(self):
@@ -26,7 +26,6 @@ class RestoreChain(Chain):
         self.subparser.add_argument('-f', '--force', action='store_true', help='force backup')
 
     def run(self, args):
-        # ctx.schema = Schema(getAppDir() / 'schemas' / f'{ctx.args.schema_name}.yaml')
         lockPath = getTmpDir() / args.schema_name / '.lock'
         lockData:dict
         def updateLock(path, data):

@@ -28,7 +28,7 @@ def entry():
     if module.invokeArgs['action'] == 'send':
         send()
     elif module.invokeArgs['action'] == 'download':
-        ...
+        download()
 
 
 def send():
@@ -71,4 +71,34 @@ def send():
         exit(1)
     except ServerNotFoundError as e:
         logger.error(f'failed to backup; possibly network error: {e}')
+        exit(1)
+
+
+def download():
+    module:CloudGoogleDriveModule = ctx.currentModule
+    args = ctx.args
+
+    logger.info('authenticating Google Drive credentials')
+    module.creds = creds = authenticate()
+
+    try:
+        logger.info('building service')
+        module.service = build("drive", "v3", credentials=creds)
+
+        if module.serviceCred and not schema.get('root'):
+            logger.error('schema.root is required if you use service credentials')
+            quit(1)
+        
+        folderId = getDestination(schema.get('destination'), schema.get('root'))
+
+        logger.info('downloading pack from the cloud...')
+        downloadArchive(folderId)
+
+        logger.info(f'archive was downloaded to a local folder successfully!')
+
+    except (HttpError, RefreshError) as e:
+        logger.error(f'failed to restore; error: {e}')
+        exit(1)
+    except ServerNotFoundError as e:
+        logger.error(f'failed to restore; possibly network error: {e}')
         exit(1)
