@@ -16,23 +16,23 @@ def parseArgs(args):
         print(f'SBT v{VERSION} | Copyright {C_YEARS} {COPYRIGHT} ({LINK})')
         return
     
-    parser = argparse.ArgumentParser()
-    subparsers = parser.add_subparsers(
+    ctx.parser = parser = argparse.ArgumentParser()
+    ctx.subparsers = subparsers = parser.add_subparsers(
         dest="command",
         required=True
     )
     
     # register modules
-    module_register.register(modules.scan.ScanModule(parser))
-    module_register.register(modules.cryptography.CryptographyModule(parser))
-    module_register.register(modules.packer.PackerModule(parser))
-    module_register.register(modules.archiver_internal.ArchiverInternalModule(parser))
-    module_register.register(modules.cloud.CloudModule(parser))
-    module_register.register(modules.cloud_google_drive.CloudGoogleDriveModule(parser))
+    module_register.register(modules.scan.ScanModule())
+    module_register.register(modules.cryptography.CryptographyModule())
+    module_register.register(modules.packer.PackerModule())
+    module_register.register(modules.archiver_internal.ArchiverInternalModule())
+    module_register.register(modules.cloud.CloudModule())
+    module_register.register(modules.cloud_google_drive.CloudGoogleDriveModule())
     # init chains
     ctx.chains = [
-        chain.BackupChain(subparsers),
-        chain.RestoreChain(subparsers)
+        chain.BackupChain(),
+        chain.RestoreChain()
     ]
 
     app_config.config.load()

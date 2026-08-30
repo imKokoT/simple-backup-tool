@@ -15,8 +15,8 @@ class CloudModule(Module):
         entry()
 
     def registerCommandArguments(self):
-        self.argGroup.add_argument('-d', '--destination', help='folder on the cloud, where the archive placed')
         self.argGroup.add_argument('-c', '--cloud', help='which cloud to use')
+        self.argGroup.add_argument('-d', '--destination', help='folder on the cloud, where the archive placed')
 
     def registerSchemaParams(self):
         self.schema_config_registry.register(

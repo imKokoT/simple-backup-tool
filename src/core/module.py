@@ -30,9 +30,8 @@ class Module(ABC):
     schemaParams:list[str] = [] # registered Schema params
     chainArgs:list[str] = []    # defined Chain's command arguments
 
-    def __init__(self, argParser:ArgumentParser):
-        self.parser:ArgumentParser = argParser
-        self.argGroup = self.parser.add_argument_group(self.name)
+    def __init__(self):
+        self.argGroup = ctx.parser.add_argument_group(f'module.{self.name}')
 
     @abstractmethod
     def registerCommandArguments(self):
@@ -125,8 +124,8 @@ class Chain(ABC):
     description:str
     chain:list[str]
      
-    def __init__(self, subparsers:_SubParsersAction[ArgumentParser]):
-        self.subparser = subparsers.add_parser(self.name, help=self.description)
+    def __init__(self):
+        self.subparser = ctx.subparsers.add_parser(self.name, help=self.description)
         self.registerCommandArguments()
         self.subparser.set_defaults(func=self.run)
 
