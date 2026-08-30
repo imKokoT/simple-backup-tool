@@ -26,6 +26,7 @@ class RestoreChain(Chain):
         self.subparser.add_argument('-f', '--force', action='store_true', help='force restore')
 
     def run(self, args):
+        ctx.schema = Schema(getAppDir() / 'schemas' / f'{ctx.args.schema_name}.yaml', tryLoad=True)
         lockPath = getTmpDir() / args.schema_name / '.lock'
         lockData:dict
         def updateLock(path, data):

@@ -76,7 +76,13 @@ def send():
 
 def download():
     module:CloudGoogleDriveModule = ctx.currentModule
+    schema = ctx.schema
     args = ctx.args
+
+    # set args to schema
+    schema.set('credentials', args.credentials)
+    schema.set('destination', args.destination)
+    schema.set('cloud', args.cloud)
 
     logger.info('authenticating Google Drive credentials')
     module.creds = creds = authenticate()

@@ -16,9 +16,10 @@ class Schema:
     path:Path
     _values:dict[str, object] = {}
 
-    def __init__(self, path:Path):
+    def __init__(self, path:Path = None, tryLoad:bool = False):
         self.path = path
         self.name = path.stem
+        self._tryLoad = tryLoad
         self.load()
     
     def get(self, key:str):
@@ -47,6 +48,9 @@ class Schema:
         visited.add(path)
 
         if not path.exists():
+            if self._tryLoad:
+                logger.warning(f'schema path {path} does not exist; the empty one will be used')
+                return
             logger.error(f'schema path {path} does not exist')
             quit(1)
 
