@@ -13,12 +13,14 @@ logger = logging.getLogger(__name__)
 
 class RestoreChain(Chain):
     name = 'restore'
-    description = 'Restore backup'
+    description = 'Restore backup from cloud'
     chain = [
-        'cloud'
+        'cloud',
+        'unpacker'
     ]
     chainKwargs = [
-        {'action': 'download'}
+        {'action': 'download'},
+        {}
     ]
 
     def registerCommandArguments(self):

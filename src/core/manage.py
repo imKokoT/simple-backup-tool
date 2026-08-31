@@ -26,6 +26,7 @@ def parseArgs(args):
     module_register.register(modules.scan.ScanModule())
     module_register.register(modules.cryptography.CryptographyModule())
     module_register.register(modules.packer.PackerModule())
+    module_register.register(modules.unpacker.UnpackerModule())
     module_register.register(modules.archiver_internal.ArchiverInternalModule())
     module_register.register(modules.cloud.CloudModule())
     module_register.register(modules.cloud_google_drive.CloudGoogleDriveModule())
