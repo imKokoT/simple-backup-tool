@@ -28,6 +28,9 @@ class DecryptionStream(io.IOBase):
                 self._encryptor = ChaCha20Poly1305DecryptionBackend(self.stream)
             case _:
                 raise ValueError(f'unsupported decryption method: {self._method}')
+    
+    def read(self, n:int = -1) -> bytes:
+        return self._encryptor.read(n)
 
     def readable(self): return True
     def flush(self): self.stream.flush()

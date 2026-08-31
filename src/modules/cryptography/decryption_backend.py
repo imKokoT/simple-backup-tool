@@ -29,4 +29,6 @@ class DecryptionBackend(ABC):
         h.version = int.from_bytes(self._stream.read(1))
         h.algorithm = Algorithm.from_bytes(self._stream.read(1))
         h.salt = self._stream.read(SALT)
-        
+
+    @abstractmethod
+    def read(self, n:int = -1) -> bytes: ...

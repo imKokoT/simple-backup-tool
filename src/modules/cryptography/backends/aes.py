@@ -1,4 +1,5 @@
 import struct
+from cryptography.exceptions import InvalidTag
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 
 from ..decryption_backend import DecryptionBackend
@@ -8,6 +9,8 @@ from ..keygen import *
 
 CHUNK_SIZE = 1024*1024
 NONCE = 12
+TAG_SIZE = 16
+END_MARKER = 0xffffffff
 
 
 def _chunk_nonce(base_nonce, index):
@@ -52,7 +55,7 @@ class AESEncryptionBackend(EncryptionBackend):
         ciphertext += encryptor.finalize()
 
         self._stream.write(
-            struct.pack("<I", len(ciphertext))
+            struct.pack("<I", len(ciphertext) + TAG_SIZE)
         )
         self._stream.write(ciphertext)
         self._stream.write(encryptor.tag)
@@ -69,8 +72,82 @@ class AESDecryptionBackend(DecryptionBackend):
     def __init__(self, stream):
         super().__init__(stream)
 
+        self._chunk_index = 0
+        self._buffer = bytearray()
+        self._eof = False
+
     def readHeader(self):
         super().readHeader()
         h = self._header
         h.nonce = self._stream.read(NONCE)
+
+    def _read_chunk(self) -> bytes | None:
+        length_data = self._stream.read(4)
+
+        if len(length_data) != 4:
+            raise EOFError("unexpected end of encrypted stream")
+
+        length = struct.unpack("<I", length_data)[0]
+
+        if length == END_MARKER:
+            self._eof = True
+            return None
+
+        if length < TAG_SIZE:
+            raise ValueError("invalid encrypted chunk size")
+
+        encrypted = self._stream.read(length)
+
+        if len(encrypted) != length:
+            raise EOFError("incomplete encrypted chunk")
+
+        ciphertext = encrypted[:-TAG_SIZE]
+        tag = encrypted[-TAG_SIZE:]
+
+        nonce = _chunk_nonce(self._header.nonce, self._chunk_index)
+
+        decryptor = Cipher(
+            algorithms.AES(self._key),
+            modes.GCM(nonce, tag)
+        ).decryptor()
+
+        associated_data = struct.pack(
+            "<Q",
+            self._chunk_index
+        )
+
+        decryptor.authenticate_additional_data(
+            associated_data
+        )
+
+        try:
+            plaintext = decryptor.update(ciphertext)
+            plaintext += decryptor.finalize()
+        except InvalidTag:
+            raise ValueError(
+                f"authentication failed for chunk "
+                f"{self._chunk_index}"
+            ) from None
+
+        self._chunk_index += 1
+        return plaintext
+
+    def read(self, size=-1) -> bytes:
+        while not self._eof and (size < 0 or len(self._buffer) < size):
+            chunk = self._read_chunk()
+
+            if chunk is None:
+                break
+
+            self._buffer.extend(chunk)
+
+        if size < 0:
+            result = bytes(self._buffer)
+            self._buffer.clear()
+            return result
+
+        result = bytes(self._buffer[:size])
+        del self._buffer[:size]
+
+        return result
 
