@@ -2,6 +2,8 @@ from core.config_registry import D
 from core.module import Module
 from .body import *
 from .encryption_stream import EncryptionStream
+from .decryption_stream import DecryptionStream
+from . import tools
 
 
 class CryptographyModule(Module):
@@ -12,7 +14,10 @@ class CryptographyModule(Module):
         'aes',
         'chacha20poly1305'
     ]
+
     encryptionStream = EncryptionStream
+    decryptionStream = DecryptionStream
+    isEncrypted = tools.isEncrypted
 
     def entry(self):
         raise NotImplementedError()

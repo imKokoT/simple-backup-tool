@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from enum import IntEnum
+from pathlib import Path
 
 VERSION = b'\x01'
 MAGIC = b'EPKG'
@@ -19,3 +20,10 @@ class Header:
     algorithm:Algorithm
     salt:bytes
     nonce:bytes
+
+
+def isEncrypted(packPath:Path):
+    '''returns True if MAGIC is encrypted package'''
+    with packPath.open('rb') as pk:
+        magic = pk.read(4)
+    return magic == MAGIC
