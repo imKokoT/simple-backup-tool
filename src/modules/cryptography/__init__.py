@@ -17,7 +17,7 @@ class CryptographyModule(Module):
 
     encryptionStream = EncryptionStream
     decryptionStream = DecryptionStream
-    isEncrypted = tools.isEncrypted
+    isEncrypted = lambda self, path: tools.isEncrypted(path)
 
     def entry(self):
         raise NotImplementedError()

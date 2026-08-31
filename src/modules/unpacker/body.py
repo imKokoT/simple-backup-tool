@@ -27,4 +27,4 @@ def entry():
         s = c.decryptionStream(s)
 
     # decompress stream
-    
+    print('gay')

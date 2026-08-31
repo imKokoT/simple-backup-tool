@@ -27,3 +27,10 @@ def isEncrypted(packPath:Path):
     with packPath.open('rb') as pk:
         magic = pk.read(4)
     return magic == MAGIC
+
+
+def getAlgorithm(packPath:Path) -> Algorithm:
+    with packPath.open('rb') as pk:
+        pk.seek(5)
+        algorithm = Algorithm.from_bytes(pk.read(1))
+    return algorithm

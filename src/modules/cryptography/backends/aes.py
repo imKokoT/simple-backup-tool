@@ -1,15 +1,16 @@
 import struct
-
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 
+from ..decryption_backend import DecryptionBackend
 from ..encryption_backend import EncryptionBackend
 from ..tools import *
 from ..keygen import *
 
 CHUNK_SIZE = 1024*1024
+NONCE = 12
 
 
-def make_chunk_nonce(base_nonce, index):
+def _chunk_nonce(base_nonce, index):
     return (
         base_nonce[:4] +
         index.to_bytes(8, "little")
@@ -21,7 +22,7 @@ class AESEncryptionBackend(EncryptionBackend):
 
         h = self._header
         h.algorithm = Algorithm.AES256_GCM
-        h.nonce = bytesgen(12)
+        h.nonce = bytesgen(NONCE)
 
         self._buffer = bytearray()
         self._chunk_index = 0
@@ -35,7 +36,7 @@ class AESEncryptionBackend(EncryptionBackend):
             self._encrypt_chunk(chunk)
 
     def _encrypt_chunk(self, data):
-        nonce = make_chunk_nonce(self._header.nonce, self._chunk_index)
+        nonce = _chunk_nonce(self._header.nonce, self._chunk_index)
 
         encryptor = Cipher(
             algorithms.AES(self._key),
@@ -62,3 +63,14 @@ class AESEncryptionBackend(EncryptionBackend):
         if self._buffer:
             self._encrypt_chunk(bytes(self._buffer))
             self._buffer.clear()
+
+
+class AESDecryptionBackend(DecryptionBackend):
+    def __init__(self, stream):
+        super().__init__(stream)
+
+    def readHeader(self):
+        super().readHeader()
+        h = self._header
+        h.nonce = self._stream.read(NONCE)
+
