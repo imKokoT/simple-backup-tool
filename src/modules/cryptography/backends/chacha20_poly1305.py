@@ -5,7 +5,7 @@ from ..encryption_backend import EncryptionBackend
 from ..tools import *
 from ..keygen import *
 
-CHUNK_SIZE = 1024 * 256
+CHUNK_SIZE = 1024 * 1024
 
 
 class ChaCha20Poly1305EncryptionBackend(EncryptionBackend):
