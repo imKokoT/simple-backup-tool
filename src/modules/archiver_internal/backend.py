@@ -1,5 +1,7 @@
 import logging
 import tarfile
+
+from core.context import ctx
 from core.pack import ArchiveBackend
 
 logger = logging.getLogger(__name__)
@@ -9,13 +11,17 @@ class TarBackend(ArchiveBackend):
     arch:tarfile.TarFile
     BACKEND_ID = b'internal'
     
-    def __init__(self, stream, compressFormat:str, compressLevel:int):
+    def __init__(self, stream):
         super().__init__(stream)
-        self.compressFormat = compressFormat
-        self.compressLevel = compressLevel
+        schema = ctx.schema
+        self.compressFormat:str = schema.get('packer.format')
+        self.compressLevel:int = schema.get('packer.level')
 
     def set_backend_args(self):
         self.backend_args = bytes(16)
+    
+    def read_backend_args(self, header):
+        ...
 
     def open(self, mode):
         if mode == 'r':
@@ -43,3 +49,10 @@ class TarBackend(ArchiveBackend):
         meta = tarfile.TarInfo(dst)
         meta.size = data.getbuffer().nbytes
         self.arch.addfile(meta, fileobj=data)
+
+    def read_file_bytes(self, src):
+        member = self.arch.getmember(src)
+        return self.arch.extractfile(member)
+    
+    def restore_file(self, src, dst):
+        ...

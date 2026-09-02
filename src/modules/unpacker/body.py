@@ -2,6 +2,7 @@ import logging
 
 from core.context import ctx
 from core.module import module_register
+from core.pack import Pack
 from core.vfs import VFile
 
 from typing import TYPE_CHECKING
@@ -27,4 +28,5 @@ def entry():
         s = c.decryptionStream(s)
 
     # decompress stream
-    print(s.read(128))
+    module.pack = Pack('r', s)
+    print(module.pack.getBackendId())

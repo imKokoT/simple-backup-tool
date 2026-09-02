@@ -5,6 +5,7 @@ import logging
 from core.cli import humanSize
 from core.context import ctx
 from core.module import module_register
+from core.pack import Pack
 from core.vfs import VFile, size
 from paths import getTmpDir
 from properties import *
@@ -38,6 +39,7 @@ def entry():
     if schema.get('encryption'):
         c:CryptographyModule = module_register.get('cryptography')
         s = c.encryptionStream(s)
+    module.pack = Pack('w', s)
     archiver.invoke(stream=s, mode='compress')
 
     logger.info(f'created pack successfully! final size: {humanSize(size(module.packPath))}')

@@ -31,7 +31,6 @@ def compress():
 
     packConfig = packer.packConfig
     compressFormat:str = schema.get('packer.format')
-    compressLevel:int = schema.get('packer.level')
 
     if compressFormat not in module.supportedFormats:
         logger.error(f'{module.name} does not support format {compressFormat}; '
@@ -39,11 +38,9 @@ def compress():
         quit(1)
 
     # open archive
+    pack = packer.pack
     logger.info(f'open {compressFormat.upper()} archive with {module.name}')
-    module.pack = pack = Pack(
-        TarBackend(module.invokeArgs['stream'], compressFormat, compressLevel),
-        'w'
-    )
+    pack.open(TarBackend(module.invokeArgs['stream']))
     
     pack.pack_data(packConfig)
 

@@ -3,7 +3,7 @@ from enum import IntEnum
 from pathlib import Path
 
 VERSION = b'\x01'
-MAGIC = b'EPKG'
+MAGIC = b'EPCK'
 SALT = 16
 
 

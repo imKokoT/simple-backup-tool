@@ -23,7 +23,7 @@ class DecryptionBackend(ABC):
 
     def readHeader(self):
         '''reads everything excluding NONCE; inherited backend override this method to read nonce too'''
-        logger.debug(f'read EPKG header')
+        logger.debug(f'read EPCK header')
         h = self._header
         h.magic = self._stream.read(4)
         h.version = int.from_bytes(self._stream.read(1))
