@@ -31,6 +31,10 @@ class DecryptionStream(io.IOBase):
     
     def read(self, n:int = -1) -> bytes:
         return self._encryptor.read(n)
-
+    
+    def seek(self, offset:int, whence:int = 0) -> int: 
+        return self._encryptor.seek(offset, whence)
+    
     def readable(self): return True
     def flush(self): self.stream.flush()
+    def tell(self) -> int: return self._encryptor.tell()

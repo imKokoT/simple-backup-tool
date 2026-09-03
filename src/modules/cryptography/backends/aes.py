@@ -11,6 +11,8 @@ CHUNK_SIZE = 1024*1024
 NONCE = 12
 TAG_SIZE = 16
 END_MARKER = 0xffffffff
+FULL_CHUNK_SIZE = CHUNK_SIZE + TAG_SIZE + 4
+HEADER_LENGTH = 34
 
 
 def _chunk_nonce(base_nonce, index):
@@ -143,11 +145,39 @@ class AESDecryptionBackend(DecryptionBackend):
 
         if size < 0:
             result = bytes(self._buffer)
+            self._position += len(result)
             self._buffer.clear()
             return result
 
         result = bytes(self._buffer[:size])
+        self._position += len(result)
         del self._buffer[:size]
 
         return result
 
+    def seek(self, offset, whence = 0):
+        if whence == 0:
+            newPos = offset
+        elif whence == 1:
+            newPos = self._position + offset
+        elif whence == 2:
+            raise NotImplementedError('whence 2 not supported')
+        else:
+            raise ValueError('invalid whence')
+        
+        if newPos < 0:
+            raise ValueError("negative seek position")
+
+        # seek physical pos
+        self._stream.seek(FULL_CHUNK_SIZE * (newPos // FULL_CHUNK_SIZE) + HEADER_LENGTH)
+        self._chunk_index = newPos // FULL_CHUNK_SIZE
+        self._buffer.clear()
+        self._position = newPos
+        self._eof = False
+
+        # decrypt chunk from new  physical pos
+        chunk = self._read_chunk()
+        if chunk is not None:
+            self._buffer.extend(chunk[newPos % FULL_CHUNK_SIZE:])
+
+        return self._position

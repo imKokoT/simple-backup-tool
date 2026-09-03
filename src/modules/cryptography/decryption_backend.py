@@ -21,6 +21,9 @@ class DecryptionBackend(ABC):
             h.salt
         )
 
+        # logical position in plaintext
+        self._position = 0
+
     def readHeader(self):
         '''reads everything excluding NONCE; inherited backend override this method to read nonce too'''
         logger.debug(f'read EPCK header')
@@ -32,3 +35,9 @@ class DecryptionBackend(ABC):
 
     @abstractmethod
     def read(self, n:int = -1) -> bytes: ...
+
+    @abstractmethod
+    def seek(self, offset:int, whence:int = 0) -> int: ...
+
+    def tell(self) -> int:
+        return self._position

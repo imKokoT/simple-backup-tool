@@ -1,4 +1,5 @@
 import logging
+import shutil
 import tarfile
 
 from core.context import ctx
@@ -58,5 +59,5 @@ class TarBackend(ArchiveBackend):
         member = self.arch.getmember(src)
         with self.arch.extractfile(member) as ext: # type: ignore
             with open(dst, 'wb') as f:
-                f.write(ext)
+                shutil.copyfileobj(ext, f)
     

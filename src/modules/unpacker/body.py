@@ -31,6 +31,10 @@ def entry():
     module.pack = Pack('r', s)
     bid = module.pack.getBackendId()
 
+    # print(s.read(128))
+    # print(s.seek(-128))
+    # print(s.read(128))
+
     archiver = module_register.get(
         module.archiverModules[module.archiverType.index(bid)]
     )
