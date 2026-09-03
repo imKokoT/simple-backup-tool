@@ -81,7 +81,7 @@ class PackConfig:
         }
     
     def fromDict(self, d:dict):
-        pass
+        raise NotImplementedError()
 
 
 class Pack:
@@ -140,7 +140,7 @@ class Pack:
         '''returns backend id from pack's header'''
         if not self._header:
             raise AttributeError('pack must be opened within backend')
-        return struct.unpack(HEADER_FORMAT, self._header)[2].decode('utf-8')
+        return struct.unpack(HEADER_FORMAT, self._header)[2].decode('utf-8').replace('\x00', '')
 
     # --- READ MODE -----------------------------------------------------
     
@@ -150,6 +150,12 @@ class Pack:
         pc = PackConfig()
         pc.fromDict(json.loads(jsonData))
         return pc
+    
+    def read_file_bytes(self, src:Path) -> io.BytesIO:
+        return self._backend.read_file_bytes(src)
+
+    def restore_file(self, src:Path, dst:str):
+        self._backend.restore_file(src, dst)
 
     # --- WRITE MODE ----------------------------------------------------
 

@@ -11,6 +11,13 @@ class UnpackerModule(Module):
     name = 'unpacker'
     description = 'This module opens local pack and restores it\'s content'
 
+    archiverType = [
+        'internal'
+    ]
+    archiverModules = [
+        'archiver.internal'
+    ]
+
     packPath:Path
     packConfig:PackConfig
     packStream:VFile

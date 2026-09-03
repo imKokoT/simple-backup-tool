@@ -2,13 +2,13 @@ import logging
 from .backend import TarBackend
 from core.context import ctx
 from core.module import module_register
-from core.pack import Pack
 from properties import *
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from . import ArchiverInternalModule
     from modules.packer import PackerModule 
+    from modules.unpacker import UnpackerModule
 
 logger = logging.getLogger(__name__)
 
@@ -47,5 +47,16 @@ def compress():
     pack.dumpConfig(packConfig)
     pack.close()
 
+
 def decompress():
-    raise NotImplementedError()
+    module:ArchiverInternalModule = ctx.currentModule
+    packer:UnpackerModule = module_register.get('unpacker')
+    schema = ctx.schema
+
+    # open archive
+    pack = packer.pack
+    pack.open(TarBackend(module.invokeArgs['stream']))
+
+    pack.restore_file('config', 'config')
+
+    pack.close()

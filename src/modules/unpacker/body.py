@@ -26,7 +26,12 @@ def entry():
     if c.isEncrypted(module.packPath):
         logger.info('encryption detected')
         s = c.decryptionStream(s)
-
-    # decompress stream
+    
+    # select module for decompressing
     module.pack = Pack('r', s)
-    print(module.pack.getBackendId())
+    bid = module.pack.getBackendId()
+
+    archiver = module_register.get(
+        module.archiverModules[module.archiverType.index(bid)]
+    )
+    archiver.invoke(stream=s, mode='decompress')

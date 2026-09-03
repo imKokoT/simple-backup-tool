@@ -55,4 +55,8 @@ class TarBackend(ArchiveBackend):
         return self.arch.extractfile(member)
     
     def restore_file(self, src, dst):
-        ...
+        member = self.arch.getmember(src)
+        with self.arch.extractfile(member) as ext: # type: ignore
+            with open(dst, 'wb') as f:
+                f.write(ext)
+    
