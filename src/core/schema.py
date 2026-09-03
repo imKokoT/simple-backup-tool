@@ -18,9 +18,10 @@ class Schema:
 
     def __init__(self, path:Path = None, tryLoad:bool = False):
         self.path = path
-        self.name = path.stem
         self._tryLoad = tryLoad
-        self.load()
+        if path:
+            self.name = path.stem
+            self.load()
     
     def get(self, key:str):
         if key not in self._values:

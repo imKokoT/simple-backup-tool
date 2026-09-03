@@ -84,22 +84,19 @@ class AESDecryptionBackend(DecryptionBackend):
         h.nonce = self._stream.read(NONCE)
 
     def _read_chunk(self) -> bytes | None:
-        length_data = self._stream.read(4)
+        rawLength = self._stream.read(4)
 
-        if len(length_data) != 4:
-            raise EOFError("unexpected end of encrypted stream")
-
-        length = struct.unpack("<I", length_data)[0]
-
-        if length == END_MARKER:
+        if rawLength == b'':
             self._eof = True
             return None
+        elif len(rawLength) != 4:
+            raise EOFError("unexpected end of encrypted stream")
 
+        length = struct.unpack("<I", rawLength)[0]
         if length < TAG_SIZE:
             raise ValueError("invalid encrypted chunk size")
 
         encrypted = self._stream.read(length)
-
         if len(encrypted) != length:
             raise EOFError("incomplete encrypted chunk")
 
@@ -113,14 +110,11 @@ class AESDecryptionBackend(DecryptionBackend):
             modes.GCM(nonce, tag)
         ).decryptor()
 
-        associated_data = struct.pack(
+        decryptor.authenticate_additional_data(
+            struct.pack(
             "<Q",
             self._chunk_index
-        )
-
-        decryptor.authenticate_additional_data(
-            associated_data
-        )
+        ))
 
         try:
             plaintext = decryptor.update(ciphertext)
@@ -176,8 +170,8 @@ class AESDecryptionBackend(DecryptionBackend):
         self._eof = False
 
         # decrypt chunk from new  physical pos
-        chunk = self._read_chunk()
-        if chunk is not None:
-            self._buffer.extend(chunk[newPos % FULL_CHUNK_SIZE:])
+        # chunk = self._read_chunk()
+        # if chunk is not None:
+        #     self._buffer.extend(chunk[newPos % FULL_CHUNK_SIZE:])
 
         return self._position

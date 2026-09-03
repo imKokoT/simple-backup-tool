@@ -50,13 +50,12 @@ def compress():
 
 def decompress():
     module:ArchiverInternalModule = ctx.currentModule
-    packer:UnpackerModule = module_register.get('unpacker')
+    unpacker:UnpackerModule = module_register.get('unpacker')
     schema = ctx.schema
 
     # open archive
-    pack = packer.pack
+    pack = unpacker.pack
     pack.open(TarBackend(module.invokeArgs['stream']))
-
-    pack.restore_file('config', 'config')
+    unpacker.packConfig = pack.readConfig()
 
     pack.close()

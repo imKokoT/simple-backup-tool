@@ -8,16 +8,18 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal
 
+from core.schema import Schema
 from core.vfs import VFile
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from core.schema import Schema
+    pass
 
 logger = logging.getLogger(__name__)
 
 MAGIC = b'SBTP'
 VERSION = 1
+CONFIG_VERSION = 1
 HEADER_FORMAT = '<4sB32s16s64s'
 
 
@@ -62,6 +64,7 @@ class ArchiveBackend(ABC):
 
 @dataclass(init=False)
 class PackConfig:
+    version = CONFIG_VERSION
     createdAt:str
     schema:Schema
     targetFolders:list[str]
@@ -70,6 +73,7 @@ class PackConfig:
 
     def get(self) -> dict:
         return {
+            'version': self.version,
             'created_at': self.createdAt,
             'schema': {
                 'name': self.schema.name,
@@ -81,7 +85,19 @@ class PackConfig:
         }
     
     def fromDict(self, d:dict):
-        raise NotImplementedError()
+        self.schema = Schema()
+        self.version = d['version'] # TODO: verify version etc
+
+        self.createdAt = d['created_at']
+        self.foldersFiles = d['folders']
+        self.targetFiles = d['files']
+
+        self.schema.name = d['schema']['name']
+        for k, v in d['schema']['values'].items():
+            try:
+                self.schema.set(k, v)
+            except SyntaxError as e:
+                logger.warning(f'failed to set schema key {k} from pack; error: {e}')
 
 
 class Pack:
