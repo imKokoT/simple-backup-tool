@@ -12,6 +12,11 @@ logger = logging.getLogger(__name__)
 
 def entry():
     module:CloudModule = ctx.currentModule
+    args = ctx.args
+
+    if args.locally:
+        logger.info('skip cloud module')
+        return
 
     if module.invokeArgs['action'] == 'send':
         send()

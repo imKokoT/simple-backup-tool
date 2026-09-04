@@ -18,6 +18,7 @@ class CloudModule(Module):
         self.argGroup.add_argument('-c', '--cloud', help='which cloud to use')
         self.argGroup.add_argument('-d', '--destination', help='folder on the cloud, where the archive placed')
         self.argGroup.add_argument('-s', '--credentials', help='credentials file')
+        self.argGroup.add_argument('--locally', action='store_true', help='prevent sending/downloading backup; useful when you want to do things locally')
 
     def registerSchemaParams(self):
         self.schema_config_registry.register(
