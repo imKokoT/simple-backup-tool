@@ -170,8 +170,8 @@ class AESDecryptionBackend(DecryptionBackend):
         self._eof = False
 
         # decrypt chunk from new  physical pos
-        # chunk = self._read_chunk()
-        # if chunk is not None:
-        #     self._buffer.extend(chunk[newPos % FULL_CHUNK_SIZE:])
+        chunk = self._read_chunk()
+        if chunk is not None:
+            self._buffer.extend(chunk[newPos % FULL_CHUNK_SIZE:])
 
         return self._position

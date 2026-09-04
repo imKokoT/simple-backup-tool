@@ -59,5 +59,5 @@ class TarBackend(ArchiveBackend):
         member = self.arch.getmember(src)
         with self.arch.extractfile(member) as ext: # type: ignore
             with open(dst, 'wb') as f:
-                shutil.copyfileobj(ext, f)
+                shutil.copyfileobj(ext, f, 1024*1024)
     

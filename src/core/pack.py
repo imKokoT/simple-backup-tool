@@ -21,15 +21,46 @@ MAGIC = b'SBTP'
 VERSION = 1
 CONFIG_VERSION = 1
 HEADER_FORMAT = '<4sB32s16s64s'
+HEADER_LENGTH = struct.calcsize(HEADER_FORMAT)
+
+
+class ArchiveStream(io.BytesIO):
+    def __init__(self, stream:VFile):
+        self.stream = stream
+
+    def tell(self) -> int:
+        return self.stream.tell() - HEADER_LENGTH
+    
+    def seek(self, offset:int, whence:int = 0) -> int:
+        if whence == 0:
+            return self.stream.seek(offset + HEADER_LENGTH)
+        elif whence == 1:
+            return self.stream.seek(offset, 1)
+        elif whence == 2:
+            return self.stream.seek(offset, 2)
+        else:
+            ValueError('invalid whence')
+
+    def flush(self):                                    self.stream.flush()
+    def read(self, n:int = -1) -> bytes:                return self.stream.read(n)
+    def readline(self, size = -1)-> bytes:              return self.stream.readline(size)
+    def readlines(self, hint = -1) -> list[bytes]:      return self.stream.readlines(hint)
+    def readable(self):                                 return self.stream.readable()
+    def seekable(self) -> bool:                         return self.stream.seekable()
+    def truncate(self, size = None) -> int:             return self.stream.truncate(size)
+    def write(self, b:bytes) -> int:                    return self.stream.write(b)
+    def writelines(self, lines):                        self.stream.writelines(lines)
+    def writable(self)-> bool:                          return self.stream.writable()
+    def close(self): self.stream.close()
 
 
 class ArchiveBackend(ABC):
-    stream:VFile         # stream object where the backend writes archive
+    stream:ArchiveStream # stream object where the backend writes archive
     backend_args:bytes   # helper args to manage archive; MAX 16 bytes
     BACKEND_ID:bytes     # important to detect what backed to use to open archive; MAX 32 bytes
 
     def __init__(self, stream:VFile):
-        self.stream = stream
+        self.stream = ArchiveStream(stream)
 
     @abstractmethod
     def set_backend_args(self):
