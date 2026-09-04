@@ -20,8 +20,8 @@ def entry():
 
     if module.invokeArgs['mode'] == 'compress':
         compress()
-    elif module.invokeArgs['mode'] == 'decompress':
-        decompress()
+    elif module.invokeArgs['mode'] == 'setup-decompress':
+        setup_decompress()
 
 
 def compress():
@@ -48,7 +48,7 @@ def compress():
     pack.close()
 
 
-def decompress():
+def setup_decompress():
     module:ArchiverInternalModule = ctx.currentModule
     unpacker:UnpackerModule = module_register.get('unpacker')
     schema = ctx.schema
@@ -57,5 +57,3 @@ def decompress():
     pack = unpacker.pack
     pack.open(TarBackend(module.invokeArgs['stream']))
     unpacker.packConfig = pack.readConfig()
-
-    pack.close()

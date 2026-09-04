@@ -50,3 +50,16 @@ def getTmpDir() -> Path:
     path.mkdir(parents=True, exist_ok=True)
     return path
 
+
+def canCreate(path:Path) -> bool:
+    return path.parent.exists() and \
+           path.parent.is_dir() and \
+           os.access(path.parent, os.W_OK) and \
+           not path.exists()
+
+def isValid(path:str) -> bool:
+    try:
+        Path(path).resolve(strict=False)
+        return True
+    except (OSError, ValueError):
+        return False

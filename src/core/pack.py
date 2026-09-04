@@ -78,7 +78,7 @@ class PackConfig:
             'schema': {
                 'name': self.schema.name,
                 'path': str(self.schema.path),
-                'values': self.schema._values
+                'values': {k:v for k,v in self.schema._values.items() if v is not None}
             },
             'folders': self.targetFolders,
             'files': self.targetFiles
@@ -89,7 +89,7 @@ class PackConfig:
         self.version = d['version'] # TODO: verify version etc
 
         self.createdAt = d['created_at']
-        self.foldersFiles = d['folders']
+        self.targetFolders = d['folders']
         self.targetFiles = d['files']
 
         self.schema.name = d['schema']['name']
@@ -167,11 +167,15 @@ class Pack:
         pc.fromDict(json.loads(jsonData))
         return pc
     
-    def read_file_bytes(self, src:Path) -> io.BytesIO:
+    def read_file_bytes(self, src:str) -> io.BytesIO:
         return self._backend.read_file_bytes(src)
 
-    def restore_file(self, src:Path, dst:str):
-        self._backend.restore_file(src, dst)
+    def restore_file(self, packConfig:PackConfig, src:str, dst:str):
+        i = packConfig.targetFiles.index(src)
+        self._backend.restore_file(f'files/{hex(i)[2:]}', dst)
+
+    def restore_folder(self, packConfig:PackConfig, src:str, dst:str):
+        raise NotImplementedError()
 
     # --- WRITE MODE ----------------------------------------------------
 

@@ -1,4 +1,4 @@
-import io
+import os
 from pathlib import Path
 
 from core.config_registry import D
@@ -18,6 +18,7 @@ class UnpackerModule(Module):
         'archiver.internal'
     ]
 
+    restoredFolder:Path
     packPath:Path
     packConfig:PackConfig
     packStream:VFile
@@ -25,8 +26,11 @@ class UnpackerModule(Module):
 
     def entry(self):
         self.packPath = getTmpDir() / ctx.schema.name / 'pack'
+        self.restoredFolder = getTmpDir() / ctx.schema.name / 'restored'
         self.packConfig = PackConfig()
         self.packConfig.schema = ctx.schema
+
+        os.makedirs(self.restoredFolder, exist_ok=True)
         entry()
 
     def registerCommandArguments(self):
@@ -36,4 +40,15 @@ class UnpackerModule(Module):
         ...
 
     def registerAppConfigs(self):
-        ...
+        self.app_config_registry.register(
+            'restore.allow_local_replace',
+            bool,
+            False,
+            'Allow replace local files with files from pack; otherwise restored files/folders will have "-restored" suffix'
+        )
+        self.app_config_registry.register(
+            'restore.restore_to_restored_if_path_invalid',
+            bool,
+            True,
+            'Restore to "restored" folder if target path is invalid'
+        )
