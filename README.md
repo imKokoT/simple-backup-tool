@@ -1,6 +1,9 @@
 # Simple backup tool
 for making backups to your Google Drive cloud by imKokoT.
 
+> [!WARNING]
+> This documentation is deprecated! It is related to *0.11a*
+
 # How to setup
 All application configurations placed in "configs" folder.
 
