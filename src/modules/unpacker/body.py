@@ -45,8 +45,8 @@ def entry():
 
     # ask for replace
     if getConfirm('n', f'Are you sure to rewrite next folders and files:\n'
-                       f'{'\n'.join([f' - {f}' for f in module.packConfig.targetFolders])}\t[FOLDER]\n'
-                       f'{'\n'.join([f' - {f}' for f in module.packConfig.targetFiles])}\t[FILE]\n'):
+                       f'{'\n'.join([f' - {f}\t[FOLDER]' for f in module.packConfig.targetFolders])}\n'
+                       f'{'\n'.join([f' - {f}\t[FILE]' for f in module.packConfig.targetFiles])}\n'):
         if getConfirm('y', f'Do you want to restore data into {module.restoredFolder}'):
             module.restoreToRestored = True 
         else:
@@ -80,17 +80,17 @@ def selectRestorePath(path:Path, tType) -> Path:
     module:UnpackerModule = ctx.currentModule
 
     # if selected restore to restored folder
-    if module.restoredFolder:
-        i = module.packConfig.targetFiles.index(str(path)) if tType == 'file' \
-            else module.packConfig.targetFolders.index(str(path))
+    if module.restoreToRestored:
+        i = module.packConfig.targetFiles.index(str(path.resolve())) if tType == 'file' \
+            else module.packConfig.targetFolders.index(str(path.resolve()))
         path = module.restoredFolder / f'{path.name} ({hex(i)[2:]})'
         return path
 
     # interactive select
     if not path.parent.exists():
         if config.get('restore.restore_to_restored_if_path_invalid'):
-            i = module.packConfig.targetFiles.index(str(path)) if tType == 'file' \
-                else module.packConfig.targetFolders.index(str(path))
+            i = module.packConfig.targetFiles.index(str(path.resolve())) if tType == 'file' \
+                else module.packConfig.targetFolders.index(str(path.resolve()))
             path = module.restoredFolder / f'{path.name} ({hex(i)[2:]})'
         else:
             # ask user where to restore file

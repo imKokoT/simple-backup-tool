@@ -115,8 +115,9 @@ class PackConfig:
                 'path': str(self.schema.path),
                 'values': {k:v for k,v in self.schema._values.items() if v is not None}
             },
-            'folders': self.targetFolders,
-            'files': self.targetFiles
+            # normalize paths
+            'folders': [str(Path(p).resolve()) for p in self.targetFolders],
+            'files': [str(Path(p).resolve()) for p in self.targetFiles]
         }
     
     def fromDict(self, d:dict):
