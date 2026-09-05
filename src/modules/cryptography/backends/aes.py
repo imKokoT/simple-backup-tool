@@ -83,6 +83,9 @@ class AESDecryptionBackend(DecryptionBackend):
         h = self._header
         h.nonce = self._stream.read(NONCE)
 
+        if len(self._header.nonce) != NONCE:
+            raise EOFError("unexpected end of encrypted header")
+
     def _read_chunk(self) -> bytes | None:
         rawLength = self._stream.read(4)
 

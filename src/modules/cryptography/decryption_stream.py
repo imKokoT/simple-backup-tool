@@ -2,6 +2,7 @@ import io
 import logging
 
 from core.vfs import VFile
+from .backends.chacha20_poly1305 import ChaCha20Poly1305DecryptionBackend
 from .backends.aes import AESDecryptionBackend
 from .decryption_backend import DecryptionBackend
 from core.context import ctx

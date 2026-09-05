@@ -1,12 +1,27 @@
+from cryptography.exceptions import InvalidTag
 from cryptography.hazmat.primitives.ciphers.aead import ChaCha20Poly1305
 import struct
 
+from ..decryption_backend import DecryptionBackend
 from ..encryption_backend import EncryptionBackend
 from ..tools import *
 from ..keygen import *
 
 CHUNK_SIZE = 1024 * 1024
+NONCE  = 12
+HEADER_LENGTH = 34
+TAG_SIZE = 16
+FULL_CHUNK_SIZE = CHUNK_SIZE + TAG_SIZE + 4
 
+
+
+def _chunk_nonce(header:Header, index: int) -> bytes:
+    # 12-byte nonce version (ChaCha20-Poly1305 standard)
+    # base_nonce[0:8] + counter(4 bytes)
+    return (
+        header.nonce[:8] +
+        index.to_bytes(4, "little")
+    )
 
 class ChaCha20Poly1305EncryptionBackend(EncryptionBackend):
     def __init__(self, stream):
@@ -20,17 +35,9 @@ class ChaCha20Poly1305EncryptionBackend(EncryptionBackend):
 
         self._buffer = bytearray()
         self._chunk_index = 0
-
-    def _chunk_nonce(self, index: int) -> bytes:
-        # 12-byte nonce version (ChaCha20-Poly1305 standard)
-        # base_nonce[0:8] + counter(4 bytes)
-        return (
-            self._header.nonce[:8] +
-            index.to_bytes(4, "little")
-        )
     
     def _write_chunk(self, chunk:bytes):
-        nonce = self._chunk_nonce(self._chunk_index)
+        nonce = _chunk_nonce(self._header, self._chunk_index)
 
         associated_data = struct.pack("<Q", self._chunk_index)
 
@@ -59,6 +66,109 @@ class ChaCha20Poly1305EncryptionBackend(EncryptionBackend):
             self._write_chunk(bytes(self._buffer))
             self._buffer.clear()
 
-        # end marker
-        self._stream.write(struct.pack("<I", 201305))
         self._stream.flush()
+
+
+class ChaCha20Poly1305DecryptionBackend(DecryptionBackend):
+    def __init__(self, stream):
+        super().__init__(stream)
+
+        self._chunk_index = 0
+        self._buffer = bytearray()
+        self._position = 0
+        self._eof = False
+
+        self._decryptor = ChaCha20Poly1305(self._key)
+
+    def readHeader(self):
+        super().readHeader()
+        self._header.nonce = self._stream.read(NONCE)
+
+        if len(self._header.nonce) != 12:
+            raise EOFError("unexpected end of encrypted header")
+
+    def _read_chunk(self) -> bytes | None:
+        rawLength = self._stream.read(4)
+
+        if rawLength == b'':
+            self._eof = True
+            return None
+        elif len(rawLength) != 4:
+            raise EOFError("unexpected end of encrypted stream")
+
+        length = struct.unpack("<I", rawLength)[0]
+        if length < TAG_SIZE:
+            raise ValueError("invalid encrypted chunk size")
+
+        encrypted = self._stream.read(length)
+        if len(encrypted) != length:
+            raise EOFError("incomplete encrypted chunk")
+
+        nonce = _chunk_nonce(self._header, self._chunk_index)
+
+        try:
+            plaintext = self._decryptor.decrypt(
+                nonce,
+                encrypted,
+                struct.pack(
+                    "<Q",
+                    self._chunk_index
+                )
+            )
+        except InvalidTag:
+            raise ValueError(
+                f"authentication failed for chunk "
+                f"{self._chunk_index}"
+            ) from None
+
+        self._chunk_index += 1
+        return plaintext
+
+    def read(self, size=-1) -> bytes:
+        while not self._eof and (size < 0 or len(self._buffer) < size):
+            chunk = self._read_chunk()
+
+            if chunk is None:
+                break
+
+            self._buffer.extend(chunk)
+
+        if size < 0:
+            result = bytes(self._buffer)
+            self._buffer.clear()
+            self._position += len(result)
+            return result
+
+        result = bytes(self._buffer[:size])
+        del self._buffer[:size]
+
+        self._position += len(result)
+
+        return result
+
+    def seek(self, offset, whence = 0):
+        if whence == 0:
+            newPos = offset
+        elif whence == 1:
+            newPos = self._position + offset
+        elif whence == 2:
+            raise NotImplementedError('whence 2 not supported')
+        else:
+            raise ValueError('invalid whence')
+        
+        if newPos < 0:
+            raise ValueError("negative seek position")
+
+        # seek physical pos
+        self._stream.seek(FULL_CHUNK_SIZE * (newPos // FULL_CHUNK_SIZE) + HEADER_LENGTH)
+        self._chunk_index = newPos // FULL_CHUNK_SIZE
+        self._buffer.clear()
+        self._position = newPos
+        self._eof = False
+
+        # decrypt chunk from new  physical pos
+        chunk = self._read_chunk()
+        if chunk is not None:
+            self._buffer.extend(chunk[newPos % FULL_CHUNK_SIZE:])
+
+        return self._position
