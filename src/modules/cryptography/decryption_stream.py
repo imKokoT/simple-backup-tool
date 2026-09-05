@@ -19,16 +19,17 @@ class DecryptionStream(io.IOBase):
         self._encryptor:DecryptionBackend = None
         self._module = module_register.get('cryptography')
 
-        logger.info(f'initializing decryption stream') 
         self._method = getAlgorithm(self.stream._path)
 
         match self._method:
             case Algorithm.AES256_GCM:
+                logger.info(f'initializing decryption stream; method: AES')
                 self._encryptor = AESDecryptionBackend(self.stream)
             case Algorithm.CHACHA20_POLY1305:
+                logger.info(f'initializing decryption stream; method: CHACHA20_POLY1305')
                 self._encryptor = ChaCha20Poly1305DecryptionBackend(self.stream)
             case _:
-                raise ValueError(f'unsupported decryption method: {self._method}')
+                raise ValueError(f'unsupported decryption method')
     
     def read(self, n:int = -1) -> bytes:
         return self._encryptor.read(n)

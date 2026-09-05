@@ -9,10 +9,7 @@ from ..keygen import *
 
 CHUNK_SIZE = 1024 * 1024
 NONCE  = 12
-HEADER_LENGTH = 34
 TAG_SIZE = 16
-FULL_CHUNK_SIZE = CHUNK_SIZE + TAG_SIZE + 4
-
 
 
 def _chunk_nonce(header:Header, index: int) -> bytes:
@@ -74,17 +71,18 @@ class ChaCha20Poly1305DecryptionBackend(DecryptionBackend):
         super().__init__(stream)
 
         self._chunk_index = 0
-        self._buffer = bytearray()
-        self._position = 0
         self._eof = False
 
         self._decryptor = ChaCha20Poly1305(self._key)
+
+        self.FULL_CHUNK_SIZE = CHUNK_SIZE + TAG_SIZE + 4
+        self.HEADER_LENGTH = 34
 
     def readHeader(self):
         super().readHeader()
         self._header.nonce = self._stream.read(NONCE)
 
-        if len(self._header.nonce) != 12:
+        if len(self._header.nonce) != NONCE:
             raise EOFError("unexpected end of encrypted header")
 
     def _read_chunk(self) -> bytes | None:
@@ -145,30 +143,3 @@ class ChaCha20Poly1305DecryptionBackend(DecryptionBackend):
         self._position += len(result)
 
         return result
-
-    def seek(self, offset, whence = 0):
-        if whence == 0:
-            newPos = offset
-        elif whence == 1:
-            newPos = self._position + offset
-        elif whence == 2:
-            raise NotImplementedError('whence 2 not supported')
-        else:
-            raise ValueError('invalid whence')
-        
-        if newPos < 0:
-            raise ValueError("negative seek position")
-
-        # seek physical pos
-        self._stream.seek(FULL_CHUNK_SIZE * (newPos // FULL_CHUNK_SIZE) + HEADER_LENGTH)
-        self._chunk_index = newPos // FULL_CHUNK_SIZE
-        self._buffer.clear()
-        self._position = newPos
-        self._eof = False
-
-        # decrypt chunk from new  physical pos
-        chunk = self._read_chunk()
-        if chunk is not None:
-            self._buffer.extend(chunk[newPos % FULL_CHUNK_SIZE:])
-
-        return self._position
