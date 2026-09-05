@@ -79,12 +79,16 @@ class ArchiveBackend(ABC):
         '''add a file to archive from bytes'''
 
     @abstractmethod
-    def read_file_bytes(self, src:Path) -> io.BytesIO:
+    def read_file_bytes(self, src:str) -> io.BytesIO:
         '''read a file from archive to bytes'''
 
     @abstractmethod
-    def restore_file(self, src:Path, dst:str):
+    def restore_file(self, src:str, dst:str):
         '''restore a file from archive to a disk'''
+
+    @abstractmethod
+    def restore_folder(self, src:str, dst:str):
+        '''restore a folder from archive to a disk'''
 
     @abstractmethod
     def open(self, mode:Literal['r', 'w']): ...
@@ -206,7 +210,8 @@ class Pack:
         self._backend.restore_file(f'files/{hex(i)[2:]}', dst)
 
     def restore_folder(self, packConfig:PackConfig, src:str, dst:str):
-        raise NotImplementedError()
+        i = packConfig.targetFolders.index(src)
+        self._backend.restore_folder(f'folders/{hex(i)[2:]}', dst)
 
     # --- WRITE MODE ----------------------------------------------------
 

@@ -48,7 +48,7 @@ def entry():
                        f'{'\n'.join([f' - {f}' for f in module.packConfig.targetFolders])}\t[FOLDER]\n'
                        f'{'\n'.join([f' - {f}' for f in module.packConfig.targetFiles])}\t[FILE]\n'):
         if getConfirm('y', f'Do you want to restore data into {module.restoredFolder}'):
-            raise NotImplementedError()
+            module.restoreToRestored = True 
         else:
             exit(0)
 
@@ -62,27 +62,47 @@ def unpack_files():
     module:UnpackerModule = ctx.currentModule
 
     for tf in module.packConfig.targetFiles:
-        path = Path(tf)
-
-        # select where to restore
-        if not path.parent.exists():
-            if config.get('restore.restore_to_restored_if_path_invalid'):
-                path = module.restoredFolder / path.name
-            else:
-                # ask user where to restore file
-                path = askAnotherPath(path)
-                if not path:
-                    logger.info(f'skip file {path}')
-                    continue
-        else:
-            path = path if config.get('restore.allow_local_replace') else path.with_name(f"{path.stem}-restored{path.suffix}")
-
+        path = selectRestorePath(Path(tf), 'file')
         module.pack.restore_file(module.packConfig, tf, path)
         logger.info(f'restored file "{tf}" to {path}')
 
 
 def unpack_folders():
     module:UnpackerModule = ctx.currentModule
+
+    for tf in module.packConfig.targetFolders:
+        logger.info(f'restoring folder "{tf}"')
+        path = selectRestorePath(Path(tf), 'folder')
+        module.pack.restore_folder(module.packConfig, tf, path)
+
+
+def selectRestorePath(path:Path, tType) -> Path:
+    module:UnpackerModule = ctx.currentModule
+
+    # if selected restore to restored folder
+    if module.restoredFolder:
+        i = module.packConfig.targetFiles.index(str(path)) if tType == 'file' \
+            else module.packConfig.targetFolders.index(str(path))
+        path = module.restoredFolder / f'{path.name} ({hex(i)[2:]})'
+        return path
+
+    # interactive select
+    if not path.parent.exists():
+        if config.get('restore.restore_to_restored_if_path_invalid'):
+            i = module.packConfig.targetFiles.index(str(path)) if tType == 'file' \
+                else module.packConfig.targetFolders.index(str(path))
+            path = module.restoredFolder / f'{path.name} ({hex(i)[2:]})'
+        else:
+            # ask user where to restore file
+            path = askAnotherPath(path)
+            if not path:
+                logger.info(f'skip folder {path}')
+                path
+    else:
+        fName = f"{path.stem}-restored{path.suffix}" if fName == 'file' else f"{path.stem}-restored"
+        path = path if config.get('restore.allow_local_replace') else path.with_name(fName)
+
+    return path
 
 
 def askAnotherPath(path:Path) -> Path:

@@ -1,4 +1,5 @@
 import logging
+import os
 import shutil
 import tarfile
 
@@ -61,3 +62,28 @@ class TarBackend(ArchiveBackend):
             with open(dst, 'wb') as f:
                 shutil.copyfileobj(ext, f, 1024*1024)
     
+    def restore_folder(self, src, dst):
+        rewrittenCount = 0
+        restoredCount = 0
+
+        for member in self.arch.getmembers():
+            if not (member.name.startswith(src) and member.isfile()):
+                continue
+
+            relpath = os.path.relpath(member.name, src)
+            extractPath = f'{dst}/{relpath}'
+
+            if os.path.exists(extractPath):
+                rewrittenCount += 1
+            else:
+                restoredCount += 1
+
+            os.makedirs(os.path.dirname(extractPath), exist_ok=True)
+
+            with self.arch.extractfile(member) as ext: # type: ignore
+                with open(extractPath, 'wb') as f:
+                    shutil.copyfileobj(ext, f, 1024*1024)
+
+        logger.info(f'restored folder to "{dst}"\n'
+                    f' - rewritten: {rewrittenCount}\n'
+                    f' - restored: {restoredCount}')

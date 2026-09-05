@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+import shutil
 
 from core.config_registry import D
 from core.module import Module
@@ -23,14 +24,19 @@ class UnpackerModule(Module):
     packConfig:PackConfig
     packStream:VFile
     pack:Pack
+    restoreToRestored = False
 
     def entry(self):
         self.packPath = getTmpDir() / ctx.schema.name / 'pack'
+        
         self.restoredFolder = getTmpDir() / ctx.schema.name / 'restored'
+        if self.restoredFolder.exists():
+            shutil.rmtree(self.restoredFolder)
+        os.makedirs(self.restoredFolder, exist_ok=True)
+
         self.packConfig = PackConfig()
         self.packConfig.schema = ctx.schema
 
-        os.makedirs(self.restoredFolder, exist_ok=True)
         entry()
 
     def registerCommandArguments(self):
