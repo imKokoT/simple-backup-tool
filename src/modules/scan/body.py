@@ -111,8 +111,13 @@ def scanFolder(target:str):
 
         isIgnored = shouldIgnore(current.relative_to(target), specStack)
 
+        # symlink
+        if current.is_symlink():
+            # TODO: handle symlinks
+            logger.warning(f'skip symlink {current}')
+            continue
         # file
-        if not current.is_dir():
+        elif not current.is_dir():
             stat = current.stat()
             size = stat.st_size
 
