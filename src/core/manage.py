@@ -17,11 +17,12 @@ def parseArgs(args):
         return
     
     ctx.parser = parser = argparse.ArgumentParser()
+    parser.add_argument('-v', '--verbose', action='store_true', help='verbose output')
     ctx.subparsers = subparsers = parser.add_subparsers(
         dest="command",
         required=True
     )
-    
+
     # register modules
     module_register.register(modules.scan.ScanModule())
     module_register.register(modules.cryptography.CryptographyModule())
@@ -38,4 +39,11 @@ def parseArgs(args):
 
     app_config.config.load()
     args = ctx.args = parser.parse_args()
+    
+    # verbose output logs
+    if args.verbose:
+        logging.getLogger().setLevel(
+            logging.DEBUG
+        )
+
     args.func(ctx.args)
