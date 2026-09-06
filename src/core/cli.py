@@ -1,3 +1,4 @@
+from getpass import getpass
 import shutil
 import sys
 from typing import Literal
@@ -58,3 +59,7 @@ def humanSize(sizeBytes:int) -> str:
     unit_index = int((len(str(sizeBytes)) - 1) / 3)
     readable_size = sizeBytes / (1024 ** unit_index)
     return f"{readable_size:.2f}{size_units[unit_index]}"
+
+
+def getSecret(msg:str) -> str:
+    return getpass(msg)

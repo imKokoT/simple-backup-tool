@@ -40,7 +40,7 @@ class UnpackerModule(Module):
         entry()
 
     def registerCommandArguments(self):
-        ...
+        self.argGroup.add_argument('-p', '--password', help='Set password')
 
     def registerSchemaParams(self):
         ...

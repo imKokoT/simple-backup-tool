@@ -6,6 +6,10 @@ VERSION = b'\x01'
 MAGIC = b'EPCK'
 SALT = 16
 
+
+class WrongPasswordError(Exception): ...
+
+
 class Algorithm(IntEnum):
     AES256_GCM = 1
     CHACHA20_POLY1305 = 2

@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 
 from core.app_config import config
-from core.cli import getConfirm
+from core.cli import getConfirm, getSecret
 from core.context import ctx
 from core.module import module_register
 from core.pack import Pack
@@ -25,6 +25,9 @@ def entry():
     schema = ctx.schema
     args  = ctx.args
 
+    if args.password:
+        schema.set('password', args.password)
+
     logger.info('unpacking loaded pack...')
     module.packStream = s = VFile(module.packPath, 'r')
 
@@ -32,10 +35,19 @@ def entry():
     c:CryptographyModule = module_register.get('cryptography')
     if c.isEncrypted(module.packPath):
         logger.info('encryption detected')
+        if not schema.get('password'):
+            schema.set(
+                'password',
+                getSecret('Enter password: ')
+            )
         s = c.decryptionStream(s)
     
     # select module for decompressing
-    module.pack = Pack('r', s)
+    try:
+        module.pack = Pack('r', s)
+    except c.WrongPasswordError as e:
+        logger.error(f'Decryption failed, possibly wrong password: {e}')
+        exit(1)
     bid = module.pack.getBackendId()
 
     archiver = module_register.get(

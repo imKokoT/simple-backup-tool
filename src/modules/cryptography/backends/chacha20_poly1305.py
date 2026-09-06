@@ -114,7 +114,7 @@ class ChaCha20Poly1305DecryptionBackend(DecryptionBackend):
                 )
             )
         except InvalidTag:
-            raise ValueError(
+            raise WrongPasswordError(
                 f"authentication failed for chunk "
                 f"{self._chunk_index}"
             ) from None
