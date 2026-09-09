@@ -67,11 +67,13 @@ class AppConfig:
             data[key.name] = value
 
             if key.description:
-                # data.yaml_set_comment_before_after_key(
-                #     key.name,
-                #     before=key.description
-                # )
-                data.yaml_add_eol_comment(key.description, key.name)
+                if '\n' in key.description:
+                    data.yaml_set_comment_before_after_key(
+                        key.name,
+                        before=f'\n{key.description}'
+                    )
+                else:
+                    data.yaml_add_eol_comment(key.description, key.name)
 
         with path.open("w", encoding="utf-8") as f:
             yaml.dump(data, f)
@@ -88,4 +90,16 @@ def registerBaseSettings():
         type=bool,
         default=False,
         description='If true, byte sizes will print in "B", "KB", "MB", "GB", "TB"'
+    )
+    app_config_registry.register(
+        name='zero_waste',
+        type=bool,
+        default=False,
+        description='If true, all VFiles without specified storage location will be saved to RAM\n' \
+                    '\n' \
+                    'This feature usually preferred for small and frequent backups (daily or even hourly) to\n' \
+                    'increase packing speed and reduce host\'s disk wear while sacrificing some stability\n'
+                    '\n'
+                    'WARNING: REQUIRES A HUGE AMOUNT OF RAM! Large backups/restores could cause freezes, crashes,\n' \
+                    'system slowdown etc, if the system does not have enough RAM.',
     )
