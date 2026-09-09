@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from argparse import ArgumentParser, _SubParsersAction
 from contextlib import contextmanager
 from core.context import ctx
 from core.schema import schema_config_registry
@@ -21,6 +20,8 @@ def _setCurrent(module):
 
 
 class Module(ABC):
+    DISABLED = False # disable module from registration
+
     schema_config_registry = schema_config_registry
     app_config_registry = app_config_registry
     invokeArgs:dict = {}
@@ -91,6 +92,10 @@ class ModuleRegister:
         self._modules:dict[str, Module] = {}
 
     def register(self, module:Module):
+        if module.DISABLED:
+            logger.debug(f'skip registering "{module}"')
+            return
+
         logger.debug(f'registering "{module.name}"... ({module})')
         if module.name in self._modules.keys():
             msg = f'Module "{module.name}" already exists!'

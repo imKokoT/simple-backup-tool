@@ -14,10 +14,9 @@ dependencies = [
   "pathspec",
   "google-api-python-client", 
   "google-auth-httplib2",
-  "google-auth-oauthlib"
+  "google-auth-oauthlib",
+  "cryptography"
 ]
-[project.optional-dependencies]
-encryption = ["cryptography"]
 
 [build-system]
 requires = ["setuptools>=61.0"]
