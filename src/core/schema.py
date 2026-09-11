@@ -100,3 +100,9 @@ def registerBaseSettings():
         type=str,
         default=None
     )
+    schema_config_registry.register(
+        name='app_config_override',
+        type=dict,
+        default=None,
+        description='override app config params for this session; works only for chain-related params'
+    )

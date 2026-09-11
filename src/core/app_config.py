@@ -80,6 +80,14 @@ class AppConfig:
 
         logger.debug("dumped config.yaml")
 
+    def override(self, params:dict):
+        logger.debug('overriding app config params')
+        for k,v in params.items():
+            if k not in app_config_registry.keys():
+                continue
+
+            self.set(k, v)
+
 config = AppConfig()
 
 

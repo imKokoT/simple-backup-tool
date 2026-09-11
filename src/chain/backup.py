@@ -2,6 +2,7 @@ import json
 import logging
 import os
 
+from core.app_config import config
 from core.cli import getConfirm
 from core.module import Chain, module_register
 from core.context import ctx
@@ -32,12 +33,17 @@ class BackupChain(Chain):
         self.subparser.add_argument('-f', '--force', action='store_true', help='force backup')
 
     def run(self, args):
-        ctx.schema = Schema(getAppDir() / 'schemas' / f'{ctx.args.schema_name}.yaml')
+        schema = ctx.schema = Schema(getAppDir() / 'schemas' / f'{ctx.args.schema_name}.yaml')
         lockPath = getTmpDir() / ctx.schema.name / '.lock'
         lockData:dict
+        
         def updateLock(path, data):
             with open(path, 'w') as f:
                 json.dump(data, f)
+
+        # override app config
+        if schema.get('app_config_override'):
+            config.override(schema.get('app_config_override'))
 
         if lockPath.exists():
             with open(lockPath, 'r') as f:
