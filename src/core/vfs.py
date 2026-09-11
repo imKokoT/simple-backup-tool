@@ -1,22 +1,30 @@
 from io import BytesIO, FileIO, IOBase
+import os
 from pathlib import Path
 from typing import Literal
 import logging
+
+from core.app_config import config
 
 logger = logging.getLogger(__name__)
 
 
 class VirtualFS:
     """Virtual filesystem to manage virtual files"""
-    _opened:dict[Path, 'VFile'] = {}
-    _vfs:dict[Path, BytesIO] = {}
+    _opened:dict[str, 'VFile'] = {}
+    _vfs:dict[str, BytesIO] = {}
+    _lastOpenedLocation:dict[str, Literal['r', 'w']] = {}
 
     def get(self, path:Path) -> 'VFile | None':
         """get opened VFile"""
-        return self._opened.get(path)
+        return self._opened.get(
+           str(os.path.normpath(path))
+        )
     
     def free(self, path:Path):
         """Free data of the closed in-memory VFile"""
+        path = str(os.path.normpath(path))
+
         if path in self._opened:
             raise ValueError(f'VFile "{path}" not closed')
         if path not in self._vfs:
@@ -26,36 +34,46 @@ class VirtualFS:
         logger.debug(f'freed "{path}"')
 
     def _onClose(self, vf:'VFile'):
-        self._opened.pop(vf._path)
+        path = str(os.path.normpath(vf._path))
+
+        if path not in self._opened:
+            return
+
+        self._opened.pop(path)
         if vf._location != 'ram':
             vf._raw.close()
-        logger.debug(f'closed VFile "{vf._path}"')
+        else:
+            vf._raw.seek(0)
+        logger.debug(f'closed VFile "{path}"')
 
     def _onOpen(self, vf:'VFile'):
-        if vf._path in self._opened:
-            raise FileExistsError(f'virtual file "{vf._path}" already exists')
-        
-        if vf._location is None: # TODO: add app setting
-            vf._location = 'disk'
+        path = str(os.path.normpath(vf._path))
 
-        if vf._location != 'ram' and vf._path in self._vfs:
+        if path in self._opened:
+            raise RuntimeError(f'virtual file "{path}" already opened')
+        
+        if vf._location is None:
+            vf._location = 'ram' if config.get('zero_waste') else 'disk'
+
+        if vf._location != 'ram' and path in self._vfs:
             raise RuntimeError(f'cannot open VFile on {vf._location} while it exists in-memory')
         
         if vf._location == 'ram':
-            if vf._path not in self._vfs:
-                self._vfs[vf._path] = BytesIO()
-            vf._raw = self._vfs[vf._path]
+            if path not in self._vfs:
+                self._vfs[path] = BytesIO()
+            vf._raw = self._vfs[path]
 
             if 'w' in vf._mode:
                 vf.truncate()
                 vf.seek(0)
         elif vf._location == 'disk':
-            vf._raw = FileIO(vf._path, vf._mode)
+            vf._raw = FileIO(path, vf._mode)
         else:
             raise ValueError(f'invalid VFile location {vf._location}')
         
-        self._opened[vf._path] = vf
-        logger.debug(f'opened VFile "{vf._path}" on {vf._location}')
+        self._opened[path] = vf
+        self._lastOpenedLocation[path] = vf._location
+        logger.debug(f'opened VFile "{path}" on {vf._location}')
         
 vfs = VirtualFS()
 
@@ -101,26 +119,32 @@ class VFile(IOBase):
         return super().__exit__(exc_type, exc_val, exc_tb)
 
 
-# extension
-def exists(path:str|Path) -> bool:
-    '''returns true if path exists
-    
-    You must call this function if the file path which you check designed to be managed by VFS'''
-    if path is str: 
-        path = Path(path)
+# --- extensions ----------------------------------------------
 
-    return vfs._vfs.get(path) != None or path.exists()
+def exists(path:str|Path) -> bool:
+    '''
+    returns true if path exists
+    
+    You must call this function if the file path which you check designed to be managed by VFS
+    '''
+    path = str(os.path.normpath(path))
+
+    if vfs._lastOpenedLocation.get(path) == 'ram':
+        return vfs._vfs.get(path) != None or vfs._opened.get(path)
+    else:
+        return os.path.exists(path)
 
 
 def size(path:str|Path) -> int:
-    '''returns size in bytes
+    '''
+    returns size in bytes
     
-    You must call this function if the file path which you check designed to be managed by VFS'''
-    if path is str: 
-        path = Path(path)
+    You must call this function if the file path which you check designed to be managed by VFS
+    '''
+    path = str(os.path.normpath(path))
     
     b = vfs._vfs.get(path)
     if b is not None:
         return b.getbuffer().nbytes
     else:
-        return path.stat().st_size
+        return os.stat(path).st_size

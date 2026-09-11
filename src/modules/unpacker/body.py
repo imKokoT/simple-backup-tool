@@ -2,6 +2,7 @@ import logging
 import os
 from pathlib import Path
 
+from core import vfs
 from core.app_config import config
 from core.cli import getConfirm, getSecret
 from core.context import ctx
@@ -29,11 +30,14 @@ def entry():
         schema.set('password', args.password)
 
     logger.info('unpacking loaded pack...')
+    if not vfs.exists(module.packPath):
+        logger.error(f'pack path {module.packPath} not exists')
+        exit(1)
     module.packStream = s = VFile(module.packPath, 'r')
 
     # try decrypt pack
     c:CryptographyModule = module_register.get('cryptography')
-    if c.isEncrypted(module.packPath):
+    if c.isEncrypted(module.packStream):
         logger.info('encryption detected')
         if not schema.get('password'):
             schema.set(

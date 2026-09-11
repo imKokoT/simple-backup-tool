@@ -17,7 +17,7 @@ class CryptographyModule(Module):
 
     encryptionStream = EncryptionStream
     decryptionStream = DecryptionStream
-    isEncrypted = lambda self, path: tools.isEncrypted(path)
+    isEncrypted = lambda self, packStream: tools.isEncrypted(packStream)
     WrongPasswordError = tools.WrongPasswordError
 
     def entry(self):

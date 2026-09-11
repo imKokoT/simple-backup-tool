@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from enum import IntEnum
 from pathlib import Path
 
+from core.vfs import VFile
+
 VERSION = b'\x01'
 MAGIC = b'EPCK'
 SALT = 16
@@ -25,15 +27,23 @@ class Header:
     nonce:bytes
 
 
-def isEncrypted(packPath:Path):
+def isEncrypted(packStream:VFile):
     '''returns True if MAGIC is encrypted package'''
-    with packPath.open('rb') as pk:
-        magic = pk.read(4)
+    last = packStream.tell()
+    packStream.seek(0)
+
+    magic = packStream.read(4)
+
+    packStream.seek(last)
     return magic == MAGIC
 
 
-def getAlgorithm(packPath:Path) -> Algorithm:
-    with packPath.open('rb') as pk:
-        pk.seek(5)
-        algorithm = Algorithm.from_bytes(pk.read(1))
+def getAlgorithm(packStream:VFile) -> Algorithm:
+    '''Returns Algorithm, that used in EPCK'''
+    last = packStream.tell()
+    packStream.seek(5)
+
+    algorithm = Algorithm.from_bytes(packStream.read(1))
+
+    packStream.seek(last)
     return algorithm

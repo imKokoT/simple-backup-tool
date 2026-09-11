@@ -2,6 +2,7 @@ import gzip
 from io import TextIOWrapper
 import json
 import logging
+from core import vfs
 from core.cli import humanSize
 from core.context import ctx
 from core.module import module_register
@@ -51,6 +52,10 @@ def loadScancache():
     logger.debug('preparing PackConfig')
 
     cachePath = getTmpDir() / schema.name / 'scancache'
+    if not vfs.exists(cachePath):
+        logger.error(f'scanhash file does not exists; aborting')
+        exit(1)
+
     with VFile(cachePath, 'r') as vf:
         if DEBUG:
             with TextIOWrapper(vf, encoding="utf-8") as f:

@@ -43,12 +43,12 @@ def entry():
         f' - included/scanned size: {humanSize(module.includedSize)}/{humanSize(module.scannedSize)}'
     )
 
-    scancachePath = getTmpDir() / schema.name / 'scanhash'
-    if not scancachePath.exists():
+    scanhashPath = getTmpDir() / schema.name / 'scanhash'
+    if not scanhashPath.exists():
         dumpScanCache()
         return
 
-    with VFile(scancachePath, 'r', location='disk') as vf:
+    with VFile(scanhashPath, 'r', location='disk') as vf:
         if module.scanhash.hexdigest() == vf.read().decode():
             logger.info('No changes detected since last scan')
 

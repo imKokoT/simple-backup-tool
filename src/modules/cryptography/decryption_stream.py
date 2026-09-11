@@ -19,7 +19,7 @@ class DecryptionStream(io.IOBase):
         self._encryptor:DecryptionBackend = None
         self._module = module_register.get('cryptography')
 
-        self._method = getAlgorithm(self.stream._path)
+        self._method = getAlgorithm(self.stream)
 
         match self._method:
             case Algorithm.AES256_GCM:
