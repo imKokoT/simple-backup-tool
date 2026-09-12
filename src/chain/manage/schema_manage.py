@@ -4,7 +4,8 @@ from properties import *
 from paths import getAppDir, isValid
 from .tools import openWithinEditor
 
-def create():
+
+def create(args):
     name = None
     schemasPath = getAppDir() / 'schemas'
 
@@ -16,7 +17,7 @@ def create():
             print(f'{RC}This name is already used{DC}')
             name = None
             continue
-        if not isValid(f'{name}.yaml'):
+        if not isValid(schemasPath / f'{name}.yaml'):
             print(f'{RC}Invalid name{DC}')
             name = None
             continue
@@ -24,6 +25,7 @@ def create():
     path = schemasPath / f'{name}.yaml'
 
     with open(path, 'w', encoding='utf-8') as f:
+        # TODO: schema template
         f.write('# template\n')
     
     # try open schema to edit
@@ -39,3 +41,14 @@ def openSchema(args):
         print(f'{RC}Schema does not exists!{DC}')
     
     openWithinEditor(path)
+
+
+def listSchemas(args):
+    schemasPath = getAppDir() / 'schemas'
+
+    schemas = [os.path.basename(f) for f in os.listdir(schemasPath) 
+             if os.path.isfile(os.path.join(schemasPath, f)) and
+                f.endswith('.yaml')]
+    
+    for f in schemas:
+        print(f' - {LGC}{f}{DC}')

@@ -1,5 +1,8 @@
 import logging
 
+from paths import getAppDir
+
+from .tools import openWithinEditor
 from core.module import Chain
 from . import schema_manage
 
@@ -12,6 +15,9 @@ class ManageChain(Chain):
     actions = [
         'create_schema',
         'open_schema',
+        'list_schemas',
+
+        'config',
     ]
 
     def registerCommandArguments(self):
@@ -21,12 +27,22 @@ class ManageChain(Chain):
             required=True,
         )
 
+        # --- schema manage ---
         createSchema = self.action_parsers.add_parser('create_schema')
         createSchema.set_defaults(func=schema_manage.create)
         
         openSchema = self.action_parsers.add_parser('open_schema')
         openSchema.add_argument('schema_name')
         openSchema.set_defaults(func=schema_manage.openSchema)
+
+        listSchemas = self.action_parsers.add_parser('list_schemas')
+        listSchemas.set_defaults(func=schema_manage.listSchemas)
+
+        # --- app config ---
+        openConfig = self.action_parsers.add_parser('config')
+        openConfig.set_defaults(
+            func=lambda args: openWithinEditor(getAppDir() / 'config.yaml')
+        )
 
     def run(self, args):
         ...
