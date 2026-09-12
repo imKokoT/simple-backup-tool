@@ -1,12 +1,10 @@
 import os
-import subprocess
-import sys
 
 from properties import *
 from paths import getAppDir, isValid
+from .tools import openWithinEditor
 
-
-def entry():
+def create():
     name = None
     schemasPath = getAppDir() / 'schemas'
 
@@ -29,9 +27,15 @@ def entry():
         f.write('# template\n')
     
     # try open schema to edit
-    if sys.platform == 'win32':
-        os.startfile(path)
-    elif sys.platform == 'linux':
-        subprocess.run(["xdg-open", path], check=False)
+    openWithinEditor(path)
 
     print(f'{GC}successfully created template {path}{DC}')
+
+
+def openSchema(args):
+    path = getAppDir() / 'schemas' / f'{args.schema_name}.yaml'
+
+    if not path.exists():
+        print(f'{RC}Schema does not exists!{DC}')
+    
+    openWithinEditor(path)
