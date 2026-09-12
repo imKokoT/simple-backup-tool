@@ -57,9 +57,12 @@ def canCreate(path:Path) -> bool:
            os.access(path.parent, os.W_OK) and \
            not path.exists()
 
-def isValid(path:str) -> bool:
+def isValid(path:str|Path) -> bool:
+    if isinstance(path, str):
+        path = Path(path)
+
     try:
-        Path(path).resolve(strict=False)
+        path.resolve(strict=False)
         return True
     except (OSError, ValueError):
         return False

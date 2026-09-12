@@ -34,7 +34,8 @@ def parseArgs(args):
     # init chains
     ctx.chains = [
         chain.BackupChain(),
-        chain.RestoreChain()
+        chain.RestoreChain(),
+        chain.ManageChain()
     ]
 
     app_config.config.load()
