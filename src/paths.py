@@ -38,6 +38,12 @@ def getTmpDir() -> Path:
     """
     Returns directory for temporal files
 
+    Windows:
+        `%localappdata%/[COPYRIGHT]/simple-backup-tool`
+
+    Linux:
+        `$HOME/.local/state/[COPYRIGHT]/simple-backup-tool`
+
     In DEBUG mode, returns the `<project root directory>/configs/tmp
     """
     system = platform.system()
@@ -45,7 +51,17 @@ def getTmpDir() -> Path:
     if DEBUG:
         path = Path(__file__).resolve().parent.parent / 'configs' / 'tmp'
     else:
-        raise NotImplementedError(f"Unsupported OS: {system}")
+        if system == "Linux":
+            path = Path.home() / ".local" / "state"/ COPYRIGHT / "simple-backup-tool"
+
+        elif system == "Windows":
+            base = os.getenv("LOCALAPPDATA")
+            if not base:
+                raise RuntimeError("APPDATA not set")
+            path = Path(base) / COPYRIGHT / "simple-backup-tool"
+
+        else:
+            raise NotImplementedError(f"Unsupported OS: {system}")
 
     path.mkdir(parents=True, exist_ok=True)
     return path
@@ -56,6 +72,7 @@ def canCreate(path:Path) -> bool:
            path.parent.is_dir() and \
            os.access(path.parent, os.W_OK) and \
            not path.exists()
+
 
 def isValid(path:str|Path) -> bool:
     if isinstance(path, str):
