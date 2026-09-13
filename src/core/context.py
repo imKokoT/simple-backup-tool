@@ -1,3 +1,4 @@
+from __future__ import annotations
 from argparse import Namespace, ArgumentParser, _SubParsersAction
 
 import time
@@ -14,7 +15,7 @@ class Context:
     # cli
     args:Namespace
     parser:ArgumentParser
-    subparsers:_SubParsersAction[ArgumentParser]
+    subparsers:_SubParsersAction
 
     # module
     currentModule:Module = None # NOTE: if 'None' here, may you forgot to run module through invoke()
