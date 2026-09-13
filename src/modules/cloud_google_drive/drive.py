@@ -2,6 +2,7 @@ import logging
 import re
 from googleapiclient.http import MediaIoBaseUpload, MediaIoBaseDownload
 
+from core.app_config import config
 from core.vfs import VFile
 from core.context import ctx
 from core.cli import progressBar
@@ -61,7 +62,11 @@ def cleanup(folderId:str):
     
     logger.info('cleaning old cloud backup if exists...')
     
-    query = f"'{folderId}' in parents and name='{schemaName}.archive' and trashed=false"
+    if config.get('backup.delete_old_before_upload'):
+        query = f"'{folderId}' in parents and name='{schemaName}.archive' and trashed=false"
+    else:
+        query = f"'{folderId}' in parents and name='{schemaName}.archive.old' and trashed=false"
+
     response = service.files().list(q=query, spaces='drive').execute()
     files = response.get('files', [])
 
@@ -69,6 +74,26 @@ def cleanup(folderId:str):
         for f in files:
             file_id = f['id']
             service.files().delete(fileId=file_id).execute()
+
+
+def rename(folderId:str, name:str, newName:str):
+    module:CloudGoogleDriveModule = ctx.currentModule
+    service = module.service
+
+    query = f"'{folderId}' in parents and name='{name}' and trashed=false"
+    response = service.files().list(q=query, spaces='drive').execute()
+    files = response.get('files', [])
+
+    if files:
+        fileId = files[0]['id']
+
+        service.files().update(
+            fileId=fileId,
+            body={"name": newName},
+            fields="id,name",
+        ).execute()
+
+        logger.debug(f'renamed {name} to {newName} from {folderId}')
 
 
 def deleteAllNonShared(folderId:str = 'root'):

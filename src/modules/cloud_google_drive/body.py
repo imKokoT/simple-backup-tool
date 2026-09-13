@@ -5,6 +5,7 @@ from httplib2 import ServerNotFoundError
 from googleapiclient.errors import HttpError
 from google.auth.exceptions import RefreshError
 
+from core.app_config import config
 from core.cli import humanSize
 from core.context import ctx
 from core.vfs import size
@@ -47,9 +48,17 @@ def send():
             logger.error('schema.root is required if you use service credentials')
             quit(1)
 
+        if module.serviceCred:
+            deleteAllNonShared()
+
         folderId = getDestination(schema.get('destination'), schema.get('root'))
 
-        cleanup(folderId)
+        # cleanup main backup if related config is true
+        # otherwise rename it to .old before upload
+        if config.get('backup.delete_old_before_upload'):
+            cleanup(folderId)
+        else:
+            rename(folderId, f'{ctx.schema.name}.archive', f'{ctx.schema.name}.archive.old')
 
         quota = getStorageQuota()
         availableSpace = quota['limit'] - quota['usage']
@@ -65,6 +74,11 @@ def send():
         sendArchive(folderId)
 
         logger.info(f'archive was sent to the cloud successfully!')
+
+        # if upload is success deleted .old backup
+        # according related setting
+        if not config.get('backup.delete_old_before_upload'):
+            cleanup(folderId)
 
     except (HttpError, RefreshError) as e:
         logger.error(f'failed to backup; error: {e}')

@@ -53,7 +53,7 @@ def loadScancache():
 
     cachePath = getTmpDir() / schema.name / 'scancache'
     if not vfs.exists(cachePath):
-        logger.error(f'scanhash file does not exists; aborting')
+        logger.error(f'scancache file does not exists; aborting')
         exit(1)
 
     with VFile(cachePath, 'r') as vf:

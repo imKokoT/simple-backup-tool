@@ -44,4 +44,13 @@ class CloudModule(Module):
         )
 
     def registerAppConfigs(self):
-        ...
+        self.app_config_registry.register(
+            name='backup.delete_old_before_upload',
+            type=bool,
+            default=False,
+            description='If true, old backup on a cloud will be deleted before new one would be uploaded\n' \
+                        'This could be useful for large backups is uploaded to the cloud with a little space.\n' \
+                        '\n ' \
+                        'WARNING: as mentioned before OLD BACKUP WILL BE DELETED BEFORE NEW ONE UPLOADED, so if\n'
+                        'a backup process would broken after old one was deleted, you will lost it!'
+        )
