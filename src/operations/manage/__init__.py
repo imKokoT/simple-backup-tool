@@ -1,4 +1,5 @@
 import logging
+import os
 
 from paths import getAppDir
 
@@ -45,4 +46,4 @@ class ManageOperation(Operation):
         )
 
     def run(self, args):
-        ...
+        os.makedirs(getAppDir() / 'schemas', exist_ok=True)
