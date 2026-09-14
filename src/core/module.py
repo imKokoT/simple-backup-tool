@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 from contextlib import contextmanager
+from argparse import ArgumentParser
+
 from core.context import ctx
 from core.schema import schema_config_registry
 from core.app_config import app_config_registry
@@ -29,7 +31,7 @@ class Module(ABC):
     name:str
     description:str
     schemaParams:list[str] = [] # registered Schema params
-    chainArgs:list[str] = []    # defined Chain's command arguments
+    operationArgs:list[str] = []    # defined Operations's command arguments
 
     def __init__(self):
         self.argGroup = ctx.parser.add_argument_group(f'module.{self.name}')
@@ -72,7 +74,7 @@ class Module(ABC):
     def invoke(self, **kwargs):
         """invoke Module's entry"""
         with _setCurrent(self):
-            self._requireChainArguments()
+            self._requireOperationArguments()
             self.invokeArgs = kwargs
             self.entry()
             self.invokeArgs = {}
@@ -81,10 +83,10 @@ class Module(ABC):
         for p in self.schemaParams:
             schema_config_registry.isRegistered(p)
 
-    def _requireChainArguments(self):
-        for a in self.chainArgs:
+    def _requireOperationArguments(self):
+        for a in self.operationArgs:
             if a not in ctx.args.__dict__.keys():
-                raise KeyError(f'{self} require from Chain command argument "{a}"')
+                raise KeyError(f'{self} require from Operation command argument "{a}"')
 
 
 class ModuleRegister:
@@ -121,16 +123,15 @@ class ModuleRegister:
 module_register = ModuleRegister()
 
 
-class Chain(ABC):
+class Operation(ABC):
     """
-    Module chain of some process. Chain defines sequence of process execution.
+    CLI operation. Entry point of the tool
     """
     name:str
     description:str
-    chain:list[str]
      
     def __init__(self):
-        self.subparser = ctx.subparsers.add_parser(self.name, help=self.description)
+        self.subparser:ArgumentParser = ctx.subparsers.add_parser(self.name, help=self.description)
         self.registerCommandArguments()
         self.subparser.set_defaults(func=self.run)
 
@@ -140,4 +141,4 @@ class Chain(ABC):
 
     @abstractmethod
     def run(self, args):
-        """run chain of modules"""
+        """run operation of modules"""

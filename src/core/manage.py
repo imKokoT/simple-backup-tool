@@ -1,5 +1,5 @@
 import modules
-import chain
+import operations
 from core import app_config
 from properties import *
 from core.module import module_register
@@ -31,11 +31,11 @@ def parseArgs(args):
     module_register.register(modules.archiver_internal.ArchiverInternalModule())
     module_register.register(modules.cloud.CloudModule())
     module_register.register(modules.cloud_google_drive.CloudGoogleDriveModule())
-    # init chains
-    ctx.chains = [
-        chain.BackupChain(),
-        chain.RestoreChain(),
-        chain.ManageChain()
+    # init operations
+    ctx.operations = [
+        operations.BackupOperation(),
+        operations.RestoreOperation(),
+        operations.ManageOperation()
     ]
 
     app_config.config.load()

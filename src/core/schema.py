@@ -104,5 +104,5 @@ def registerBaseSettings():
         name='app_config_override',
         type=dict,
         default=None,
-        description='override app config params for this session; works only for chain-related params'
+        description='override app config params for this session; works only for operation-related params'
     )

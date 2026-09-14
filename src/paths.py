@@ -50,18 +50,18 @@ def getTmpDir() -> Path:
 
     if DEBUG:
         path = Path(__file__).resolve().parent.parent / 'configs' / 'tmp'
+
+    elif system == "Linux":
+        path = Path.home() / ".local" / "state"/ COPYRIGHT / "simple-backup-tool"
+
+    elif system == "Windows":
+        base = os.getenv("LOCALAPPDATA")
+        if not base:
+            raise RuntimeError("APPDATA not set")
+        path = Path(base) / COPYRIGHT / "simple-backup-tool"
+
     else:
-        if system == "Linux":
-            path = Path.home() / ".local" / "state"/ COPYRIGHT / "simple-backup-tool"
-
-        elif system == "Windows":
-            base = os.getenv("LOCALAPPDATA")
-            if not base:
-                raise RuntimeError("APPDATA not set")
-            path = Path(base) / COPYRIGHT / "simple-backup-tool"
-
-        else:
-            raise NotImplementedError(f"Unsupported OS: {system}")
+        raise NotImplementedError(f"Unsupported OS: {system}")
 
     path.mkdir(parents=True, exist_ok=True)
     return path

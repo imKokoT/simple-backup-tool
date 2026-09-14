@@ -6,7 +6,7 @@ import hashlib
 class ScanModule(Module):
     name = 'scan'
     description = 'Scan local targets for changes from filesystem'
-    chainArgs = [
+    OperationArgs = [
         'force'
     ]
 

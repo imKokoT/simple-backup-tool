@@ -3,13 +3,13 @@ import logging
 from paths import getAppDir
 
 from .tools import openWithinEditor
-from core.module import Chain
+from core.module import Operation
 from . import schema_manage
 
 logger = logging.getLogger(__name__)
 
 
-class ManageChain(Chain):
+class ManageOperation(Operation):
     name = 'manage'
     description = 'Helper to manage application'
     actions = [
