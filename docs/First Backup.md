@@ -41,11 +41,11 @@ Uploaded backup could be simply restored with next command:
 sbt --cloud cloud_google_drive --destination /path/on/the/cloud --credentials your-secret restore your-schema-name
 ```
 
-The command a bit weird, but why it looks like this explained [here](). Restore workflow requires user attention by default. After archive was download and unpacked, tool will ask what to do with data. There are a few possible ways to restore:
+The command a bit weird, but why it looks like this explained [here](). Restore workflow requires user attention by default. After archive was downloaded and unpacked, the tool will ask what to do with data. There are a few possible ways to restore:
 
 - abort; leave local pack unpacked
 - restore to */restored* folder
-- try to rewrite original data; all failed targets would be placed to */restored* folder
+- try to rewrite original data; all failed targets would be placed to */restored* folder or specified path from user
 
 */restored* folder exists under tool's tmp dir:
 

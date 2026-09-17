@@ -42,7 +42,7 @@ targets:
 There is also an option to filter folders/files within specific file `.sbtignore`. It fully inherits `.gitignore` functionality. Created `.sbtignore` file under some *target path* will filter targets under this *target path*.
 
 > [!WARNING]
-> As mentioned before `ignore` parameter works globally, overlapping any `.sbtignore` patters
+> As mentioned before `ignore` parameter works globally, overlapping any `.sbtignore` patterns
 
 Nevertheless `.sbtignore` is usually enough, there is also an option to load `.gitignore` files to. This is disabled by default, so edit app's config:
 
