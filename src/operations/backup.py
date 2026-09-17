@@ -33,6 +33,7 @@ class BackupOperation(Operation):
         self.subparser.add_argument('-f', '--force', action='store_true', help='force backup')
 
     def run(self, args):
+        os.makedirs(getTmpDir() / args.schema_name, exist_ok=True)
         schema = ctx.schema = Schema(getAppDir() / 'schemas' / f'{ctx.args.schema_name}.yaml')
         lockPath = getTmpDir() / ctx.schema.name / '.lock'
         lockData:dict

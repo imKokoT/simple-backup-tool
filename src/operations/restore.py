@@ -29,6 +29,7 @@ class RestoreOperation(Operation):
         self.subparser.add_argument('-f', '--force', action='store_true', help='force restore')
 
     def run(self, args):
+        os.makedirs(getTmpDir() / args.schema_name, exist_ok=True)
         schema = ctx.schema = Schema(getAppDir() / 'schemas' / f'{ctx.args.schema_name}.yaml', tryLoad=True)
         lockPath = getTmpDir() / args.schema_name / '.lock'
         lockData:dict

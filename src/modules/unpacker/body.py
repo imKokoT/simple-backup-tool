@@ -115,7 +115,7 @@ def selectRestorePath(path:Path, tType) -> Path:
                 logger.info(f'skip folder {path}')
                 path
     else:
-        fName = f"{path.stem}-restored{path.suffix}" if fName == 'file' else f"{path.stem}-restored"
+        fName = f"{path.stem}-restored{path.suffix}" if tType == 'file' else f"{path.stem}-restored"
         path = path if config.get('restore.allow_local_replace') else path.with_name(fName)
 
     return path

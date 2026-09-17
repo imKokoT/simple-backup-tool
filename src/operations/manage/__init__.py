@@ -22,6 +22,8 @@ class ManageOperation(Operation):
     ]
 
     def registerCommandArguments(self):
+        os.makedirs(getAppDir() / 'schemas', exist_ok=True)
+
         self.action_parsers = self.subparser.add_subparsers(
             dest="action",
             help=f'Possible values: {', '.join(self.actions)}',
@@ -46,4 +48,4 @@ class ManageOperation(Operation):
         )
 
     def run(self, args):
-        os.makedirs(getAppDir() / 'schemas', exist_ok=True)
+        ...
