@@ -14,7 +14,6 @@ if TYPE_CHECKING:
     from . import CloudGoogleDriveModule
 
 logger = logging.getLogger(__name__)
-ARCHIVE_PATTERN = re.compile(r'\.(meta|archive)$') # TODO: remove .meta at release
 CHUNK_SIZE = 1024*1024
 
 
@@ -96,34 +95,43 @@ def rename(folderId:str, name:str, newName:str):
         logger.debug(f'renamed {name} to {newName} from {folderId}')
 
 
-def deleteAllNonShared(folderId:str = 'root'):
+def deleteAllNonShared():
     '''delete all not shared service archives and its meta'''
     module:CloudGoogleDriveModule = ctx.currentModule
     service = module.service
 
     if not module.serviceCred:
-        logger.error(f'abort deletion of not shared all archives because service account key is not using!')
+        logger.error(
+            'abort deletion of non-shared archives because '
+            'service account key is not being used'
+        )
         return
-    
-    if folderId == 'root':
-        logger.info('deleting not shared archives of service account storage')
 
-    query = f"'{folderId}' in parents and trashed=false"
-    response = service.files().list(
-        q=query,
-        spaces="drive",
-        fields="files(id, name, mimeType)",
-    ).execute()
+    pageToken = None
 
-    items = response.get('files', [])
+    while True:
+        response = service.files().list(
+            q="""
+                trashed = false and 
+                'root' in parents 
+            """,
+            spaces='drive',
+            fields='nextPageToken, files(id, name, mimeType, shared)',
+            pageToken=pageToken,
+            pageSize=100,
+        ).execute()
 
-    for item in items:    
-        if item['mimeType'] == 'application/vnd.google-apps.folder':
-            deleteAllNonShared(folderId=item['id'])
-        
-        if re.search(ARCHIVE_PATTERN, item['name']):
-            logger.debug(f"Deleting: {item['name']}[id:{item['id']}] ({item['mimeType']})")
-            service.files().delete(fileId=item['id']).execute()
+        for item in response.get('files', []):
+            logger.debug(f'deleting {item['name']} [id:{item['id']}] ({item['mimeType']})')
+
+            service.files().delete(
+                fileId=item['id']
+            ).execute()
+
+        pageToken = response.get('nextPageToken')
+
+        if not pageToken:
+            break
 
 
 def sendArchive(folderId:str):
