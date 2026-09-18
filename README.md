@@ -22,7 +22,7 @@ Project uses *pyproject,toml* to setup. To install the project use:
 ```sh
 # optionally, to prevent install it globally
 python -m venv .venv
-source .venv/bin/activate.sh
+source .venv/bin/activate
 
 python -m pip install --upgrade pip
 python -m pip install -e .
