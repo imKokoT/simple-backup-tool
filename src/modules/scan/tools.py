@@ -28,7 +28,7 @@ def searchTargets(pattern:str) -> list[str]:
         targetPath.parts[len(rootPath.parts):]
     ).replace('//', '/'))
     
-    for path in Path(rootPath).rglob(patternPath):
+    for path in Path(rootPath).glob(str(patternPath)):
         if path.is_symlink():
             logger.warning(f'skip target symlink {path}')
             continue

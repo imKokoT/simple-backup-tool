@@ -85,6 +85,7 @@ def scanFile(target:str):
     module.includedSize += size
     module.scannedSize += size
     module.included += 1
+    module.scanned += 1
     module.files.append(target)
 
     # count hash
