@@ -8,6 +8,36 @@ from properties import *
 logger = logging.getLogger(__name__)
 
 
+def isPatter(path:str) -> bool:
+    return any(char in path for char in '!*?[]')
+
+
+def searchTargets(pattern:str) -> list[str]:
+    '''search for targets by a pattern'''
+    out = []
+    rootParts = []
+    for p in Path(pattern).parts:
+        if isPatter(p): 
+            break
+        
+        rootParts.append(p)
+
+    rootPath = Path('/'.join(rootParts).replace('//', '/'))
+    targetPath = Path(pattern)
+    patternPath = Path('/'.join(
+        targetPath.parts[len(rootPath.parts):]
+    ).replace('//', '/'))
+    
+    for path in Path(rootPath).rglob(patternPath):
+        if path.is_symlink():
+            logger.warning(f'skip target symlink {path}')
+            continue
+        out.append(str(path))
+
+    logger.debug(f'found {len(out)} targets for pattern {pattern}')
+    return out
+
+
 def loadIgnorePatterns(directory:str) -> pathspec.PathSpec|None:
     patterns = []
     sbtignore = f'{directory}/.sbtignore'
@@ -32,7 +62,7 @@ def loadIgnorePatterns(directory:str) -> pathspec.PathSpec|None:
         return
         
     try:
-        return pathspec.PathSpec.from_lines('gitignore', patterns)
+        return pathspec.PathSpec.from_lines('gitwildmatch', patterns)
     except ValueError as e:
         logger.warning(f'ignore patters of directory "{directory}" has wrong format, so skipped; error: {e}')
 

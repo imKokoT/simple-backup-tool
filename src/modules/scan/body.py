@@ -23,10 +23,22 @@ def entry():
     schema = ctx.schema
     args = ctx.args
 
-    targets = schema.get('targets')
+    targets:list = schema.get('targets')
 
     tmpDir = getTmpDir() / schema.name
     tmpDir.mkdir(parents=True, exist_ok=True)
+
+    # search targets
+    for target in sorted(targets):
+        if not isPatter(target): 
+            continue
+        
+        targets.remove(target)
+        targets.extend(searchTargets(target))
+
+    if not targets:
+        logger.info('no targets to pack; aborting')
+        exit(0)
 
     # scan targets
     for target in sorted(targets):
