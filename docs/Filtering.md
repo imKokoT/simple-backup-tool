@@ -65,4 +65,4 @@ Nevertheless `.sbtignore` is usually enough, there is also an option to load `.g
 sbt manage config
 ```
 
-And modify value of related parameter. `.sbtignore` still has higher load priority, so with it you can disable some `.gitignore` items from excluding.
+And modify value of related parameter `backup.load_gitignore`. `.sbtignore` still has higher load priority, so with it you can disable some `.gitignore` items from excluding.

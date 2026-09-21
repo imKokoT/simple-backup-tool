@@ -60,7 +60,7 @@ Following topics will help to setup more complex workflows with filtering, diffe
 
 - [Automation]()
 - [App folders](./App%20folders.md)
-- [Backup with service account]()
+- [Backup with service account](./Backup%20With%20Service%20Account.md)
 - [CLI arguments]()
 - [Compression](./Compression.md)
 - [Encryption](./Encryption.md)
