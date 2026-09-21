@@ -65,4 +65,5 @@ Following topics will help to setup more complex workflows with filtering, diffe
 - [Compression](./Compression.md)
 - [Encryption](./Encryption.md)
 - [Filtering](./Filtering.md)
+- [Zero Waste Mode](./Zero%20Waste%20Mode.md)
 - [FAQ]()
