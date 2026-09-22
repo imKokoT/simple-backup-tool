@@ -41,7 +41,7 @@ Uploaded backup could be simply restored with next command:
 sbt --cloud cloud_google_drive --destination /path/on/the/cloud --credentials your-secret restore your-schema-name
 ```
 
-The command a bit weird, but why it looks like this explained [here](). Restore workflow requires user attention by default. After archive was downloaded and unpacked, the tool will ask what to do with data. There are a few possible ways to restore:
+The command a bit weird, but why it looks like this explained [here](./CLI%20Arguments.md). Restore workflow requires user attention by default. After archive was downloaded and unpacked, the tool will ask what to do with data. There are a few possible ways to restore:
 
 - abort; leave local pack unpacked
 - restore to */restored* folder
@@ -61,7 +61,7 @@ Following topics will help to setup more complex workflows with filtering, diffe
 - [Automation]()
 - [App folders](./App%20folders.md)
 - [Backup with service account](./Backup%20With%20Service%20Account.md)
-- [CLI arguments]()
+- [CLI arguments](./CLI%20Arguments.md)
 - [Compression](./Compression.md)
 - [Encryption](./Encryption.md)
 - [Filtering](./Filtering.md)
