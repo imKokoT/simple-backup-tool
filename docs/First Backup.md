@@ -58,7 +58,7 @@ There are also contained session cache, runtime files etc. More about project's 
 
 Following topics will help to setup more complex workflows with filtering, different compression, encryption etc:
 
-- [Automation]()
+- [Automation](./Automation.md)
 - [App folders](./App%20folders.md)
 - [Backup with service account](./Backup%20With%20Service%20Account.md)
 - [CLI arguments](./CLI%20Arguments.md)
