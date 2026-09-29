@@ -10,7 +10,7 @@ A small CLI tool for making backups to your Google Drive cloud.
 - file copy backups into single archive
 - config-based workflow setup
 - powerful pattern search and filtering based on *gitwildmatch*
-- several methods of compressing
+- several methods of compression
 - backup encryption with AES or Chacha20Poly1305
 - fully streamed backup/restore workflow from pack to final result
 - an option to start backup/restore workflow in RAM without affecting drive
