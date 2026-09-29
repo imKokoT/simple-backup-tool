@@ -11,7 +11,7 @@ Application logs are stored into root app folder under `./logs/`. Application st
 App configs, schemas and credentials are located under:
 
 - Windows: `%appdata%/[COPYRIGHT]/simple-backup-tool/`
-- Linux: `$HOME/.local/share/[COPYRIGHT]/simple-backup-tool`
+- Linux: `$HOME/.config/[COPYRIGHT]/simple-backup-tool/`
 
 ```
 simple-backup-tool/

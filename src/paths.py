@@ -12,7 +12,7 @@ def getAppDir() -> Path:
         `%%appdata%%/[COPYRIGHT]/simple-backup-tool`
     
     Linux: 
-        `$HOME/.local/share/[COPYRIGHT]/simple-backup-tool`
+        `$HOME/.config/[COPYRIGHT]/simple-backup-tool`
     
     In DEBUG mode, returns the `<project root directory>/configs`.
     """
@@ -26,7 +26,7 @@ def getAppDir() -> Path:
             raise RuntimeError("APPDATA not set")
         path = Path(base) / COPYRIGHT / "simple-backup-tool"
     elif system == "Linux":
-        path = Path.home() / ".local" / "share" / COPYRIGHT / "simple-backup-tool"
+        path = Path.home() / ".config" / COPYRIGHT / "simple-backup-tool"
     else:
         raise NotImplementedError(f"Unsupported OS: {system}")
 

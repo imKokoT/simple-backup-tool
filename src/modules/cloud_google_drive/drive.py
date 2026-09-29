@@ -163,7 +163,7 @@ def sendArchive(folderId:str):
     response = None
     while response is None:
         status, response = uploadFile.next_chunk()
-        progressBar(status.progress() if status else 100)
+        progressBar(status.progress() if status else 1, ppu=100)
 
     vf.close()
 
@@ -195,6 +195,6 @@ def downloadArchive(folderId:str):
     done = False
     while not done:
         status, done = downloader.next_chunk()
-        progressBar(status.progress() if status else 100, done)
+        progressBar(status.progress() if status else 100, done, ppu=100)
 
     vf.close()
