@@ -62,7 +62,7 @@ class AppConfig:
 
         data = CommentedMap()
 
-        for key in app_config_registry.all():
+        for key in sorted(app_config_registry.all(), key=lambda x: x.name):
             value = self.get(key.name)
             data[key.name] = value
 
@@ -73,6 +73,10 @@ class AppConfig:
                         before=f'\n{key.description}'
                     )
                 else:
+                    data.yaml_set_comment_before_after_key(
+                        key.name,
+                        before=f'\n'
+                    )
                     data.yaml_add_eol_comment(key.description, key.name)
 
         with path.open("w", encoding="utf-8") as f:
