@@ -39,6 +39,9 @@ class BackupOperation(Operation):
         lockData:dict
         
         def updateLock(path, data):
+            if config.get('zero_waste'): # prevent lock while zero_waste is on
+                return
+
             with open(path, 'w') as f:
                 json.dump(data, f)
 
@@ -91,5 +94,5 @@ class BackupOperation(Operation):
 
         logger.info('ended backup workflow')
 
-        if set(lockData['progress'].keys()) & set(self.workflow):
+        if set(lockData['progress'].keys()) & set(self.workflow) and lockPath.exists():
             os.remove(lockPath)
