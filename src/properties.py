@@ -5,7 +5,7 @@ from ruamel.yaml import YAML
 
 
 VERSION = '1.0b1'
-DEBUG = True                # dev-only
+DEBUG = False               # dev-only
 EXPERIMENTAL = False        # enable experimental features
 
 COPYRIGHT = 'imKokoT'
