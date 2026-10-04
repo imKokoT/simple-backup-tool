@@ -1,7 +1,7 @@
 
 [project]
 name = "simple-backup-tool"
-version = "1.0b1"
+version = "1.0b2"
 description = "A small CLI tool for making backups to your Google Drive cloud"
 readme = "README.md"
 requires-python = ">=3.12"

@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+from pathlib import Path
 
 from core.app_config import config
 from core.cli import getConfirm
@@ -31,7 +32,7 @@ class RestoreOperation(Operation):
     def run(self, args):
         os.makedirs(getTmpDir() / args.schema_name, exist_ok=True)
         schema = ctx.schema = Schema(getAppDir() / 'schemas' / f'{ctx.args.schema_name}.yaml', tryLoad=True)
-        lockPath = getTmpDir() / args.schema_name / '.lock'
+        lockPath:Path = getTmpDir() / args.schema_name / '.lock'
         lockData:dict
         
         def updateLock(path, data):
@@ -83,7 +84,8 @@ class RestoreOperation(Operation):
         except SystemExit as e:
             if e.code == 0:
                 logger.info('backup workflow aborted')
-                os.remove(lockPath)
+                if lockPath.exists():
+                    os.remove(lockPath)
                 return
             else: 
                 raise

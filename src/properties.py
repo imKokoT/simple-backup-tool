@@ -4,8 +4,8 @@ import colorama
 from ruamel.yaml import YAML
 
 
-VERSION = '1.0b1'
-DEBUG = False               # dev-only
+VERSION = '1.0b2-dev'
+DEBUG = True                # dev-only
 EXPERIMENTAL = False        # enable experimental features
 
 COPYRIGHT = 'imKokoT'

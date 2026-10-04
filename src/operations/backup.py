@@ -87,7 +87,8 @@ class BackupOperation(Operation):
         except SystemExit as e:
             if e.code == 0:
                 logger.info('backup workflow aborted')
-                os.remove(lockPath)
+                if lockPath.exists():
+                    os.remove(lockPath)
                 return
             else: 
                 raise
