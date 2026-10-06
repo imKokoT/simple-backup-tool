@@ -6,6 +6,7 @@ from paths import getAppDir
 from .tools import openWithinEditor
 from core.module import Operation
 from . import schema_manage
+from . import launcher
 
 logger = logging.getLogger(__name__)
 
@@ -14,6 +15,9 @@ class ManageOperation(Operation):
     name = 'manage'
     description = 'Helper to manage application'
     actions = [
+        'install-launcher',
+        'uninstall-launcher',
+
         'create_schema',
         'open_schema',
         'list_schemas',
@@ -46,6 +50,13 @@ class ManageOperation(Operation):
         openConfig.set_defaults(
             func=lambda args: openWithinEditor(getAppDir() / 'config.yaml')
         )
+
+        # --- launcher script installation ---
+        installLauncher = self.action_parsers.add_parser('install-launcher')
+        installLauncher.set_defaults(func=launcher.install)
+
+        uninstallLauncher = self.action_parsers.add_parser('uninstall-launcher')
+        uninstallLauncher.set_defaults(func=launcher.uninstall)
 
     def run(self, args):
         ...
