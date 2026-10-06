@@ -47,4 +47,12 @@ def parseArgs(args):
             logging.DEBUG
         )
 
-    args.func(ctx.args)
+    try:
+        args.func(ctx.args)
+    except Exception as e:
+        if e is SystemExit and e.code == 0:
+            return
+        
+        logger.critical(f'the tool a bit cooked! exit exception: {e}', 
+                        exc_info=(DEBUG or args.verbose))
+        exit(1)
