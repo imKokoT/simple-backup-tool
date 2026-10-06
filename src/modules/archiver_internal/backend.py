@@ -18,6 +18,7 @@ class TarBackend(ArchiveBackend):
         schema = ctx.schema
         self.compressFormat:str = schema.get('packer.format')
         self.compressLevel:int = schema.get('packer.level')
+        self.threads:int = schema.get('packer.threads')
 
     def set_backend_args(self):
         self.backend_args = bytes(16)
@@ -35,10 +36,17 @@ class TarBackend(ArchiveBackend):
                 if self.compressLevel > 0:
                     logger.warning('TAR does not support compress level')
                 self.arch = tarfile.open(None, 'w:tar', fileobj=self.stream)
+            # who is that impressive guy, who didn't standardize compress level param
             case 'gz': self.arch = tarfile.open(None, 'w:gz', fileobj=self.stream, compresslevel=self.compressLevel)
-            case 'xz': self.arch = tarfile.open(None, 'w:xz', fileobj=self.stream, preset=self.compressLevel) # who is that impressive guy, who didn't standardize compress level
             case 'bz2': self.arch = tarfile.open(None, 'w:bz2', fileobj=self.stream, compresslevel=self.compressLevel)
-            case 'zst': self.arch = tarfile.open(None, 'w:zst', fileobj=self.stream, level=self.compressLevel)
+            case 'xz': self.arch = tarfile.open(None, 'w:xz', fileobj=self.stream, preset=self.compressLevel) 
+            case 'zst': 
+                from compression.zstd import CompressionParameter
+                self.arch = tarfile.open(None, 'w:zst', fileobj=self.stream, 
+                                         options={
+                                             CompressionParameter.nb_workers: self.threads,
+                                             CompressionParameter.compression_level: self.compressLevel
+                                         })
         
     def close(self):
         self.arch.close()

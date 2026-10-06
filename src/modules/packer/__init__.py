@@ -55,6 +55,13 @@ class PackerModule(Module):
             type=int,
             default=5,
         )
+        self.schema_config_registry.register(
+            name='packer.threads',
+            type=int,
+            default=1,
+            description='How many threads to use while packing process if archiver supports threading.' \
+                        'Default is 1; 0 lets archiver decide'
+        )
 
     def registerAppConfigs(self):
         ...
