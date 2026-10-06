@@ -20,11 +20,3 @@ packer.archiver: internal
 ```
 
 Supports: `tar`, `gz`, `xz`, `bz2`, `zst` (Python 3.14+)
-
-## 7zip Archiver
-
-External [7z archiver](https://7-zip.org/). To use it, it must be accessible from `PATH` environment variable.
-
-```yaml
-packer.archiver: 7zip
-```
