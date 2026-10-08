@@ -28,7 +28,7 @@ A small CLI tool for making backups to your Google Drive cloud.
 Project uses *pyproject,toml* to setup. To install the project use:
 
 ```sh
-# optionally, to prevent install it globally
+# optionally for Windows, to prevent install it globally
 python -m venv .venv
 source .venv/bin/activate
 
@@ -40,6 +40,12 @@ After success install there is entry script:
 
 ```sh
 sbt
+```
+
+There is also an option to expose application user-scope if the application was installed into *venv*:
+
+```sh
+sbt manage install-launcher
 ```
 
 If everything is fine, we will continue setup with [First Backup topic](/docs/First%20Backup.md)
