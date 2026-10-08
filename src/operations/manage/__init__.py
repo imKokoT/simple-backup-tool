@@ -18,9 +18,9 @@ class ManageOperation(Operation):
         'install-launcher',
         'uninstall-launcher',
 
-        'create_schema',
-        'open_schema',
-        'list_schemas',
+        'create-schema',
+        'open-schema',
+        'list-schemas',
 
         'config',
     ]
@@ -35,14 +35,14 @@ class ManageOperation(Operation):
         )
 
         # --- schema manage ---
-        createSchema = self.action_parsers.add_parser('create_schema')
+        createSchema = self.action_parsers.add_parser('create-schema')
         createSchema.set_defaults(func=schema_manage.create)
         
-        openSchema = self.action_parsers.add_parser('open_schema')
+        openSchema = self.action_parsers.add_parser('open-schema')
         openSchema.add_argument('schema_name')
         openSchema.set_defaults(func=schema_manage.openSchema)
 
-        listSchemas = self.action_parsers.add_parser('list_schemas')
+        listSchemas = self.action_parsers.add_parser('list-schemas')
         listSchemas.set_defaults(func=schema_manage.listSchemas)
 
         # --- app config ---

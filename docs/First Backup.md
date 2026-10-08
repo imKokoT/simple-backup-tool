@@ -7,7 +7,7 @@ Before we continue, firstly we must create [Google Drive service](./Create%20Goo
 The tool provide creation of backups by **schemas**. Schema is YAML file with all configuration of the both backup and restore workflows. Lets see its minimal structure:
 
 ```sh
-sbt manage create_schema
+sbt manage create-schema
 ```
 
 You opened template will look something like this:
