@@ -24,8 +24,6 @@ def entry():
     schema = ctx.schema
     args = ctx.args
 
-    os.makedirs(f'./configs/secrets', exist_ok=True)
-
     if module.invokeArgs['action'] == 'send':
         send()
     elif module.invokeArgs['action'] == 'download':
