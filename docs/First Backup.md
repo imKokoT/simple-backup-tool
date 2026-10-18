@@ -49,8 +49,8 @@ The command a bit weird, but why it looks like this explained [here](./CLI%20Arg
 
 */restored* folder exists under tool's tmp dir:
 
-- Windows: `%localappdata%/[COPYRIGHT]/simple-backup-tool/your-schema-name/`
-- Linux: `$HOME/.local/state/[COPYRIGHT]/simple-backup-tool/your-schema-name/`
+- Windows: `%localappdata%/simple-backup-tool/your-schema-name/`
+- Linux: `$HOME/.local/state/simple-backup-tool/your-schema-name/`
 
 There are also contained session cache, runtime files etc. More about project's folders [here](./App%20folders.md)
 

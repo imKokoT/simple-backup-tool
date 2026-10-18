@@ -10,8 +10,8 @@ Application logs are stored into root app folder under `./logs/`. Application st
 
 App configs, schemas and credentials are located under:
 
-- Windows: `%appdata%/[COPYRIGHT]/simple-backup-tool/`
-- Linux: `$HOME/.config/[COPYRIGHT]/simple-backup-tool/`
+- Windows: `%appdata%/simple-backup-tool/`
+- Linux: `$HOME/.config/simple-backup-tool/`
 
 ```
 simple-backup-tool/
@@ -28,7 +28,7 @@ simple-backup-tool/
 
 Session cache, runtime files etc are located under:
 
-- Windows: `%localappdata%/[COPYRIGHT]/simple-backup-tool/`
-- Linux: `$HOME/.local/state/[COPYRIGHT]/simple-backup-tool/`
+- Windows: `%localappdata%/simple-backup-tool/`
+- Linux: `$HOME/.local/state/simple-backup-tool/`
 
 Every separate folder is a session cache. Also there is `*/**/restored` folder with potentially restored data.
