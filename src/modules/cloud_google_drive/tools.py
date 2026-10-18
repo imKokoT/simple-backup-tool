@@ -7,7 +7,7 @@ from google.oauth2 import service_account
 from google.oauth2.credentials import Credentials
 
 from core.context import ctx
-from paths import getAppDir, getTmpDir
+from core.paths import getAppDir, getTmpDir
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:

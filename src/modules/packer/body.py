@@ -8,7 +8,7 @@ from core.context import ctx
 from core.module import module_register
 from core.pack import Pack
 from core.vfs import VFile, size
-from paths import getTmpDir
+from core.paths import getTmpDir
 from properties import *
 
 from typing import TYPE_CHECKING

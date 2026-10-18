@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from properties import VERSION, DEBUG, EXPERIMENTAL
-import logger
+import core.logger as logger
 from core.manage import parseArgs
 from core import app_config
 from core import schema

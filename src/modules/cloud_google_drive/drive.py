@@ -6,7 +6,7 @@ from core.app_config import config
 from core.vfs import VFile
 from core.context import ctx
 from core.cli import progressBar
-from paths import getTmpDir
+from core.paths import getTmpDir
 from properties import *
 
 from typing import TYPE_CHECKING

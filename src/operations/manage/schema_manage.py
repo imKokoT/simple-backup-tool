@@ -1,7 +1,7 @@
 import os
 
 from properties import *
-from paths import getAppDir, isValid
+from core.paths import getAppDir, isValid
 from .tools import openWithinEditor
 
 

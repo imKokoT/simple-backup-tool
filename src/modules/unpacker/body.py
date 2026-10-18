@@ -13,7 +13,7 @@ from properties import *
 
 from typing import TYPE_CHECKING
 
-from paths import canCreate, isValid
+from core.paths import canCreate, isValid
 if TYPE_CHECKING:
     from . import UnpackerModule
     from modules.cryptography import CryptographyModule

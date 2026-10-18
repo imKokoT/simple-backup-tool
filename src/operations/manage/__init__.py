@@ -1,7 +1,7 @@
 import logging
 import os
 
-from paths import getAppDir
+from core.paths import getAppDir
 
 from .tools import openWithinEditor
 from core.module import Operation

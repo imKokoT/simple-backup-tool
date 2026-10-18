@@ -1,6 +1,6 @@
 from typing import Set
 from core.config_registry import ConfigRegistry
-from paths import *
+from core.paths import *
 from properties import *
 from ruamel.yaml.comments import CommentedMap
 from ruamel.yaml.error import YAMLError

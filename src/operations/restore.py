@@ -8,7 +8,7 @@ from core.cli import getConfirm
 from core.module import Operation, module_register
 from core.context import ctx
 from core.schema import Schema
-from paths import getAppDir, getTmpDir
+from core.paths import getAppDir, getTmpDir
 
 logger = logging.getLogger(__name__)
 

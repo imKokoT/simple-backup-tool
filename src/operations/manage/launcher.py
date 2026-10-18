@@ -4,7 +4,7 @@ import sys
 import logging
 
 from properties import *
-from paths import getAppDir
+from core.paths import getAppDir
 
 logger = logging.getLogger(__name__)
 

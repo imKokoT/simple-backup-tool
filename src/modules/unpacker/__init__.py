@@ -5,7 +5,7 @@ import shutil
 from core.config_registry import D
 from core.module import Module
 from core.pack import Pack, PackConfig
-from paths import getTmpDir
+from core.paths import getTmpDir
 from .body import *
 
 class UnpackerModule(Module):

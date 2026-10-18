@@ -2,7 +2,7 @@ from io import TextIOWrapper
 from core.cli import humanSize, iprint
 from core.context import ctx
 from core.vfs import VFile
-from paths import getTmpDir
+from core.paths import getTmpDir
 from .tools import *
 import logging
 import pathspec
