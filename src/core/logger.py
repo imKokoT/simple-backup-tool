@@ -29,7 +29,7 @@ def init():
     )
 
     file = logging.FileHandler(
-        f'logs/session_{str(datetime.datetime.now().replace(microsecond=0)).replace(':','.')}.log', 
+        f'logs/session_{str(datetime.datetime.now().replace(microsecond=0)).replace(':','.')}_{os.getpid()}.log', 
         'w', 'utf-8')
     file.setFormatter(
         logging.Formatter(BASE_FILE_LOGGING_FORMATE)
