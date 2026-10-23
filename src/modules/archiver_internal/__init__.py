@@ -1,7 +1,11 @@
 import sys
-from core.module import Module
+from core.module import Module, module_register
 from core.pack import Pack
 from .body import entry
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from modules.packer import PackerModule 
 
 
 class ArchiverInternalModule(Module):
@@ -16,11 +20,18 @@ class ArchiverInternalModule(Module):
     supportedFormats = {'tar','gz','xz','bz'}
     pack:Pack
 
-    def entry(self):
+    def __init__(self):
+        super().__init__()
+        
         # Python 3.14+
         if sys.version_info[1] >= 14:
             self.supportedFormats.add('zst')
 
+        # patch packer supportedFormats
+        module:PackerModule = module_register.get('packer')
+        module.supportedFormats.update(self.supportedFormats)
+
+    def entry(self):
         entry()
 
     def registerCommandArguments(self):

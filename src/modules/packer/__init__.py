@@ -15,7 +15,7 @@ class PackerModule(Module):
     ]
 
     archiverTypes = ['internal']
-    supportedFormats = {}
+    supportedFormats = set()
     archiverModules = [
         'archiver.internal'
     ]
@@ -39,7 +39,7 @@ class PackerModule(Module):
             name='packer.archiver',
             type=str,
             default='internal',
-            description=D('Which archiver to use; possible values: {variant}',
+            description=D('Which archiver module to use; possible values: {variant}',
                           variant=lambda: ', '.join(self.archiverTypes)),
             validator=lambda x: x in self.archiverTypes
         )
@@ -47,19 +47,20 @@ class PackerModule(Module):
             name='packer.format',
             type=str,
             default='gz',
-            description=D('Possible values: {variant}',
+            description=D('Compress format; possible values: {variant}',
                           variant=lambda: ', '.join(self.supportedFormats))
         )
         self.schema_config_registry.register(
             name='packer.level',
             type=int,
             default=5,
+            description='Compress level; min/max value depends from selected archiver'
         )
         self.schema_config_registry.register(
             name='packer.threads',
             type=int,
             default=1,
-            description='How many threads to use while packing process if archiver supports threading.' \
+            description='How many threads to use while packing process if the archiver supports threading.' \
                         'Default is 1; 0 lets archiver decide'
         )
 
