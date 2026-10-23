@@ -84,8 +84,34 @@ class Schema:
             self.set(k, v)
 
     def dump(self):
-        raise NotImplementedError()
+        '''dump schema to file from set values'''
+        data = CommentedMap()
 
+        data.yaml_set_start_comment(
+            f"The schema template was generated with SBT V{VERSION}"
+        )
+
+        for k,v in self._values.items():
+            data[k] = v
+            ck = schema_config_registry.get(k)
+
+            if ck.description:
+                if '\n' in ck.description:
+                    data.yaml_set_comment_before_after_key(
+                        ck.name,
+                        before=f'\n{ck.description}'
+                    )
+                else:
+                    data.yaml_set_comment_before_after_key(
+                        ck.name,
+                        before=f'\n'
+                    )
+                    data.yaml_add_eol_comment(ck.description, ck.name)
+
+        with self.path.open("w", encoding="utf-8") as f:
+            yaml.dump(data, f)
+
+        logger.debug(f"dumped schema to {self.path}")
 
 def registerBaseSettings():
     """build-in schemas parameters"""

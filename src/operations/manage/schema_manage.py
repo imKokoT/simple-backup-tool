@@ -1,5 +1,6 @@
 import os
 
+from core.schema import Schema
 from properties import *
 from core.paths import getAppDir, isValid
 from .tools import openWithinEditor
@@ -23,11 +24,16 @@ def create(args):
             continue
 
     path = schemasPath / f'{name}.yaml'
-
-    with open(path, 'w', encoding='utf-8') as f:
-        # TODO: schema template
-        f.write('# template\n')
     
+    # minimal settings
+    schema = Schema(path, True)
+
+    schema.set('credentials', 'your-secret')
+    schema.set('targets', ['/path/to/folder/'])
+    schema.set('destination', '/path/in/the/cloud')
+    
+    schema.dump()
+
     # try open schema to edit
     openWithinEditor(path)
 

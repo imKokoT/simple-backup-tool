@@ -19,7 +19,7 @@ def getAppDir() -> Path:
     system = platform.system()
 
     if DEBUG:
-        path = Path(__file__).resolve().parent.parent / 'configs'
+        path = Path(__file__).resolve().parent.parent.parent / 'configs'
     elif system == "Windows":
         base = os.getenv("APPDATA")
         if not base:
@@ -49,7 +49,7 @@ def getTmpDir() -> Path:
     system = platform.system()
 
     if DEBUG:
-        path = Path(__file__).resolve().parent.parent / 'configs' / 'tmp'
+        path = Path(__file__).resolve().parent.parent.parent / 'configs' / 'tmp'
 
     elif system == "Linux":
         path = Path.home() / ".local" / "state" / "simple-backup-tool"
