@@ -66,6 +66,9 @@ class ConfigKeyDescription:
     def __str__(self):
         out = {k: v() for k, v in self.kwargs.items()}
         return self.raw.format(**out)
+    
+    def __contains__(self, item):
+        return item in self.__str__()
 
 # shortcut
 D = ConfigKeyDescription

@@ -32,7 +32,7 @@ class CryptographyModule(Module):
             type=str,
             default=None,
             description=D('With what algorithm the pack will be encrypted; values: {values}',
-                          values=self.supportedAlgorithms),
+                          values=lambda: ', '.join(self.supportedAlgorithms)),
             validator=lambda x: x in self.supportedAlgorithms
         )
 

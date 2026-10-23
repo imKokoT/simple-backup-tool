@@ -70,14 +70,14 @@ class AppConfig:
                 if '\n' in key.description:
                     data.yaml_set_comment_before_after_key(
                         key.name,
-                        before=f'\n{key.description}'
+                        before=f'\n{str(key.description)}'
                     )
                 else:
                     data.yaml_set_comment_before_after_key(
                         key.name,
                         before=f'\n'
                     )
-                    data.yaml_add_eol_comment(key.description, key.name)
+                    data.yaml_add_eol_comment(str(key.description), key.name)
 
         with path.open("w", encoding="utf-8") as f:
             yaml.dump(data, f)

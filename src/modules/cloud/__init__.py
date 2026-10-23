@@ -39,7 +39,7 @@ class CloudModule(Module):
             type=str,
             default=self.cloudModules[0],
             description=D('What cloud to use; possible values {variant}',
-                          variant=', '.join(self.cloudModules)),
+                          variant=lambda: ', '.join(self.cloudModules)),
             validator=lambda x: x in self.cloudModules
         )
 

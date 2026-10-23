@@ -3,6 +3,7 @@ import shutil
 import sys
 from typing import Literal
 from core.app_config import config
+from properties import *
 
 
 def getConfirm(expected:Literal['y','n'], msg:str='', default:Literal['y','n']='n') -> bool:
@@ -16,6 +17,31 @@ def getConfirm(expected:Literal['y','n'], msg:str='', default:Literal['y','n']='
         return expected == default
     else:
         return yn == expected
+
+
+def getOption(options:list[str], msg:str='Please select an option', default:int=None) -> int:
+    '''Asks user to select 1, 2, 3... options and returns the index (1-based)'''
+    print(f'\n{msg}:')
+    for i, option in enumerate(options, 1):
+        suffix = ' (default)' if default == i else ''
+        print(f'{i}) {option}{suffix}')
+
+    while True:
+        prompt = f'Select [1-{len(options)}]'
+        if default is not None:
+            prompt += f' (default: {default})'
+        prompt += ': '
+
+        choice = input(prompt).strip()
+
+        if not choice and default is not None:
+            return default
+
+        if choice.isdigit():
+            idx = int(choice)
+            if 1 <= idx <= len(options):
+                return idx
+        print(f'{RC}Invalid selection. Please enter a number between 1 and {len(options)}.{DC}')
 
 
 def iprint(*strings):

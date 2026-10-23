@@ -83,7 +83,7 @@ class Schema:
                 continue
             self.set(k, v)
 
-    def dump(self):
+    def dump(self, **kwargs):
         '''dump schema to file from set values'''
         data = CommentedMap()
 
@@ -95,18 +95,19 @@ class Schema:
             data[k] = v
             ck = schema_config_registry.get(k)
 
-            if ck.description:
+            data.yaml_set_comment_before_after_key(
+                ck.name,
+                before=f'\n'
+            )
+
+            if ck.description and not kwargs.get('disable_comments'):
                 if '\n' in ck.description:
                     data.yaml_set_comment_before_after_key(
                         ck.name,
-                        before=f'\n{ck.description}'
+                        before=f'{str(ck.description)}'
                     )
                 else:
-                    data.yaml_set_comment_before_after_key(
-                        ck.name,
-                        before=f'\n'
-                    )
-                    data.yaml_add_eol_comment(ck.description, ck.name)
+                    data.yaml_add_eol_comment(str(ck.description), ck.name)
 
         with self.path.open("w", encoding="utf-8") as f:
             yaml.dump(data, f)
