@@ -1,9 +1,9 @@
 import modules
 import operations
-from core import app_config
-from properties import *
+from core import app_config, schema
 from core.module import module_register
 from core.context import ctx
+from properties import *
 import argparse
 import logging
 import sys
@@ -23,6 +23,10 @@ def parseArgs(args):
         required=True
     )
 
+    # register base params
+    app_config.registerBaseSettings()
+    schema.registerBaseSettings()
+
     # register modules
     module_register.register(modules.scan.ScanModule())
     module_register.register(modules.cryptography.CryptographyModule())
@@ -39,8 +43,12 @@ def parseArgs(args):
     ]
 
     app_config.config.load()
-    args = ctx.args = parser.parse_args()
     
+    if app_config.config.get('experimental'):
+        logger.warning('Experimental mode is enabled')
+    
+    args = ctx.args = parser.parse_args()
+
     # verbose output logs
     if args.verbose:
         logging.getLogger().setLevel(

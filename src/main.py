@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
-from properties import VERSION, DEBUG, EXPERIMENTAL
+from properties import VERSION, DEBUG
 import core.logger as logger
 from core.manage import parseArgs
-from core import app_config
-from core import schema
 import sys
 
 
@@ -11,14 +9,11 @@ def main():
     """
     It's command-line entry point of the tool.
 
-    You must run this script within arguments to backup/restore data,
+    Run this script within arguments to backup/restore data,
     creating templates, automate processes etc.
     """
     logger.init()
-    logger.logging.debug(f'v{VERSION} | {DEBUG=} {EXPERIMENTAL=}')
-
-    app_config.registerBaseSettings()
-    schema.registerBaseSettings()
+    logger.logging.debug(f'v{VERSION} | {DEBUG=}')
     
     parseArgs(sys.argv)
 

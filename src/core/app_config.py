@@ -1,9 +1,10 @@
 from core.config_registry import ConfigRegistry
 from core.paths import *
 from properties import *
+
+import logging
 from ruamel.yaml.comments import CommentedMap
 from ruamel.yaml.error import YAMLError
-import logging
 
 logger = logging.getLogger(__name__)
 app_config_registry = ConfigRegistry('app_config_registry')
@@ -114,4 +115,10 @@ def registerBaseSettings():
                     '\n'
                     'WARNING: REQUIRES A HUGE AMOUNT OF RAM! Large backups/restores could cause freezes, crashes,\n' \
                     'system slowdown etc, if the system does not have enough RAM.',
+    )
+    app_config_registry.register(
+        name='experimental',
+        type=bool,
+        default=False,
+        description='Enable experimental features'
     )

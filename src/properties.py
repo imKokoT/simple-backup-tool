@@ -5,8 +5,7 @@ from ruamel.yaml import YAML
 
 
 VERSION = '1.0b2-dev'
-DEBUG = True                # dev-only
-EXPERIMENTAL = False        # enable experimental features
+DEBUG = True  # dev-only
 
 COPYRIGHT = 'imKokoT'
 LINK = '''https://github.com/imKokoT/simple-backup-tool'''
