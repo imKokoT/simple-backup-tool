@@ -1,8 +1,10 @@
 import datetime
-from colorlog import ColoredFormatter
-from properties import *
 import logging
 import os
+
+from colorlog import ColoredFormatter
+from properties import *
+from core.app_config import config
 
 BASE_LOGGING_FORMAT = '\r%(log_color)s[%(asctime)s] %(levelname)s %(name)s: %(message)s%(reset)s'
 BASE_FILE_LOGGING_FORMATE = '[%(asctime)s] %(levelname)s %(name)s: %(message)s'
@@ -40,9 +42,10 @@ def init():
     root.addHandler(stream)
     root.addHandler(file)
 
-    # auto clean-up
+
+def cleanOldest():
     logs = [f'./logs/{l}' for l in os.listdir('./logs') if l.startswith('session')]
     logs.sort(key=lambda x: os.path.getctime(x))
-    while len(logs) > MAX_SESSION_LOGS:
+    while len(logs) > config.get('max_logs'):
         os.remove(logs.pop(0))
     

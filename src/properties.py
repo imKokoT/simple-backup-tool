@@ -11,8 +11,6 @@ COPYRIGHT = 'imKokoT'
 LINK = '''https://github.com/imKokoT/simple-backup-tool'''
 C_YEARS = '2024-2026'
 
-MAX_SESSION_LOGS = 10
-
 DC = colorama.Style.RESET_ALL
 
 RC = colorama.Fore.RED

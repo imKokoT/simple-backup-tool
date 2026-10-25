@@ -3,6 +3,7 @@ import operations
 from core import app_config, schema
 from core.module import module_register
 from core.context import ctx
+from core.logger import cleanOldest
 from properties import *
 import argparse
 import logging
@@ -44,6 +45,8 @@ def parseArgs(args):
 
     app_config.config.load()
     
+    cleanOldest() # clean oldest session log
+
     if app_config.config.get('experimental'):
         logger.warning('Experimental mode is enabled')
     

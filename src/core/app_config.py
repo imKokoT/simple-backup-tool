@@ -122,3 +122,10 @@ def registerBaseSettings():
         default=False,
         description='Enable experimental features'
     )
+    app_config_registry.register(
+        name='max_logs',
+        type=int,
+        default=10,
+        description='Max session logs; default 10',
+        validator=lambda x: x > 0
+    )
