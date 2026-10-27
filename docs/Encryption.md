@@ -1,9 +1,9 @@
 # Encryption
 
-Your backup could be encrypted with a few methods, provided by the tool.
+Your backup can be encrypted using a few methods provided by the tool.
 
 > [!NOTE]
-> For now the tool provides password-secured backups only!
+> For now, the tool provides password-secured backups only!
 
 ## Schema Params
 

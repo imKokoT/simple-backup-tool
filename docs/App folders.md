@@ -4,11 +4,11 @@ The tool stores all files in three different locations.
 
 ## Logs
 
-Application logs are stored into root app folder under `./logs/`. Application stores last 10 sessions, that you could discover in case of errors, debugging etc.
+Application logs are stored in the root app folder under `./logs/`. The application stores the last 10 sessions by default, which you can review in case of errors, debugging, etc.
 
 ## Configs
 
-App configs, schemas and credentials are located under:
+App configs, schemas, and credentials are located under:
 
 - Windows: `%appdata%/simple-backup-tool/`
 - Linux: `$HOME/.config/simple-backup-tool/`

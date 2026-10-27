@@ -1,6 +1,6 @@
 # Compression
 
-The tool provides wide range of compression formats. Beside this it natively supports [7z archiver](https://7-zip.org/). However, the tool also allows to use external archivers through CLI, if they support stdin/stdout mode.
+The tool provides a wide range of compression formats. Besides this, it natively supports the [7z archiver](https://7-zip.org/). However, the tool also allows the use of external archivers through the CLI, if they support stdin/stdout mode.
 
 ## Schema Params
 

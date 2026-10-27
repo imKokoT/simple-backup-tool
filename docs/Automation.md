@@ -1,3 +1,3 @@
 # Automation
 
-Current implementation of the tool does not provide any automated scenarios of automation setup and this relies on the user.
+The current implementation of the tool does not provide any automated scenarios for automation setup; this relies on the user.

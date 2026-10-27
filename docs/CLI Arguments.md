@@ -1,12 +1,13 @@
 # CLI Arguments
 
-Due to current application design the argument positioning could be confusing, so there is a small explanation. However, in the future there will be possible changes.
+> [!NOTE]
+> Due to the current application design, argument positioning could be confusing, so there is a small explanation. However, changes may be made in the future.
 
-In box the tool has entry points **operations** and **modules**, that implement some feature and could be invoked by **operations**.
+In Box, the tool has two entry points: **operations** and **modules**. Modules implement specific features and can be invoked by **operations**.
 
 ## Operations
 
-Operation defines some use-case and in CLI is a *subcommand*.
+An operation defines a use case and acts as a *subcommand* in the CLI.
 
 Example:
 
