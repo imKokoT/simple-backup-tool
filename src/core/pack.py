@@ -181,9 +181,9 @@ class Pack:
     
     def close(self):
         if self.mode == 'w' and not self._configured:
-            raise RuntimeError(f'tried to close uncofigured pack "{self.path}"')
+            raise RuntimeError(f'tried to close uncofigured pack')
         if self.mode == 'w' and not self._packed:
-            raise RuntimeError(f'tried to close pack without packing data"{self.path}"')
+            raise RuntimeError(f'tried to close pack without packing data')
         
         self._backend.close()
         logger.debug(f'closed pack')
