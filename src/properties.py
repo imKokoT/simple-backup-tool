@@ -1,11 +1,11 @@
 '''global constants'''
-from properties import *
+import os
 import colorama
 from ruamel.yaml import YAML
 
 
 VERSION = '1.0b2-dev'
-DEBUG = True  # dev-only
+DEBUG = os.getenv('DEBUG') == '1'  # dev-only
 
 COPYRIGHT = 'imKokoT'
 LINK = '''https://github.com/imKokoT/simple-backup-tool'''

@@ -1,3 +1,4 @@
+import sysconfig
 import os
 from pathlib import Path
 import sys
@@ -20,7 +21,7 @@ def install(args):
             scriptPath = scriptDir / 'sbt.cmd'
             os.makedirs(scriptDir, exist_ok=True)
 
-        execPath = Path(sys.executable).parent / 'sbt.exe'
+        execPath = Path(sysconfig.get_path("scripts")) / 'sbt.exe'
     elif sys.platform == 'linux':
         template = 'res/templates/sbt.sh'
         if DEBUG:
@@ -29,7 +30,7 @@ def install(args):
             os.makedirs(Path.home() / '.local' / 'bin', exist_ok=True)
             scriptPath = Path.home() / '.local' / 'bin' / 'sbt'
 
-        execPath = Path(sys.executable).parent / 'sbt'
+        execPath = Path(sysconfig.get_path("scripts")) / 'sbt'
     else:
         logger.error(f'unsupported platform')
         exit(1)
@@ -50,7 +51,7 @@ def install(args):
             entries = [p for p in current.split(";") if p]
 
             if scriptDir not in entries:
-                entries.append(scriptDir)
+                entries.append(str(scriptDir))
 
                 winreg.SetValueEx(
                     key,
@@ -95,7 +96,7 @@ def uninstall(args):
     if sys.platform == 'win32' and not DEBUG:
         import winreg
 
-        scriptDir = getAppDir() / 'bin'
+        scriptDir = str(getAppDir() / 'bin')
         with winreg.OpenKey(
             winreg.HKEY_CURRENT_USER, "Environment", 0, 
             winreg.KEY_READ | winreg.KEY_WRITE,
