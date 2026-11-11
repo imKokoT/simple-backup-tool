@@ -39,7 +39,7 @@ class ArchiveStream(io.BytesIO):
         elif whence == 2:
             return self.stream.seek(offset, 2)
         else:
-            ValueError('invalid whence')
+            raise ValueError('invalid whence')
 
     def flush(self):                                    self.stream.flush()
     def read(self, n:int = -1) -> bytes:                return self.stream.read(n)
@@ -51,7 +51,7 @@ class ArchiveStream(io.BytesIO):
     def write(self, b:bytes) -> int:                    return self.stream.write(b)
     def writelines(self, lines):                        self.stream.writelines(lines)
     def writable(self)-> bool:                          return self.stream.writable()
-    def close(self): self.stream.close()
+    def close(self):                                    self.stream.close()
 
 
 class ArchiveBackend(ABC):
